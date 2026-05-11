@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# supabase local link (각자 본인 프로젝트로 link)
+.supabase/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
