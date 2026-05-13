@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#2d7a4f"/>
+  <!-- 잎 모양 -->
+  <ellipse cx="200" cy="230" rx="90" ry="55" fill="#4caf72" transform="rotate(-35 200 230)"/>
+  <ellipse cx="310" cy="200" rx="80" ry="50" fill="#4caf72" transform="rotate(20 310 200)"/>
+  <!-- 줄기 -->
+  <path d="M256 380 Q240 300 200 240" stroke="#1a4a2e" stroke-width="16" stroke-linecap="round" fill="none"/>
+  <path d="M256 380 Q270 290 310 215" stroke="#1a4a2e" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <!-- 그릇 -->
+  <ellipse cx="256" cy="370" rx="95" ry="22" fill="#1a4a2e" opacity="0.3"/>
+  <path d="M165 340 Q170 400 256 410 Q342 400 347 340 Z" fill="#f5f0e8"/>
+  <path d="M165 340 Q200 355 256 358 Q312 355 347 340" stroke="#e8734a" stroke-width="6" fill="none"/>
+</svg>
