@@ -81,7 +81,7 @@ export default async function HomePage() {
             <div className="relative w-full aspect-square max-w-md mx-auto">
               <div className="absolute inset-4 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://ecimg.cafe24img.com/pg2495b61354611092/greeneat0419/web/upload/goodymall/kr/main/main_img02.jpg"
+                  src="https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/hero.jpg"
                   alt="그린잇 도시락"
                   fill
                   sizes="(max-width: 1280px) 400px, 500px"
