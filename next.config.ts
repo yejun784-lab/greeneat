@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        // GreenEat 공홈 Cafe24 CDN
+        protocol: "https",
+        hostname: "ecimg.cafe24img.com",
+      },
     ],
   },
 };
