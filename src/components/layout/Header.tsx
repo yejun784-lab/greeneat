@@ -155,8 +155,15 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* 로고 */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-[#2d7a4f]">GreenEat</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/logo.png"
+              alt="GreenEat"
+              width={120}
+              height={40}
+              className="h-9 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* 데스크톱 네비게이션 */}
