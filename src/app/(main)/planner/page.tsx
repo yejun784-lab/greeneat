@@ -11,12 +11,15 @@ export const metadata: Metadata = {
 export default async function PlannerPage() {
   const supabase = await createClient()
 
-  const { data } = await supabase
-    .from('products')
-    .select('id, name, price, image_url, calories, protein, carbs, fat, servings')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-    .limit(30)
+  const [{ data }, { data: { user } }] = await Promise.all([
+    supabase
+      .from('products')
+      .select('id, name, price, image_url, calories, protein, carbs, fat, servings')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(30),
+    supabase.auth.getUser(),
+  ])
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -24,7 +27,7 @@ export default async function PlannerPage() {
         <h1 className="text-2xl font-bold text-ink">식단 플래너</h1>
         <p className="text-ink-4 mt-1">한 주 식단을 미리 계획하고 영양을 관리해보세요</p>
       </div>
-      <MealPlanner products={(data ?? []) as Product[]} />
+      <MealPlanner products={(data ?? []) as Product[]} userId={user?.id} />
     </div>
   )
 }

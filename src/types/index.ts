@@ -133,6 +133,43 @@ export type Coupon = {
   created_at: string
 }
 
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+
+export type FeedGroup = {
+  id: string
+  name: string
+  invite_code: string
+  created_by: string
+  created_at: string
+  feed_group_members?: FeedGroupMember[]
+}
+
+export type FeedGroupMember = {
+  group_id: string
+  user_id: string
+  joined_at: string
+  profiles?: { name: string | null }
+}
+
+export type MealLog = {
+  id: string
+  user_id: string
+  group_id: string
+  photo_url: string | null
+  caption: string | null
+  meal_type: MealType
+  streak_day: number
+  created_at: string
+  profiles?: { name: string | null }
+  meal_reactions?: MealReaction[]
+}
+
+export type MealReaction = {
+  log_id: string
+  user_id: string
+  emoji: string
+}
+
 export type FilterState = {
   category?: string
   minCalories?: number

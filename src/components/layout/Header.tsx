@@ -16,6 +16,7 @@ const NAV_LINKS = [
   { href: '/products', label: '밀키트' },
   { href: '/subscription', label: '구독 플랜' },
   { href: '/planner', label: '식단 플래너' },
+  { href: '/feed', label: '밥로그' },
   { href: '/notice', label: '이벤트' },
 ]
 
