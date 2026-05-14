@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"💾 코드 수정했으면 GitHub에 올리는 거 잊지 마세요!\\n\\n터미널에서 아래 명령어 실행:\\n  cd C:\\\\Users\\\\kwgs\\\\Desktop\\\\greeneat\\\\greeneat\\n  git add -A\\n  git commit -m \\\"수정 내용 적기\\\"\\n  git push team master\"}'",
+            "shell": "powershell"
+          }
+        ]
+      }
+    ]
+  }
+}
