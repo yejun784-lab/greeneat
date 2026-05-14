@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GreenEat — 건강한 밀키트 구독 서비스",
-  description: "신선하고 건강한 밀키트로 매일의 식사를 특별하게. GreenEat 구독으로 편리하게 즐기세요.",
+  title: "GreenEat — 진정성 있는 건강한 도시락",
+  description: "진정성 있는 건강한 선택, 맛있는 도시락. GreenEat 정기구독으로 매일 건강한 한 끼를 편리하게 즐겨보세요.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

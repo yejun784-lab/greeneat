@@ -8,13 +8,13 @@ export function Footer() {
           <div>
             <p className="text-white font-bold text-lg mb-3">GreenEat</p>
             <p className="text-sm leading-relaxed">
-              신선하고 건강한 밀키트로<br />매일의 식사를 특별하게.
+              진정성 있는 건강한 선택,<br />맛있는 도시락.
             </p>
           </div>
           <div>
             <p className="text-white font-medium mb-3">서비스</p>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/products" className="hover:text-white transition-colors">밀키트 쇼핑</Link></li>
+              <li><Link href="/products" className="hover:text-white transition-colors">도시락 쇼핑</Link></li>
               <li><Link href="/subscription" className="hover:text-white transition-colors">구독 플랜</Link></li>
               <li><Link href="/my/orders" className="hover:text-white transition-colors">주문 내역</Link></li>
             </ul>

@@ -3,11 +3,11 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: '밀키트 — GreenEat',
-  description: '다양한 카테고리의 신선한 밀키트를 만나보세요. 한식, 양식, 샐러드, 비건까지 취향에 맞는 메뉴를 골라보세요.',
+  title: '도시락 — GreenEat',
+  description: '간편식, 베이커리&샐러드, 건강식품, 맞춤식단까지. 진정성 있는 GreenEat 도시락을 만나보세요.',
   openGraph: {
-    title: '밀키트 — GreenEat',
-    description: '다양한 카테고리의 신선한 밀키트를 만나보세요.',
+    title: '도시락 — GreenEat',
+    description: '진정성 있는 건강한 선택, GreenEat 도시락.',
     type: 'website',
   },
 }

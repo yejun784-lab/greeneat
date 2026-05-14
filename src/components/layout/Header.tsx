@@ -13,7 +13,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 type SuggestItem = { id: string; name: string; image_url: string | null; price: number }
 
 const NAV_LINKS = [
-  { href: '/products', label: '밀키트' },
+  { href: '/products', label: '도시락' },
   { href: '/subscription', label: '구독 플랜' },
   { href: '/planner', label: '식단 플래너' },
   { href: '/feed', label: '밥로그' },
@@ -185,7 +185,7 @@ export function Header() {
                     onChange={handleSearchChange}
                     onKeyDown={handleKeyDown}
                     onFocus={() => searchQuery && suggestions.length > 0 && setShowSuggestions(true)}
-                    placeholder="밀키트 검색..."
+                    placeholder="도시락 검색..."
                     className="w-40 sm:w-64 px-3 py-1.5 text-sm border border-line-2 rounded-lg bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
                     autoComplete="off"
                   />
