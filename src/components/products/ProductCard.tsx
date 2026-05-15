@@ -49,18 +49,18 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
   }
 
   return (
-    <div className="group">
+    <div className="group bg-white rounded-2xl overflow-hidden border border-[#f0f0ee] shadow-sm hover:shadow-md transition-shadow duration-200">
 
       {/* 이미지 */}
       <div className="relative">
         <Link href={`/products/${product.id}`} className="block">
-          <div className="relative aspect-square rounded-2xl overflow-hidden bg-tint">
+          <div className="relative aspect-square overflow-hidden bg-tint">
             {product.image_url ? (
               <Image
                 src={product.image_url}
                 alt={product.name}
                 fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             ) : (
@@ -76,12 +76,12 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
             {/* 구독 / 잔여 뱃지 */}
             {!outOfStock && product.stock < 10 && (
-              <span className="absolute top-3 left-3 bg-[#e8734a] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+              <span className="absolute top-2.5 left-2.5 bg-[#e8734a] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 잔여 {product.stock}개
               </span>
             )}
             {product.is_subscription && !outOfStock && product.stock >= 10 && (
-              <span className="absolute top-3 left-3 bg-[#2d7a4f]/85 backdrop-blur-sm text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+              <span className="absolute top-2.5 left-2.5 bg-[#2d7a4f]/85 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 구독
               </span>
             )}
@@ -105,32 +105,36 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
         <button
           onClick={handleWish}
           aria-label={wished ? '찜 취소' : '찜하기'}
-          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
             wished
               ? 'bg-white text-red-500 shadow-sm'
               : 'bg-black/15 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100'
           }`}
         >
-          <Heart size={13} fill={wished ? 'currentColor' : 'none'} strokeWidth={wished ? 0 : 2} />
+          <Heart size={12} fill={wished ? 'currentColor' : 'none'} strokeWidth={wished ? 0 : 2} />
         </button>
       </div>
 
-      {/* 텍스트 */}
-      <Link href={`/products/${product.id}`} className="block mt-3 space-y-1">
+      {/* 텍스트 — 고정 높이로 카드 통일 */}
+      <Link href={`/products/${product.id}`} className="block px-3.5 pt-3 pb-3.5">
 
-        <h3 className={`font-medium text-ink leading-snug tracking-tight line-clamp-1 ${compact ? 'text-sm' : 'text-[14px]'}`}>
+        <h3 className={`font-medium text-ink leading-snug tracking-tight line-clamp-1 ${compact ? 'text-sm' : 'text-[13px]'}`}>
           {product.name}
         </h3>
 
-        {/* 차별점 뱃지 — 딱 하나, 작게 */}
-        {highlight && !compact && (
-          <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${highlight.className}`}>
-            <highlight.Icon size={10} />
-            {highlight.label}
+        {/* 뱃지 슬롯 — 없어도 동일한 높이 유지 */}
+        {!compact && (
+          <div className="mt-1.5 h-[20px] flex items-center">
+            {highlight && (
+              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold ${highlight.className}`}>
+                <highlight.Icon size={9} />
+                {highlight.label}
+              </div>
+            )}
           </div>
         )}
 
-        <p className={`font-bold text-ink tracking-tight ${compact ? 'text-sm' : 'text-[15px]'}`}>
+        <p className={`font-bold text-ink tracking-tight mt-1 ${compact ? 'text-sm' : 'text-[14px]'}`}>
           {formatPrice(product.price)}
         </p>
 

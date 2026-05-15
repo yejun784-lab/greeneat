@@ -174,7 +174,7 @@ export default async function HomePage() {
         </div>
 
         {products.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((product, i) => (
               <div key={product.id} className="animate-fade-up" style={{ animationDelay: `${i * 0.05}s` }}>
                 <ProductCard product={product} />
