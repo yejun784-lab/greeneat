@@ -4,10 +4,17 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback } from 'react'
 
 const CATEGORIES = [
-  { slug: 'korean', name: '한식' },
-  { slug: 'western', name: '양식' },
-  { slug: 'salad', name: '샐러드' },
-  { slug: 'vegan', name: '비건' },
+  { slug: 'lunchbox', name: '간편식' },
+  { slug: 'bakery', name: '베이커리&샐러드' },
+  { slug: 'health', name: '건강식품' },
+  { slug: 'diet', name: '맞춤식단' },
+]
+
+const CALORIE_RANGES = [
+  { label: '~300kcal', max: '300' },
+  { label: '300~500kcal', min: '300', max: '500' },
+  { label: '500~700kcal', min: '500', max: '700' },
+  { label: '700kcal~', min: '700' },
 ]
 
 const ALLERGENS = [
@@ -75,43 +82,37 @@ export function ProductFilter() {
           </div>
         </div>
 
-        {/* 인분 */}
+        {/* 칼로리 범위 */}
         <div>
-          <h3 className="text-sm font-semibold text-ink mb-3">인분</h3>
+          <h3 className="text-sm font-semibold text-ink mb-3">칼로리</h3>
           <div className="space-y-1">
-            {SERVINGS.map((s) => (
-              <button
-                key={s.value}
-                onClick={() => updateParam('servings', s.value)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  active('servings', s.value)
-                    ? 'bg-green-tint text-[#2d7a4f] font-medium'
-                    : 'text-ink-3 hover:bg-wash'
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* 난이도 */}
-        <div>
-          <h3 className="text-sm font-semibold text-ink mb-3">난이도</h3>
-          <div className="space-y-1">
-            {DIFFICULTIES.map((d) => (
-              <button
-                key={d.value}
-                onClick={() => updateParam('difficulty', d.value)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  active('difficulty', d.value)
-                    ? 'bg-green-tint text-[#2d7a4f] font-medium'
-                    : 'text-ink-3 hover:bg-wash'
-                }`}
-              >
-                {d.label}
-              </button>
-            ))}
+            {CALORIE_RANGES.map((r) => {
+              const key = `${r.min ?? ''}-${r.max ?? ''}`
+              const isActive =
+                searchParams.get('minCal') === (r.min ?? null) &&
+                searchParams.get('maxCal') === (r.max ?? null)
+              return (
+                <button
+                  key={key}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams.toString())
+                    if (isActive) {
+                      params.delete('minCal'); params.delete('maxCal')
+                    } else {
+                      if (r.min) params.set('minCal', r.min); else params.delete('minCal')
+                      if (r.max) params.set('maxCal', r.max); else params.delete('maxCal')
+                    }
+                    params.delete('page')
+                    router.push(`${pathname}?${params.toString()}`)
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    isActive ? 'bg-green-tint text-[#2d7a4f] font-medium' : 'text-ink-3 hover:bg-wash'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              )
+            })}
           </div>
         </div>
 

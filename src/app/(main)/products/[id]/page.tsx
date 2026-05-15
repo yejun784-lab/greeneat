@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, Minus, Plus, ShoppingCart, RefreshCw, Gift } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, RefreshCw, Gift } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCartStore } from '@/lib/cart-store'
 import { formatPrice, DIFFICULTY_LABEL } from '@/lib/utils'
@@ -28,12 +28,15 @@ type RecipeStep = {
 }
 
 type Tab = 'info' | 'calc' | 'recipe' | 'reviews'
+type GalleryImage = { id: string; url: string; order: number }
 
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [recipeSteps, setRecipeSteps] = useState<RecipeStep[]>([])
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [activeImage, setActiveImage] = useState(0)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState<Tab>('info')
@@ -45,7 +48,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     async function load() {
       const supabase = createClient()
-      const [{ data: productData }, { data: stepsData }] = await Promise.all([
+      const [{ data: productData }, { data: stepsData }, { data: imagesData }] = await Promise.all([
         supabase
           .from('products')
           .select('*, product_categories(id, name, slug, description)')
@@ -56,10 +59,16 @@ export default function ProductDetailPage() {
           .select('*')
           .eq('product_id', params.id as string)
           .order('step_number'),
+        supabase
+          .from('product_images')
+          .select('*')
+          .eq('product_id', params.id as string)
+          .order('order'),
       ])
       const p = productData as Product
       setProduct(p)
       setRecipeSteps((stepsData ?? []) as RecipeStep[])
+      setGalleryImages((imagesData ?? []) as GalleryImage[])
       setLoading(false)
       if (p) addRecentlyViewed(p)
     }
@@ -112,22 +121,68 @@ export default function ProductDetailPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-10">
-        {/* 이미지 */}
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-wash">
-          {product.image_url && (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-          )}
-          {product.is_subscription && (
-            <span className="absolute top-3 left-3 bg-[#2d7a4f] text-white text-xs font-medium px-3 py-1 rounded-full">
-              구독 가능
-            </span>
+        {/* 이미지 갤러리 */}
+        <div className="space-y-3">
+          {/* 메인 이미지 */}
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-wash group">
+            {(galleryImages[activeImage]?.url ?? product.image_url) && (
+              <Image
+                src={galleryImages[activeImage]?.url ?? product.image_url!}
+                alt={product.name}
+                fill
+                className="object-cover transition-all duration-300"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            )}
+            {product.is_subscription && (
+              <span className="absolute top-3 left-3 bg-[#2d7a4f] text-white text-xs font-medium px-3 py-1 rounded-full z-10">
+                구독 가능
+              </span>
+            )}
+            {/* 이전/다음 버튼 */}
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  onClick={() => setActiveImage((i) => (i - 1 + galleryImages.length) % galleryImages.length)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={() => setActiveImage((i) => (i + 1) % galleryImages.length)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
+                >
+                  <ChevronRight size={16} />
+                </button>
+                {/* 인디케이터 */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                  {galleryImages.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveImage(i)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${i === activeImage ? 'bg-white w-4' : 'bg-white/50'}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          {/* 썸네일 */}
+          {galleryImages.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {galleryImages.map((img, i) => (
+                <button
+                  key={img.id}
+                  onClick={() => setActiveImage(i)}
+                  className={`relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                    i === activeImage ? 'border-[#2d7a4f]' : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <Image src={img.url} alt={`이미지 ${i + 1}`} fill className="object-cover" sizes="64px" />
+                </button>
+              ))}
+            </div>
           )}
         </div>
 
@@ -224,7 +279,7 @@ export default function ProductDetailPage() {
 
       {/* 탭 */}
       <div className="mt-12">
-        <div className="flex border-b border-line-2 mb-6">
+        <div className="flex border-b border-line-2 mb-6 overflow-x-auto scrollbar-none">
           {(['info', 'calc', 'recipe', 'reviews'] as Tab[]).map((tab) => (
             <button
               key={tab}

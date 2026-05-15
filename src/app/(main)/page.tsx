@@ -45,7 +45,7 @@ export default async function HomePage() {
           <div className="absolute top-10 right-20 w-64 h-64 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-white blur-2xl" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid md:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <span className="inline-block bg-white/20 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
               🥗 진정성 있는 건강한 선택
@@ -68,8 +68,8 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <div className="flex gap-8 mt-10">
-              {[['20+', '다양한 도시락'], ['최저 4,900원', '한끼 가격'], ['100%', '건강 재료']].map(([num, label]) => (
+            <div className="flex flex-wrap gap-6 mt-10">
+              {[['20+', '다양한 도시락'], ['4,900원~', '한끼 가격'], ['100%', '건강 재료']].map(([num, label]) => (
                 <div key={label}>
                   <p className="text-white font-bold text-xl">{num}</p>
                   <p className="text-green-200 text-sm">{label}</p>
@@ -105,11 +105,11 @@ export default async function HomePage() {
                 className="flex items-center gap-3 bg-surface rounded-2xl p-4 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 group"
               >
                 <span className="text-3xl">{cat.emoji}</span>
-                <div>
-                  <p className="font-semibold text-ink group-hover:text-[#2d7a4f] transition-colors">
+                <div className="min-w-0">
+                  <p className="font-semibold text-ink group-hover:text-[#2d7a4f] transition-colors text-sm leading-tight">
                     {cat.name}
                   </p>
-                  <p className="text-xs text-ink-4">{cat.desc}</p>
+                  <p className="text-xs text-ink-4 mt-0.5 hidden sm:block">{cat.desc}</p>
                 </div>
               </Link>
             ))}
@@ -146,6 +146,51 @@ export default async function HomePage() {
 
       {/* 최근 본 상품 */}
       <RecentlyViewed />
+
+      {/* 인스타그램 피드 */}
+      <section className="py-14 bg-cream">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-ink">@greeneatfood</h2>
+              <p className="text-ink-4 mt-1 text-sm">그린잇의 일상을 인스타그램에서 만나보세요 📸</p>
+            </div>
+            <a
+              href="https://www.instagram.com/greeneatfood"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-[#2d7a4f] hover:underline"
+            >
+              팔로우하기 →
+            </a>
+          </div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {[
+              'insta01.jpg','insta02.jpg','insta03.jpg',
+              'insta04.jpg','insta05.jpg','insta06.jpg',
+            ].map((img, i) => (
+              <a
+                key={i}
+                href="https://www.instagram.com/greeneatfood"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative aspect-square rounded-xl overflow-hidden group block"
+              >
+                <Image
+                  src={`https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/${img}`}
+                  alt={`그린잇 인스타그램 ${i + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 33vw, 16vw"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <span className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity">📸</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* 구독 플랜 배너 — 의도적으로 다크 */}
       <section className="bg-[#1a4a2e] py-16">

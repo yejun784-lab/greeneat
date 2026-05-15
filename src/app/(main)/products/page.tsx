@@ -25,6 +25,8 @@ type SearchParams = Promise<{
   sort?: string
   search?: string
   exclude?: string
+  minCal?: string
+  maxCal?: string
 }>
 
 async function getProfileAllergens(supabase: Awaited<ReturnType<typeof createClient>>) {
@@ -54,6 +56,8 @@ async function ProductListServer({ params }: { params: Awaited<SearchParams> }) 
   if (params.difficulty) query = query.eq('difficulty', params.difficulty)
   if (params.servings)   query = query.eq('servings', Number(params.servings))
   if (params.search)     query = query.ilike('name', `%${params.search}%`)
+  if (params.minCal)     query = query.gte('calories', Number(params.minCal))
+  if (params.maxCal)     query = query.lte('calories', Number(params.maxCal))
 
   // 알레르기 필터: URL exclude 우선, 없으면 프로필 자동 적용
   const excludeList = params.exclude ? [params.exclude] : profileAllergens

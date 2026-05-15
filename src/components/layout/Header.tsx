@@ -193,7 +193,7 @@ export function Header() {
                     onKeyDown={handleKeyDown}
                     onFocus={() => searchQuery && suggestions.length > 0 && setShowSuggestions(true)}
                     placeholder="도시락 검색..."
-                    className="w-40 sm:w-64 px-3 py-1.5 text-sm border border-line-2 rounded-lg bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
+                    className="w-32 sm:w-64 px-3 py-1.5 text-sm border border-line-2 rounded-lg bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
                     autoComplete="off"
                   />
                   <button type="submit" className="sr-only">검색</button>
@@ -210,7 +210,7 @@ export function Header() {
                 {showSuggestions && suggestions.length > 0 && (
                   <div
                     ref={suggestRef}
-                    className="absolute top-full left-0 mt-1 w-72 bg-surface border border-line-2 rounded-2xl shadow-xl overflow-hidden z-50"
+                    className="absolute top-full left-0 mt-1 w-64 sm:w-72 bg-surface border border-line-2 rounded-2xl shadow-xl overflow-hidden z-50 max-w-[calc(100vw-2rem)]"
                   >
                     {suggestions.map((item, i) => (
                       <button
@@ -374,6 +374,9 @@ export function Header() {
                 로그인 / 회원가입
               </Link>
             )}
+            <div className="pt-2 border-t border-line mt-1">
+              <ThemeToggle />
+            </div>
           </nav>
         </div>
       )}
