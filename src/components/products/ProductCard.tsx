@@ -2,13 +2,11 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Plus, Heart, GitCompare } from 'lucide-react'
+import { Heart, ShoppingBag, Zap, Leaf, Dumbbell, Users } from 'lucide-react'
 import { useCartStore } from '@/lib/cart-store'
 import { useWishlist } from '@/hooks/useWishlist'
 import { useWishlistStore } from '@/lib/wishlist-store'
-import { useCompareStore } from '@/lib/compare-store'
 import { formatPrice } from '@/lib/utils'
-import { NutritionBadge } from './NutritionBadge'
 import { toast } from '@/lib/toast-store'
 import type { Product } from '@/types'
 
@@ -17,23 +15,32 @@ interface ProductCardProps {
   compact?: boolean
 }
 
-export function ProductCard({ product, compact = false }: ProductCardProps) {
-  const addItem = useCartStore((s) => s.addItem)
-  const { toggle } = useWishlist()
-  const wished = useWishlistStore((s) => s.has(product.id))
-  const { add: addCompare, remove: removeCompare, has: inCompare } = useCompareStore()
-  const compared = inCompare(product.id)
+type Highlight = { label: string; Icon: React.ElementType; className: string }
 
+function getHighlight(p: Product): Highlight | null {
+  if (p.calories && p.calories < 350)
+    return { label: `${p.calories} kcal`, Icon: Leaf,     className: 'bg-emerald-50 text-emerald-600' }
+  if (p.protein  && p.protein >= 30)
+    return { label: `단백질 ${p.protein}g`, Icon: Dumbbell, className: 'bg-blue-50 text-blue-500' }
+  if (p.cook_time && p.cook_time <= 3)
+    return { label: `${p.cook_time}분 완성`, Icon: Zap,      className: 'bg-amber-50 text-amber-500' }
+  if (p.servings  && p.servings >= 2)
+    return { label: `${p.servings}인분`,    Icon: Users,    className: 'bg-purple-50 text-purple-500' }
+  return null
+}
+
+export function ProductCard({ product, compact = false }: ProductCardProps) {
+  const addItem    = useCartStore((s) => s.addItem)
+  const { toggle } = useWishlist()
+  const wished     = useWishlistStore((s) => s.has(product.id))
   const outOfStock = product.stock <= 0
+  const highlight  = compact ? null : getHighlight(product)
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
-    if (outOfStock) {
-      toast.error('품절된 상품입니다.')
-      return
-    }
+    if (outOfStock) { toast.error('품절된 상품입니다.'); return }
     addItem(product)
-    toast.success(`${product.name}이(가) 장바구니에 담겼습니다. 🛒`)
+    toast.success('장바구니에 담았어요 🛒')
   }
 
   function handleWish(e: React.MouseEvent) {
@@ -41,111 +48,93 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
     toggle(product.id)
   }
 
-  function handleCompare(e: React.MouseEvent) {
-    e.preventDefault()
-    if (compared) {
-      removeCompare(product.id)
-    } else {
-      const store = useCompareStore.getState()
-      if (store.items.length >= 3) {
-        toast.error('최대 3개까지 비교할 수 있습니다.')
-        return
-      }
-      addCompare(product)
-    }
-  }
-
   return (
-    <div className="group bg-surface rounded-2xl border border-line shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      {/* 이미지 */}
-      <Link href={`/products/${product.id}`} className="block">
-        <div className={`relative ${compact ? 'aspect-square' : 'aspect-[4/3]'} bg-wash overflow-hidden`}>
-          {product.image_url ? (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-            />
-          ) : (
-            <div className="w-full h-full bg-tint flex items-center justify-center">
-              <span className="text-ink-5 text-sm">이미지 없음</span>
-            </div>
-          )}
-          {outOfStock && (
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <span className="bg-black/70 text-white text-sm font-bold px-3 py-1 rounded-full">품절</span>
-            </div>
-          )}
-          {!outOfStock && product.stock < 10 && (
-            <span className="absolute bottom-2 left-2 bg-orange-500 text-white text-xs font-medium px-2 py-0.5 rounded-full">
-              잔여 {product.stock}개
-            </span>
-          )}
-          {product.is_subscription && !outOfStock && (
-            <span className="absolute top-2 left-2 bg-[#2d7a4f] text-white text-xs font-medium px-2 py-1 rounded-full">
-              구독 가능
-            </span>
-          )}
-          {/* 찜 버튼 */}
-          <button
-            onClick={handleWish}
-            className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-sm transition-all ${
-              wished ? 'bg-red-500 text-white' : 'bg-surface/80 text-ink-5 hover:text-red-400'
-            }`}
-            aria-label={wished ? '찜 취소' : '찜하기'}
-          >
-            <Heart size={13} fill={wished ? 'currentColor' : 'none'} />
-          </button>
-          {/* 비교 버튼 */}
-          {!compact && (
-            <button
-              onClick={handleCompare}
-              className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center shadow-sm transition-all ${
-                compared ? 'bg-[#2d7a4f] text-white' : 'bg-surface/80 text-ink-5 hover:text-[#2d7a4f]'
-              }`}
-              aria-label={compared ? '비교 제거' : '비교 추가'}
-              title={compared ? '비교 제거' : '비교에 추가'}
-            >
-              <GitCompare size={13} />
-            </button>
-          )}
-        </div>
-      </Link>
+    <div className="group">
 
-      {/* 정보 */}
-      <div className={compact ? 'p-3' : 'p-4'}>
-        <Link href={`/products/${product.id}`}>
-          <h3 className={`font-semibold text-ink mb-1 hover:text-[#2d7a4f] transition-colors line-clamp-1 ${compact ? 'text-sm' : ''}`}>
-            {product.name}
-          </h3>
-          {!compact && product.description && (
-            <p className="text-xs text-ink-4 mb-2 line-clamp-2">{product.description}</p>
-          )}
+      {/* 이미지 */}
+      <div className="relative">
+        <Link href={`/products/${product.id}`} className="block">
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-tint">
+            {product.image_url ? (
+              <Image
+                src={product.image_url}
+                alt={product.name}
+                fill
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-ink-5">🍽</div>
+            )}
+
+            {/* 품절 */}
+            {outOfStock && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">품절</span>
+              </div>
+            )}
+
+            {/* 구독 / 잔여 뱃지 */}
+            {!outOfStock && product.stock < 10 && (
+              <span className="absolute top-3 left-3 bg-[#e8734a] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                잔여 {product.stock}개
+              </span>
+            )}
+            {product.is_subscription && !outOfStock && product.stock >= 10 && (
+              <span className="absolute top-3 left-3 bg-[#2d7a4f]/85 backdrop-blur-sm text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                구독
+              </span>
+            )}
+
+            {/* hover 담기 */}
+            {!outOfStock && (
+              <div className="absolute inset-x-3 bottom-3 translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out pointer-events-none group-hover:pointer-events-auto">
+                <button
+                  onClick={handleAdd}
+                  className="w-full flex items-center justify-center gap-1.5 bg-white/95 backdrop-blur-sm text-ink font-semibold text-[13px] py-2.5 rounded-xl shadow-md hover:bg-white transition-colors"
+                >
+                  <ShoppingBag size={13} />
+                  담기
+                </button>
+              </div>
+            )}
+          </div>
         </Link>
 
-        {!compact && <NutritionBadge product={product} />}
-
-        <div className={`flex items-center justify-between ${compact ? '' : 'mt-3'}`}>
-          <span className={`font-bold text-ink ${compact ? 'text-sm' : 'text-base'}`}>
-            {formatPrice(product.price)}
-          </span>
-          <button
-            onClick={handleAdd}
-            disabled={outOfStock}
-            aria-label={outOfStock ? '품절' : `${product.name} 장바구니에 담기`}
-            className={`flex items-center gap-1 font-medium rounded-lg transition-colors ${compact ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} ${
-              outOfStock
-                ? 'bg-tint text-ink-5 cursor-not-allowed'
-                : 'bg-[#2d7a4f] text-white hover:bg-[#235f3d]'
-            }`}
-          >
-            <Plus size={compact ? 12 : 14} />
-            {outOfStock ? '품절' : '담기'}
-          </button>
-        </div>
+        {/* 찜 버튼 */}
+        <button
+          onClick={handleWish}
+          aria-label={wished ? '찜 취소' : '찜하기'}
+          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+            wished
+              ? 'bg-white text-red-500 shadow-sm'
+              : 'bg-black/15 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100'
+          }`}
+        >
+          <Heart size={13} fill={wished ? 'currentColor' : 'none'} strokeWidth={wished ? 0 : 2} />
+        </button>
       </div>
+
+      {/* 텍스트 */}
+      <Link href={`/products/${product.id}`} className="block mt-3 space-y-1">
+
+        <h3 className={`font-medium text-ink leading-snug tracking-tight line-clamp-1 ${compact ? 'text-sm' : 'text-[14px]'}`}>
+          {product.name}
+        </h3>
+
+        {/* 차별점 뱃지 — 딱 하나, 작게 */}
+        {highlight && !compact && (
+          <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${highlight.className}`}>
+            <highlight.Icon size={10} />
+            {highlight.label}
+          </div>
+        )}
+
+        <p className={`font-bold text-ink tracking-tight ${compact ? 'text-sm' : 'text-[15px]'}`}>
+          {formatPrice(product.price)}
+        </p>
+
+      </Link>
     </div>
   )
 }

@@ -1,66 +1,65 @@
 @import "tailwindcss";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 
 /* ── 라이트 모드 ──────────────────────────────────────────────── */
 :root {
-  /* 브랜드 (다크에서도 동일) */
+  /* 브랜드 */
   --color-primary:       #2d7a4f;
   --color-primary-light: #4caf72;
   --color-primary-hover: #235f3d;
   --color-accent:        #e8734a;
 
-  /* 시맨틱 서피스 */
-  --c-surface:      #ffffff;   /* 카드/패널 */
-  --c-wash:         #f9fafb;   /* gray-50 */
-  --c-cream:        #f5f0e8;   /* 크림 배경 */
-  --c-tint:         #f3f4f6;   /* gray-100 */
-  --c-green-tint:   #e8f5ee;   /* 연초록 */
-  --c-green-tint-2: #f0faf4;   /* 더 연초록 */
+  /* 서피스 */
+  --c-surface:      #ffffff;
+  --c-wash:         #f8f8f6;   /* 따뜻한 오프화이트 */
+  --c-cream:        #f5f0e8;
+  --c-tint:         #f2f2f0;
+  --c-green-tint:   #e8f5ee;
+  --c-green-tint-2: #f0faf4;
 
-  /* 시맨틱 텍스트 */
-  --c-ink:   #111827;   /* gray-900 */
-  --c-ink-2: #374151;   /* gray-700 */
-  --c-ink-3: #4b5563;   /* gray-600 */
-  --c-ink-4: #6b7280;   /* gray-500 */
-  --c-ink-5: #9ca3af;   /* gray-400 */
+  /* 텍스트 */
+  --c-ink:   #111111;
+  --c-ink-2: #333333;
+  --c-ink-3: #555555;
+  --c-ink-4: #888888;
+  --c-ink-5: #aaaaaa;
 
-  /* 시맨틱 보더 */
-  --c-line:   #f3f4f6;   /* gray-100 */
-  --c-line-2: #e5e7eb;   /* gray-200 */
-  --c-line-3: #d1d5db;   /* gray-300 */
+  /* 보더 */
+  --c-line:   #f0f0ee;
+  --c-line-2: #e8e8e5;
+  --c-line-3: #d4d4d0;
 }
 
 /* ── 다크 모드 ────────────────────────────────────────────────── */
 .dark {
-  --c-surface:      #1e293b;   /* slate-800 */
-  --c-wash:         #1e293b;
-  --c-cream:        #1a2e20;   /* 어두운 초록 크림 */
-  --c-tint:         #273444;
-  --c-green-tint:   #13261b;
-  --c-green-tint-2: #162b1f;
+  --c-surface:      #141414;
+  --c-wash:         #1c1c1a;
+  --c-cream:        #1a2218;
+  --c-tint:         #242420;
+  --c-green-tint:   #0f2018;
+  --c-green-tint-2: #132419;
 
-  --c-ink:   #f8fafc;
-  --c-ink-2: #e2e8f0;
-  --c-ink-3: #cbd5e1;
-  --c-ink-4: #94a3b8;
-  --c-ink-5: #64748b;
+  --c-ink:   #f5f5f3;
+  --c-ink-2: #e0e0dc;
+  --c-ink-3: #c4c4be;
+  --c-ink-4: #888884;
+  --c-ink-5: #555552;
 
-  --c-line:   #273444;
-  --c-line-2: #334155;
-  --c-line-3: #475569;
+  --c-line:   #242420;
+  --c-line-2: #2e2e2a;
+  --c-line-3: #3e3e3a;
 }
 
 /* ── Tailwind v4 @theme 매핑 ───────────────────────────────────── */
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 
-  /* 브랜드 */
   --color-primary:       var(--color-primary);
   --color-primary-light: var(--color-primary-light);
   --color-primary-hover: var(--color-primary-hover);
   --color-accent:        var(--color-accent);
 
-  /* 서피스 → bg-surface, border-surface, etc. */
   --color-surface:      var(--c-surface);
   --color-wash:         var(--c-wash);
   --color-cream:        var(--c-cream);
@@ -68,24 +67,85 @@
   --color-green-tint:   var(--c-green-tint);
   --color-green-tint-2: var(--c-green-tint-2);
 
-  /* 텍스트 → text-ink, text-ink-2, etc. */
   --color-ink:   var(--c-ink);
   --color-ink-2: var(--c-ink-2);
   --color-ink-3: var(--c-ink-3);
   --color-ink-4: var(--c-ink-4);
   --color-ink-5: var(--c-ink-5);
 
-  /* 보더 → border-line, border-line-2, etc. */
   --color-line:   var(--c-line);
   --color-line-2: var(--c-line-2);
   --color-line-3: var(--c-line-3);
 }
 
 /* ── 기본 스타일 ───────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--c-surface);
   color: var(--c-ink);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
 * { box-sizing: border-box; }
+
+/* 선택 색상 */
+::selection {
+  background: #d1ead9;
+  color: #1a4a2e;
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-line-3); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--c-ink-5); }
+
+/* 스크롤바 숨김 유틸 */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── 페이드인 애니메이션 ────────────────────────────────────────── */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.33%); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+/* 딜레이 유틸 */
+.delay-100 { animation-delay: 0.1s; }
+.delay-150 { animation-delay: 0.15s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* ── 타이포 유틸 ────────────────────────────────────────────────── */
+.text-display {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.text-heading {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}

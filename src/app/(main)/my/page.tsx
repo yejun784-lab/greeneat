@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL, SUBSCRIPTION_PLAN_LABEL } from '@/lib/utils'
-import { Package, RefreshCw, ChevronRight, Target, Calendar, Heart, Coins, Ticket, MapPin } from 'lucide-react'
+import { Package, RefreshCw, ChevronRight, Target, Calendar, Heart, Coins, Ticket, MapPin, Bell } from 'lucide-react'
 import { AIRecommend } from '@/components/my/AIRecommend'
 import { SubscriptionActions } from '@/components/my/SubscriptionActions'
 import { ReferralCard } from '@/components/my/ReferralCard'
@@ -223,6 +223,21 @@ export default async function MyPage() {
               <div>
                 <p className="font-semibold text-ink text-sm">배송지</p>
                 <p className="text-xs text-ink-5 mt-0.5">배송지 관리</p>
+              </div>
+            </div>
+            <ChevronRight size={14} className="text-ink-5 group-hover:text-[#2d7a4f] transition-colors" />
+          </Link>
+          <Link
+            href="/my/notifications"
+            className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group col-span-2"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
+                <Bell size={16} className="text-[#2d7a4f]" />
+              </div>
+              <div>
+                <p className="font-semibold text-ink text-sm">알림 센터</p>
+                <p className="text-xs text-ink-5 mt-0.5">주문·재입고·이벤트 알림</p>
               </div>
             </div>
             <ChevronRight size={14} className="text-ink-5 group-hover:text-[#2d7a4f] transition-colors" />

@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'GreenEat — 건강한 밀키트 구독',
+    name: 'GreenEat — 진정성 있는 건강한 도시락',
     short_name: 'GreenEat',
-    description: '신선하고 건강한 밀키트로 매일의 식사를 특별하게',
+    description: '직접 만든 정직한 재료로 완성한 냉동 도시락',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
