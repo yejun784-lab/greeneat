@@ -66,9 +66,9 @@ async function ProductListServer({ params }: { params: Awaited<SearchParams> }) 
   }
 
   const sort = params.sort ?? 'newest'
-  if (sort === 'price_asc')  query = query.order('price', { ascending: true })
-  else if (sort === 'price_desc') query = query.order('price', { ascending: false })
-  else query = query.order('created_at', { ascending: false })
+  if (sort === 'price_asc')  query = query.order('display_group', { ascending: true }).order('price', { ascending: true })
+  else if (sort === 'price_desc') query = query.order('display_group', { ascending: true }).order('price', { ascending: false })
+  else query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
 
   query = query.range(0, PAGE_SIZE - 1)
 

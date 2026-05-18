@@ -28,9 +28,9 @@ export async function GET(request: NextRequest) {
   if (search)     query = query.ilike('name', `%${search}%`)
   if (exclude)    query = query.not('allergens', 'cs', `{${exclude}}`)
 
-  if (sort === 'price_asc')  query = query.order('price', { ascending: true })
-  else if (sort === 'price_desc') query = query.order('price', { ascending: false })
-  else query = query.order('created_at', { ascending: false })
+  if (sort === 'price_asc')  query = query.order('display_group', { ascending: true }).order('price', { ascending: true })
+  else if (sort === 'price_desc') query = query.order('display_group', { ascending: true }).order('price', { ascending: false })
+  else query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
 
   query = query.range(from, to)
 

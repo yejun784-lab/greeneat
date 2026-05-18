@@ -21,22 +21,6 @@ interface Props {
 
 const PAGE_SIZE = 9
 
-// 3열 교차 배치: display_group 1→열1, 2→열2, 3→열3
-function interleave(products: Product[]): Product[] {
-  if (!products.some(p => p.display_group)) return products
-  const g1 = products.filter(p => p.display_group === 1)
-  const g2 = products.filter(p => p.display_group === 2 || !p.display_group)
-  const g3 = products.filter(p => p.display_group === 3)
-  const result: Product[] = []
-  const maxLen = Math.max(g1.length, g2.length, g3.length)
-  for (let i = 0; i < maxLen; i++) {
-    if (g1[i]) result.push(g1[i])
-    if (g2[i]) result.push(g2[i])
-    if (g3[i]) result.push(g3[i])
-  }
-  return result
-}
-
 export function InfiniteProductGrid({ initialProducts, initialHasMore, total, filters }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [page, setPage] = useState(1)
@@ -122,12 +106,10 @@ export function InfiniteProductGrid({ initialProducts, initialHasMore, total, fi
     )
   }
 
-  const arranged = interleave(products)
-
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {arranged.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
         {loading && (

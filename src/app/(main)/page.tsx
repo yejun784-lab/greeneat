@@ -23,20 +23,6 @@ const CATEGORIES = [
   { slug: 'diet',     name: '맞춤식단',      desc: '닭가슴살 · 저칼로리', color: 'bg-[#fdf0f5]', text: 'text-[#b05d7a]' },
 ]
 
-function interleaveByGroup(products: Product[]): Product[] {
-  const g1 = products.filter(p => p.display_group === 1)
-  const g2 = products.filter(p => p.display_group === 2 || !p.display_group)
-  const g3 = products.filter(p => p.display_group === 3)
-  const result: Product[] = []
-  const maxLen = Math.max(g1.length, g2.length, g3.length)
-  for (let i = 0; i < maxLen; i++) {
-    if (g1[i]) result.push(g1[i])
-    if (g2[i]) result.push(g2[i])
-    if (g3[i]) result.push(g3[i])
-  }
-  return result
-}
-
 async function getFeaturedProducts(): Promise<Product[]> {
   const supabase = await createClient()
   const { data } = await supabase
@@ -45,8 +31,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
     .order('display_group', { ascending: true })
     .order('created_at', { ascending: false })
     .limit(9)
-  const products = (data as Product[]) ?? []
-  return interleaveByGroup(products)
+  return (data as Product[]) ?? []
 }
 
 export default async function HomePage() {
