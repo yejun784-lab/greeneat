@@ -19,6 +19,7 @@ export type Product = {
   cook_time: number | null
   difficulty: 'easy' | 'medium' | 'hard'
   image_url: string | null
+  display_group: number | null
   is_subscription: boolean
   is_active: boolean
   stock: number
@@ -48,6 +49,7 @@ export type CartItem = {
   user_id: string
   product_id: string
   quantity: number
+  display_group: number | null
   is_subscription: boolean
   created_at: string
   products?: Product
