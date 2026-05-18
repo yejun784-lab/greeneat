@@ -54,13 +54,13 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
       {/* 이미지 */}
       <div className="relative">
         <Link href={`/products/${product.id}`} className="block">
-          <div className="relative aspect-square overflow-hidden bg-tint">
+          <div className="relative aspect-square overflow-hidden bg-white">
             {product.image_url ? (
               <Image
                 src={product.image_url}
                 alt={product.name}
                 fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                className="object-contain p-3 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             ) : (
