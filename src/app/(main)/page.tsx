@@ -25,20 +25,14 @@ const CATEGORIES = [
 
 async function getFeaturedProducts(): Promise<Product[]> {
   const supabase = await createClient()
-  const sel = '*, product_categories(id, name, slug, description)'
-
-  // 그룹별로 3개씩 — 1행=박스, 2행=접시, 3행=샐러드
-  const [r1, r2, r3] = await Promise.all([
-    supabase.from('products').select(sel).eq('display_group', 1).order('created_at', { ascending: false }).limit(3),
-    supabase.from('products').select(sel).eq('display_group', 2).order('created_at', { ascending: false }).limit(3),
-    supabase.from('products').select(sel).eq('display_group', 3).order('created_at', { ascending: false }).limit(3),
-  ])
-
-  return [
-    ...((r1.data as Product[]) ?? []),
-    ...((r2.data as Product[]) ?? []),
-    ...((r3.data as Product[]) ?? []),
-  ]
+  // display_group 순 정렬: 박스(1) → 접시(2) → 샐러드/기타(3)
+  const { data } = await supabase
+    .from('products')
+    .select('*, product_categories(id, name, slug, description)')
+    .order('display_group', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(9)
+  return (data as Product[]) ?? []
 }
 
 export default async function HomePage() {
