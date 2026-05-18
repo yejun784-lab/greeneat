@@ -60,7 +60,7 @@ export function ProductFilter() {
   const active = (key: string, value: string) => searchParams.get(key) === value
 
   return (
-    <aside className="w-56 shrink-0">
+    <aside className="w-44 shrink-0">
       <div className="sticky top-24 space-y-6">
         {/* 카테고리 */}
         <div>
