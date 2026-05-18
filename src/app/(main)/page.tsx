@@ -23,14 +23,30 @@ const CATEGORIES = [
   { slug: 'diet',     name: '맞춤식단',      desc: '닭가슴살 · 저칼로리', color: 'bg-[#fdf0f5]', text: 'text-[#b05d7a]' },
 ]
 
+function interleaveByGroup(products: Product[]): Product[] {
+  const g1 = products.filter(p => p.display_group === 1)
+  const g2 = products.filter(p => p.display_group === 2 || !p.display_group)
+  const g3 = products.filter(p => p.display_group === 3)
+  const result: Product[] = []
+  const maxLen = Math.max(g1.length, g2.length, g3.length)
+  for (let i = 0; i < maxLen; i++) {
+    if (g1[i]) result.push(g1[i])
+    if (g2[i]) result.push(g2[i])
+    if (g3[i]) result.push(g3[i])
+  }
+  return result
+}
+
 async function getFeaturedProducts(): Promise<Product[]> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('products')
     .select('*, product_categories(id, name, slug, description)')
-    .limit(8)
+    .order('display_group', { ascending: true })
     .order('created_at', { ascending: false })
-  return (data as Product[]) ?? []
+    .limit(9)
+  const products = (data as Product[]) ?? []
+  return interleaveByGroup(products)
 }
 
 export default async function HomePage() {
@@ -175,10 +191,8 @@ export default async function HomePage() {
 
         {products.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {products.map((product, i) => (
-              <div key={product.id} className="animate-fade-up" style={{ animationDelay: `${i * 0.05}s` }}>
-                <ProductCard product={product} />
-              </div>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
