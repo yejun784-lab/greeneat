@@ -1,15 +1,13 @@
+﻿import { Skeleton } from '@/components/ui/Skeleton'
+
 export function ProductCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-[#f0f0ee] overflow-hidden shadow-sm animate-pulse">
-      {/* 이미지 */}
-      <div className="aspect-square bg-[#f0f0ee]" />
-      {/* 텍스트 — ProductCard와 동일한 구조/높이 */}
-      <div className="px-3.5 pt-3 pb-3.5">
-        <div className="h-3.5 bg-[#f0f0ee] rounded w-3/4" />
-        <div className="mt-1.5 h-[20px] flex items-center">
-          <div className="h-4 bg-[#f0f0ee] rounded-md w-20" />
-        </div>
-        <div className="h-4 bg-[#f0f0ee] rounded w-1/2 mt-1" />
+    <div className="bg-white rounded-2xl overflow-hidden border border-[#f0f0ee]">
+      <Skeleton className="aspect-square w-full rounded-none" />
+      <div className="px-3.5 pt-3 pb-3.5 space-y-2">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-3 w-1/2" />
+        <Skeleton className="h-4 w-1/3 mt-1" />
       </div>
     </div>
   )
@@ -18,7 +16,7 @@ export function ProductCardSkeleton() {
 export function ProductGridSkeleton({ count = 9 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-      {Array.from({ length: count }).map((_, i) => (
+      {[...Array(count)].map((_, i) => (
         <ProductCardSkeleton key={i} />
       ))}
     </div>

@@ -1,77 +1,59 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { Sparkles, RefreshCw } from 'lucide-react'
+﻿import Link from 'next/link'
+import Image from 'next/image'
+import { Sparkles } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 import { formatPrice } from '@/lib/utils'
 
-type Rec = { id: string; name: string; reason: string; price: number }
+export async function AIRecommend() {
+  const supabase = await createClient()
+  const { data: products } = await supabase
+    .from('products')
+    .select('id, name, price, image_url')
+    .eq('is_active', true)
+    .order('display_group', { ascending: true })
+    .limit(3)
 
-export function AIRecommend() {
-  const [recs, setRecs] = useState<Rec[]>([])
-  const [loading, setLoading] = useState(true)
-
-  async function load() {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/ai-recommend')
-      if (res.ok) {
-        const { recommendations } = await res.json()
-        setRecs(recommendations ?? [])
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
+  if (!products || products.length === 0) return null
 
   return (
-    <div className="bg-gradient-to-br from-[#1a4a2e] to-[#2d7a4f] rounded-2xl p-5 text-white">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Sparkles size={18} />
-          <h2 className="font-semibold">AI 맞춤 추천</h2>
-        </div>
-        <button
-          onClick={load}
-          disabled={loading}
-          className="p-1.5 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-        </button>
+    <div className="bg-surface rounded-2xl border border-line p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <Sparkles size={16} className="text-[#2d7a4f]" />
+        <h2 className="font-semibold text-ink">AI 맞춤 추천</h2>
       </div>
-
-      {loading ? (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 bg-white/10 rounded-xl animate-pulse" />
-          ))}
-        </div>
-      ) : recs.length > 0 ? (
-        <div className="space-y-2">
-          {recs.map((rec, i) => (
-            <Link
-              key={rec.id}
-              href={`/products/${rec.id}`}
-              className="flex items-start gap-3 bg-white/10 hover:bg-white/20 rounded-xl p-3 transition-colors"
-            >
-              <span className="w-6 h-6 rounded-full bg-white/20 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                {i + 1}
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-medium text-sm truncate">{rec.name}</p>
-                  <span className="text-xs text-green-200 shrink-0">{formatPrice(rec.price)}</span>
-                </div>
-                <p className="text-xs text-green-200 mt-0.5 leading-relaxed">{rec.reason}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm text-green-200 text-center py-4">추천을 불러오지 못했습니다.</p>
-      )}
+      <p className="text-xs text-ink-5 mb-4">최근 주문 패턴 기반 추천</p>
+      <div className="space-y-2">
+        {products.map((p) => (
+          <Link
+            key={p.id}
+            href={`/products/${p.id}`}
+            className="flex items-center gap-3 p-2 rounded-xl hover:bg-wash transition-colors group"
+          >
+            <div className="w-10 h-10 rounded-lg overflow-hidden bg-tint shrink-0">
+              {p.image_url ? (
+                <Image
+                  src={p.image_url.startsWith('http') ? p.image_url : `https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/${p.image_url}`}
+                  alt={p.name}
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-green-tint" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-ink truncate group-hover:text-[#2d7a4f] transition-colors">
+                {p.name}
+              </p>
+              <p className="text-xs text-ink-5">{formatPrice(p.price)}</p>
+            </div>
+            <span className="text-xs text-[#2d7a4f] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              보기 →
+            </span>
+          </Link>
+        ))}
+      </div>
     </div>
   )
 }

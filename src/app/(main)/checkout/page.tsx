@@ -104,11 +104,14 @@ export default function CheckoutPage() {
     setCouponLoading(false)
   }
 
+  // 포인트 사용 가능 최대치 = 상품금액 + 배송비 - 쿠폰할인 (결제 전 금액)
+  const maxUsablePoints = Math.min(pointBalance, Math.max(0, total + shipping - couponDiscount))
+
   function applyPoints() {
     const v = parseInt(usePointInput, 10)
     if (isNaN(v) || v <= 0) { toast.error('올바른 포인트를 입력하세요.'); return }
     if (v > pointBalance) { toast.error(`보유 포인트(${pointBalance.toLocaleString()}P)를 초과했어요.`); return }
-    if (v > total) { toast.error('주문 금액보다 많은 포인트는 사용할 수 없어요.'); return }
+    if (v > maxUsablePoints) { toast.error(`최대 ${maxUsablePoints.toLocaleString()}P까지 사용 가능해요.`); return }
     setUsedPoints(v)
     toast.success(`${v.toLocaleString()}P 사용 적용됐어요!`)
   }
@@ -122,6 +125,7 @@ export default function CheckoutPage() {
     }
 
     setLoading(true)
+    let dbOrderId: string | null = null
     try {
       // 1) DB에 pending 주문 생성
       const res = await fetch('/api/orders', {
@@ -148,12 +152,13 @@ export default function CheckoutPage() {
         return
       }
 
-      const { orderId: dbOrderId } = await res.json()
+      const { orderId } = await res.json()
+      dbOrderId = orderId
 
       // 2) TossPayments 결제 요청
       const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!
       const tossPayments = window.TossPayments(clientKey)
-      const payment = tossPayments.payment({ customerKey: dbOrderId })
+      const payment = tossPayments.payment({ customerKey: dbOrderId! })
 
       const orderName = items.length === 1
         ? items[0].product.name
@@ -162,7 +167,7 @@ export default function CheckoutPage() {
       await payment.requestPayment({
         method: '카드',
         amount: { currency: 'KRW', value: finalTotal },
-        orderId: dbOrderId,
+        orderId: dbOrderId!,
         orderName,
         customerName: userName || undefined,
         customerEmail: userEmail || undefined,
@@ -171,7 +176,10 @@ export default function CheckoutPage() {
       })
       // requestPayment가 성공하면 successUrl로 redirect됨
     } catch (err: unknown) {
-      // 사용자가 결제창을 닫은 경우 등
+      // 결제 실패/취소 시 pending 주문 DB에서 삭제
+      if (dbOrderId) {
+        fetch(`/api/orders/${dbOrderId}`, { method: 'DELETE' }).catch(() => {})
+      }
       const message = err instanceof Error ? err.message : ''
       if (!message.includes('PAY_PROCESS_CANCELED')) {
         toast.error('결제 처리 중 오류가 발생했습니다.')
@@ -186,7 +194,7 @@ export default function CheckoutPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <h1 className="text-2xl font-bold text-ink mb-8">결제</h1>
 
-      <form onSubmit={handlePayment} className="grid lg:grid-cols-3 gap-8">
+      <form onSubmit={handlePayment} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* 왼쪽 */}
         <div className="lg:col-span-2 space-y-6">
           {/* 배송지 */}
@@ -236,18 +244,20 @@ export default function CheckoutPage() {
                   </button>
                 </div>
               ) : (
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="number"
                     value={usePointInput}
                     onChange={(e) => setUsePointInput(e.target.value)}
-                    placeholder={`최대 ${Math.min(pointBalance, total).toLocaleString()}P`}
-                    max={Math.min(pointBalance, total)}
+                    placeholder={`최대 ${maxUsablePoints.toLocaleString()}P`}
+                    max={maxUsablePoints}
                     min={1}
                     className="flex-1 px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
                   />
-                  <Button type="button" size="sm" variant="secondary" onClick={applyPoints}>사용</Button>
-                  <Button type="button" size="sm" variant="secondary" onClick={() => setUsePointInput(String(Math.min(pointBalance, total)))}>전액</Button>
+                  <div className="flex gap-2 sm:contents">
+                    <Button type="button" size="sm" variant="secondary" className="flex-1 sm:flex-none" onClick={applyPoints}>사용</Button>
+                    <Button type="button" size="sm" variant="secondary" className="flex-1 sm:flex-none" onClick={() => setUsePointInput(String(maxUsablePoints))}>전액</Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -273,7 +283,7 @@ export default function CheckoutPage() {
                 <button type="button" onClick={() => { setCoupon(null); setCouponCode('') }} className="text-xs text-ink-5 hover:text-red-400">취소</button>
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   value={couponCode}
@@ -282,7 +292,7 @@ export default function CheckoutPage() {
                   className="flex-1 px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), applyCoupon())}
                 />
-                <Button type="button" size="sm" variant="secondary" onClick={applyCoupon} loading={couponLoading}>적용</Button>
+                <Button type="button" size="sm" variant="secondary" className="w-full sm:w-auto" onClick={applyCoupon} loading={couponLoading}>적용</Button>
               </div>
             )}
             {couponError && <p className="text-xs text-red-500 mt-2">{couponError}</p>}

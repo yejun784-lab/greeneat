@@ -66,7 +66,7 @@ export default function CartPage() {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* 아이템 목록 */}
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (

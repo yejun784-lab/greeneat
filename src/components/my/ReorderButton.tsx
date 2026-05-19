@@ -1,32 +1,62 @@
-'use client'
+﻿'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { useCartStore } from '@/lib/cart-store'
-import { RotateCcw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import type { OrderItem } from '@/types'
 
-export function ReorderButton({ items }: { items: OrderItem[] }) {
-  const router = useRouter()
-  const addItem = useCartStore((s) => s.addItem)
+interface Props {
+  items: OrderItem[]
+}
 
-  function handleReorder() {
-    items.forEach((item) => {
-      if (item.products) {
-        for (let i = 0; i < item.quantity; i++) {
-          addItem(item.products)
+export function ReorderButton({ items }: Props) {
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+  const addItem = useCartStore((s) => s.addItem)
+  const router = useRouter()
+
+  async function reorder() {
+    setLoading(true)
+    const supabase = createClient()
+    const productIds = items.map((i) => i.product_id).filter(Boolean)
+    const { data: products } = await supabase
+      .from('products')
+      .select('*')
+      .in('id', productIds)
+
+    if (products) {
+      for (const item of items) {
+        const product = products.find((p) => p.id === item.product_id)
+        if (product) {
+          for (let i = 0; i < item.quantity; i++) {
+            addItem(product)
+          }
         }
       }
-    })
-    router.push('/cart')
+    }
+
+    setLoading(false)
+    setDone(true)
+    setTimeout(() => {
+      setDone(false)
+      router.push('/cart')
+    }, 1200)
   }
 
   return (
     <button
-      onClick={handleReorder}
-      className="flex items-center gap-1.5 text-xs font-medium text-[#2d7a4f] hover:text-[#235f3d] transition-colors"
+      onClick={reorder}
+      disabled={loading || done}
+      className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-60 ${
+        done
+          ? 'border-[#2d7a4f] text-[#2d7a4f] bg-green-tint'
+          : 'border-line-2 text-ink-4 hover:border-[#2d7a4f] hover:text-[#2d7a4f]'
+      }`}
     >
-      <RotateCcw size={13} />
-      다시 주문
+      <RefreshCw size={11} className={loading ? 'animate-spin' : ''} />
+      {done ? '추가됨!' : '재주문'}
     </button>
   )
 }

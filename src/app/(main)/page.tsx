@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { ProductCard } from '@/components/products/ProductCard'
 import { RecentlyViewed } from '@/components/products/RecentlyViewed'
+import { InstagramGrid } from '@/components/home/InstagramGrid'
 import type { Product } from '@/types'
 
 export const metadata: Metadata = {
@@ -17,10 +18,10 @@ export const metadata: Metadata = {
 }
 
 const CATEGORIES = [
-  { slug: 'lunchbox', name: '간편식',       desc: '한끼 · 만렙 도시락', color: 'bg-[#e8f5ee]', text: 'text-[#2d7a4f]' },
-  { slug: 'bakery',   name: '베이커리&샐러드', desc: '그래놀라 · 샐러드',  color: 'bg-[#fff7ed]', text: 'text-[#c2762a]' },
-  { slug: 'health',   name: '건강식품',      desc: '수제 만두',          color: 'bg-[#f0f4ff]', text: 'text-[#4a6fa5]' },
-  { slug: 'diet',     name: '맞춤식단',      desc: '닭가슴살 · 저칼로리', color: 'bg-[#fdf0f5]', text: 'text-[#b05d7a]' },
+  { slug: 'lunchbox', name: '간편식',        desc: '한끼 · 만렙 도시락',  emoji: '🍱', color: 'bg-[#e8f5ee]', text: 'text-[#2d7a4f]' },
+  { slug: 'bakery',   name: '베이커리&샐러드', desc: '그래놀라 · 샐러드',   emoji: '🥗', color: 'bg-[#fff7ed]', text: 'text-[#c2762a]' },
+  { slug: 'health',   name: '건강식품',       desc: '수제 만두 · 건강간식', emoji: '🥦', color: 'bg-[#f0f4ff]', text: 'text-[#4a6fa5]' },
+  { slug: 'diet',     name: '맞춤식단',       desc: '닭가슴살 · 저칼로리',  emoji: '💪', color: 'bg-[#fdf0f5]', text: 'text-[#b05d7a]' },
 ]
 
 async function getFeaturedProducts(): Promise<Product[]> {
@@ -51,7 +52,7 @@ export default async function HomePage() {
               <span className="inline-flex items-center gap-1.5 bg-[#e8f5ee] text-[#2d7a4f] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
                 🌿 진정성 있는 건강한 선택
               </span>
-              <h1 className="text-display text-4xl sm:text-5xl lg:text-[3.5rem] text-[#111] leading-[1.12] mb-5">
+              <h1 className="text-display text-3xl sm:text-4xl lg:text-[3.5rem] text-[#111] leading-[1.12] mb-5">
                 바쁜 일상 속<br />
                 <span className="text-[#2d7a4f]">건강한 한 끼</span>
               </h1>
@@ -68,14 +69,14 @@ export default async function HomePage() {
                 </Link>
                 <Link
                   href="/subscription"
-                  className="inline-flex items-center px-7 py-3.5 bg-[#f8f8f6] text-[#333] font-semibold rounded-full text-sm hover:bg-[#efefed] transition-colors border border-[#e8e8e5]"
+                  className="inline-flex items-center px-7 py-3.5 bg-white text-[#333] font-semibold rounded-full text-sm hover:bg-[#f0faf4] hover:text-[#2d7a4f] hover:border-[#2d7a4f] transition-colors border border-[#ccc]"
                 >
                   정기구독
                 </Link>
               </div>
 
               {/* 스탯 */}
-              <div className="flex gap-8 pt-8 border-t border-[#f0f0ee]">
+              <div className="flex gap-5 sm:gap-8 pt-8 border-t border-[#f0f0ee]">
                 {[['20+', '다양한 메뉴'], ['4,900원~', '한끼 가격'], ['100%', '건강 재료']].map(([num, label]) => (
                   <div key={label}>
                     <p className="text-[#111] font-bold text-xl tracking-tight">{num}</p>
@@ -94,14 +95,17 @@ export default async function HomePage() {
                 {/* 2×2 콜라주 */}
                 <div className="relative z-10 grid grid-cols-2 gap-3 p-4">
                   {[
-                    { src: 'hankki-hambak.png',   label: '한끼 도시락' },
-                    { src: 'manrep-bulgogi.png',   label: '만렙 도시락' },
-                    { src: 'granola-gamgyul.png',  label: '감귤 그래놀라' },
-                    { src: 'hankki-dakgalbi.png',  label: '치즈닭갈비' },
+                    { src: 'hankki-dakgaseum.png', label: '닭가슴살 도시락', price: '4,900원~', badge: '🔥 인기 1위', contain: false },
+                    { src: 'manrep-bulgogi.png',  label: '만렙 소불고기',  price: '6,500원',  badge: '⭐ 신메뉴',  contain: false },
+                    { src: 'granola-gamgyul2.png', label: '감귤 그래놀라', price: '6,900원',  badge: null,        contain: false },
+                    { src: 'hankki-dakgalbi.png', label: '치즈닭갈비',    price: '5,200원',  badge: null,        contain: false },
                   ].map((item, i) => (
-                    <div
+                    <Link
                       key={i}
-                      className={`relative overflow-hidden bg-white shadow-md shadow-black/8 ${
+                      href="/products"
+                      className={`relative overflow-hidden shadow-md shadow-black/8 group block ${
+                        item.contain ? 'bg-[#fffbf0]' : 'bg-white'
+                      } ${
                         i === 0 ? 'rounded-tl-3xl rounded-tr-xl rounded-bl-xl rounded-br-sm' :
                         i === 1 ? 'rounded-tl-xl rounded-tr-3xl rounded-bl-sm rounded-br-xl' :
                         i === 2 ? 'rounded-tl-xl rounded-tr-sm rounded-bl-3xl rounded-br-xl' :
@@ -113,26 +117,31 @@ export default async function HomePage() {
                           src={`https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/${item.src}`}
                           alt={item.label}
                           fill
-                          className="object-cover"
+                          className={`transition-transform duration-500 group-hover:scale-105 ${item.contain ? 'object-contain p-3' : 'object-cover'}`}
                           priority={i < 2}
                           sizes="25vw"
                         />
                       </div>
-                    </div>
+                      {/* 하단 그라디언트 오버레이 */}
+                      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/55 to-transparent" />
+                      {/* 하단 텍스트 — 배지 있으면 같이 표시 */}
+                      <div className="absolute inset-x-0 bottom-0 px-2.5 pb-2.5">
+                        {item.badge && (
+                          <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded mb-1">
+                            {item.badge}
+                          </span>
+                        )}
+                        <p className="text-white text-[11px] font-semibold leading-tight drop-shadow">{item.label}</p>
+                        <p className="text-white/80 text-[10px] mt-0.5">{item.price}</p>
+                      </div>
+                    </Link>
                   ))}
                 </div>
 
-                {/* 플로팅 뱃지 */}
-                <div className="absolute -bottom-2 left-2 z-20 bg-white rounded-2xl px-4 py-2.5 shadow-lg shadow-black/10 flex items-center gap-2">
-                  <span className="text-xl">🍱</span>
-                  <div>
-                    <p className="text-[10px] text-[#999]">오늘의 추천</p>
-                    <p className="text-[12px] text-[#111] font-bold">한끼 도시락</p>
-                  </div>
-                </div>
-                <div className="absolute -top-2 right-2 z-20 bg-[#2d7a4f] rounded-2xl px-3.5 py-2 shadow-lg shadow-[#2d7a4f]/30 text-white text-center">
-                  <p className="text-[9px] opacity-75">최저</p>
-                  <p className="text-[14px] font-bold tracking-tight">4,900원</p>
+                {/* 플로팅 뱃지 — 가격 */}
+                <div className="absolute -top-3 right-4 z-20 bg-[#2d7a4f] rounded-2xl px-4 py-2.5 shadow-lg shadow-[#2d7a4f]/40 text-white text-center">
+                  <p className="text-[9px] opacity-75 tracking-wide">한 끼 최저</p>
+                  <p className="text-[15px] font-bold tracking-tight">4,900원</p>
                 </div>
               </div>
             </div>
@@ -147,12 +156,15 @@ export default async function HomePage() {
             <Link
               key={cat.slug}
               href={`/products?category=${cat.slug}`}
-              className={`group ${cat.color} rounded-2xl p-5 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 animate-fade-up`}
+              className={`group ${cat.color} rounded-2xl p-5 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 animate-fade-up flex flex-col justify-between min-h-[130px]`}
               style={{ animationDelay: `${i * 0.07}s` }}
             >
-              <p className={`font-bold text-base leading-tight ${cat.text}`}>{cat.name}</p>
-              <p className="text-[#666] text-xs mt-1.5 leading-relaxed">{cat.desc}</p>
-              <p className={`text-xs font-semibold mt-3 ${cat.text} opacity-70 group-hover:opacity-100 transition-opacity`}>
+              <div>
+                <span className="text-3xl mb-3 block">{cat.emoji}</span>
+                <p className={`font-bold text-base leading-tight ${cat.text}`}>{cat.name}</p>
+                <p className="text-[#888] text-xs mt-1.5 leading-relaxed">{cat.desc}</p>
+              </div>
+              <p className={`text-xs font-semibold mt-4 ${cat.text} opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all`}>
                 보러가기 →
               </p>
             </Link>
@@ -219,26 +231,7 @@ export default async function HomePage() {
               팔로우
             </a>
           </div>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-2.5">
-            {['insta01.jpg','insta02.jpg','insta03.jpg','insta04.jpg','insta05.jpg','insta06.jpg'].map((img, i) => (
-              <a
-                key={i}
-                href="https://www.instagram.com/greeneatfood"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative aspect-square rounded-2xl overflow-hidden group block"
-              >
-                <Image
-                  src={`https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/${img}`}
-                  alt={`그린잇 인스타그램 ${i + 1}`}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 768px) 33vw, 16vw"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-              </a>
-            ))}
-          </div>
+          <InstagramGrid />
         </div>
       </section>
 

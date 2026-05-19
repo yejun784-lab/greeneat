@@ -1,121 +1,54 @@
-'use client'
+﻿import { Trophy } from 'lucide-react'
+import { formatPrice } from '@/lib/utils'
 
-import { useMemo } from 'react'
-
-export type MembershipTier = 'bronze' | 'silver' | 'gold' | 'vip'
-
-export const TIERS: {
-  tier: MembershipTier
-  label: string
-  minAmount: number
-  color: string
-  bg: string
-  border: string
-  emoji: string
-  benefit: string
-}[] = [
-  {
-    tier: 'bronze',
-    label: '브론즈',
-    minAmount: 0,
-    color: 'text-amber-700',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    emoji: '🥉',
-    benefit: '기본 혜택',
-  },
-  {
-    tier: 'silver',
-    label: '실버',
-    minAmount: 100000,
-    color: 'text-slate-500',
-    bg: 'bg-slate-50',
-    border: 'border-slate-200',
-    emoji: '🥈',
-    benefit: '배송비 할인 쿠폰 월 1회',
-  },
-  {
-    tier: 'gold',
-    label: '골드',
-    minAmount: 300000,
-    color: 'text-yellow-600',
-    bg: 'bg-yellow-50',
-    border: 'border-yellow-200',
-    emoji: '🥇',
-    benefit: '5% 상시 할인 + 우선 배송',
-  },
-  {
-    tier: 'vip',
-    label: 'VIP',
-    minAmount: 700000,
-    color: 'text-purple-600',
-    bg: 'bg-purple-50',
-    border: 'border-purple-200',
-    emoji: '💎',
-    benefit: '10% 상시 할인 + 전담 CS',
-  },
+const TIERS = [
+  { label: 'Bronze', emoji: '🥉', color: 'text-orange-700', bg: 'bg-orange-50',   min: 0,       max: 50000  },
+  { label: 'Silver', emoji: '🥈', color: 'text-slate-500',  bg: 'bg-slate-50',    min: 50000,   max: 150000 },
+  { label: 'Gold',   emoji: '🥇', color: 'text-yellow-600', bg: 'bg-yellow-50',   min: 150000,  max: 300000 },
+  { label: 'VIP',    emoji: '👑', color: 'text-[#2d7a4f]',  bg: 'bg-green-tint',  min: 300000,  max: null   },
 ]
-
-export function getTier(totalAmount: number): (typeof TIERS)[number] {
-  return (
-    [...TIERS].reverse().find((t) => totalAmount >= t.minAmount) ?? TIERS[0]
-  )
-}
-
-export function getNextTier(current: MembershipTier) {
-  const idx = TIERS.findIndex((t) => t.tier === current)
-  return idx < TIERS.length - 1 ? TIERS[idx + 1] : null
-}
 
 interface Props {
   totalOrderAmount: number
 }
 
 export function MembershipBadge({ totalOrderAmount }: Props) {
-  const tier = useMemo(() => getTier(totalOrderAmount), [totalOrderAmount])
-  const next = useMemo(() => getNextTier(tier.tier), [tier])
-  const progress = next
-    ? Math.min(100, ((totalOrderAmount - tier.minAmount) / (next.minAmount - tier.minAmount)) * 100)
-    : 100
-  const remaining = next ? next.minAmount - totalOrderAmount : 0
+  const tierIdx = TIERS.findIndex((t) => t.max === null || totalOrderAmount < t.max)
+  const tier = TIERS[tierIdx < 0 ? TIERS.length - 1 : tierIdx]
+  const isVip = tier.max === null
+  const progress = isVip ? 100 : Math.min(100, ((totalOrderAmount - tier.min) / (tier.max! - tier.min)) * 100)
+  const remaining = isVip ? 0 : tier.max! - totalOrderAmount
 
   return (
-    <div className={`rounded-2xl border ${tier.border} ${tier.bg} p-5`}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{tier.emoji}</span>
-          <div>
-            <p className={`text-lg font-bold ${tier.color}`}>{tier.label} 회원</p>
-            <p className="text-xs text-ink-5">{tier.benefit}</p>
-          </div>
+    <div className="bg-surface rounded-2xl border border-line p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Trophy size={16} className="text-[#2d7a4f]" />
+        <h2 className="font-semibold text-ink">멤버십 등급</h2>
+      </div>
+      <div className="flex items-center gap-3 mb-4">
+        <div className={`w-12 h-12 rounded-xl ${tier.bg} flex items-center justify-center text-2xl`}>
+          {tier.emoji}
         </div>
-        <div className="text-right">
-          <p className="text-xs text-ink-5">누적 결제</p>
-          <p className="text-sm font-bold text-ink">{totalOrderAmount.toLocaleString()}원</p>
+        <div>
+          <p className={`text-lg font-bold ${tier.color}`}>{tier.label}</p>
+          <p className="text-xs text-ink-5">누적 {formatPrice(totalOrderAmount)} 결제</p>
         </div>
       </div>
-
-      {next ? (
-        <div>
-          <div className="flex justify-between text-xs text-ink-5 mb-1.5">
-            <span>{tier.label}</span>
-            <span>
-              {next.emoji} {next.label}까지 <span className="font-semibold text-ink">{remaining.toLocaleString()}원</span>
-            </span>
-          </div>
-          <div className="w-full bg-white/60 rounded-full h-2 overflow-hidden">
+      {!isVip && (
+        <>
+          <div className="w-full bg-line-2 rounded-full h-2 mb-1.5">
             <div
-              className={`h-2 rounded-full transition-all duration-700 ${
-                tier.tier === 'bronze' ? 'bg-amber-400' :
-                tier.tier === 'silver' ? 'bg-slate-400' :
-                tier.tier === 'gold'   ? 'bg-yellow-400' : 'bg-purple-400'
-              }`}
+              className="bg-[#2d7a4f] h-2 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
-        </div>
-      ) : (
-        <p className="text-xs text-purple-500 font-medium">🎉 최고 등급 달성!</p>
+          <p className="text-xs text-ink-5">
+            다음 등급까지 <span className="font-semibold text-ink">{formatPrice(remaining)}</span> 더 필요해요
+          </p>
+        </>
+      )}
+      {isVip && (
+        <p className="text-xs text-[#2d7a4f] font-medium">최고 등급 회원입니다 🎉</p>
       )}
     </div>
   )

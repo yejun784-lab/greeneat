@@ -111,6 +111,8 @@ async function ProductCount({ params }: { params: Awaited<SearchParams> }) {
   if (params.difficulty) query = query.eq('difficulty', params.difficulty)
   if (params.servings)   query = query.eq('servings', Number(params.servings))
   if (params.search)     query = query.ilike('name', `%${params.search}%`)
+  if (params.minCal)     query = query.gte('calories', Number(params.minCal))
+  if (params.maxCal)     query = query.lte('calories', Number(params.maxCal))
   const excludeList = params.exclude ? [params.exclude] : profileAllergens
   for (const allergen of excludeList) {
     query = query.not('allergens', 'cs', `{${allergen}}`)
@@ -132,8 +134,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-ink">밀키트</h1>
-        <p className="text-ink-4 mt-1">신선한 재료로 만드는 건강한 한 끼</p>
+        <h1 className="text-2xl font-bold text-ink">도시락</h1>
+        <p className="text-ink-4 mt-1">진정성 있는 건강한 한 끼를 간편하게</p>
       </div>
 
       {/* 검색 바 */}
@@ -147,7 +149,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
             type="text"
             name="search"
             defaultValue={params.search ?? ''}
-            placeholder="밀키트 검색 (예: 비빔밥, 파스타...)"
+            placeholder="도시락 검색 (예: 닭가슴살, 그래놀라...)"
             className="w-full pl-10 pr-4 py-2.5 border border-line-2 rounded-xl text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
           />
           <svg
@@ -175,8 +177,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
         </div>
       </form>
 
-      <div className="flex gap-8">
-        {/* 필터 사이드바 */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+        {/* 필터 (모바일: 토글 버튼, 데스크톱: 사이드바) */}
         <Suspense>
           <ProductFilter />
         </Suspense>

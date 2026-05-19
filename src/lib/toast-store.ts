@@ -1,49 +1,50 @@
-'use client'
+﻿'use client'
 
 import { create } from 'zustand'
 
 export type ToastType = 'success' | 'error' | 'info'
 
-export type ToastAction = {
-  label: string
-  href?: string
-  onClick?: () => void
+export interface ToastOptions {
+  duration?: number
+  action?: { label: string; href?: string; onClick?: () => void }
 }
 
-export type Toast = {
+export interface ToastItem {
   id: string
   message: string
   type: ToastType
-  duration?: number
-  action?: ToastAction
+  action?: { label: string; href?: string; onClick?: () => void }
 }
 
+// Toast is an alias for ToastItem (used by Toast.tsx)
+export type Toast = ToastItem
+
 type ToastStore = {
-  toasts: Toast[]
-  addToast: (message: string, type?: ToastType, opts?: { duration?: number; action?: ToastAction }) => void
-  removeToast: (id: string) => void
+  toasts: ToastItem[]
+  add: (message: string, type: ToastType, options?: ToastOptions) => void
+  remove: (id: string) => void
+  removeToast: (id: string) => void  // alias for Toast.tsx compatibility
 }
 
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
-  addToast: (message, type = 'success', opts) => {
-    const id = Math.random().toString(36).slice(2, 9)
-    const duration = opts?.duration ?? 3500
-    set((state) => ({ toasts: [...state.toasts, { id, message, type, duration, action: opts?.action }] }))
+  add: (message, type, options) => {
+    const id = Math.random().toString(36).slice(2)
+    const duration = options?.duration ?? 3500
+    set((s) => ({
+      toasts: [...s.toasts.slice(-2), { id, message, type, action: options?.action }],
+    }))
     setTimeout(() => {
-      set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }))
+      set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }))
     }, duration)
   },
-  removeToast: (id) =>
-    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
+  remove: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+  removeToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }))
 
-// 컴포넌트 밖에서 호출 가능한 유틸 함수
+// React 외부에서도 호출 가능한 헬퍼
 export const toast = {
-  success: (message: string, opts?: { duration?: number; action?: ToastAction }) =>
-    useToastStore.getState().addToast(message, 'success', opts),
-  error: (message: string, opts?: { duration?: number; action?: ToastAction }) =>
-    useToastStore.getState().addToast(message, 'error', opts),
-  info: (message: string, opts?: { duration?: number; action?: ToastAction }) =>
-    useToastStore.getState().addToast(message, 'info', opts),
+  success: (message: string, options?: ToastOptions) => useToastStore.getState().add(message, 'success', options),
+  error:   (message: string, options?: ToastOptions) => useToastStore.getState().add(message, 'error',   options),
+  info:    (message: string, options?: ToastOptions) => useToastStore.getState().add(message, 'info',    options),
 }

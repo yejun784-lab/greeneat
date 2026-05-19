@@ -1,56 +1,53 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { PauseCircle, XCircle } from 'lucide-react'
-import { toast } from '@/lib/toast-store'
 
 export function SubscriptionActions() {
-  const router = useRouter()
-  const [loading, setLoading] = useState<'pause' | 'cancel' | null>(null)
+  const [msg, setMsg] = useState('')
 
-  async function handleAction(action: 'pause' | 'cancel') {
-    const label = action === 'pause' ? '일시정지' : '해지'
-    const confirmed = window.confirm(`구독을 ${label}하시겠습니까?`)
-    if (!confirmed) return
+  async function handleAction(newStatus: 'paused' | 'cancelled') {
+    const label = newStatus === 'paused' ? '일시정지' : '해지'
+    if (!window.confirm(`구독을 ${label}하시겠습니까?`)) return
 
-    setLoading(action)
-    try {
-      const res = await fetch('/api/subscriptions', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      })
-      if (!res.ok) {
-        const { error } = await res.json()
-        toast.error(error || `구독 ${label}에 실패했습니다.`)
-        return
-      }
-      toast.success(`구독이 ${label}되었습니다.`)
-      router.refresh()
-    } finally {
-      setLoading(null)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setMsg('로그인이 필요합니다.'); return }
+
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ status: newStatus })
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+
+    if (error) {
+      setMsg('오류가 발생했습니다.')
+    } else {
+      setMsg(newStatus === 'paused' ? '구독이 일시정지됐습니다.' : '구독이 해지됐습니다.')
     }
+    setTimeout(() => setMsg(''), 3000)
   }
 
   return (
-    <div className="flex gap-2 mt-3">
-      <button
-        onClick={() => handleAction('pause')}
-        disabled={loading !== null}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-ink-3 border border-line-2 rounded-lg hover:bg-wash transition-colors disabled:opacity-50"
-      >
-        <PauseCircle size={13} />
-        {loading === 'pause' ? '처리 중...' : '일시정지'}
-      </button>
-      <button
-        onClick={() => handleAction('cancel')}
-        disabled={loading !== null}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
-      >
-        <XCircle size={13} />
-        {loading === 'cancel' ? '처리 중...' : '구독 해지'}
-      </button>
+    <div className="mt-3">
+      {msg && <p className="text-xs text-ink-4 mb-2">{msg}</p>}
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleAction('paused')}
+          className="flex items-center gap-1.5 text-xs border border-line-2 text-ink-3 px-3 py-1.5 rounded-lg hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors"
+        >
+          <PauseCircle size={13} />
+          일시정지
+        </button>
+        <button
+          onClick={() => handleAction('cancelled')}
+          className="flex items-center gap-1.5 text-xs border border-red-200 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+        >
+          <XCircle size={13} />
+          구독 해지
+        </button>
+      </div>
     </div>
   )
 }

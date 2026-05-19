@@ -1,33 +1,44 @@
-'use client'
+﻿'use client'
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const storage = createJSONStorage(() => {
-  if (typeof window === 'undefined') {
-    return { getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage
-  }
-  return localStorage
-})
-
 type WishlistStore = {
-  ids: string[]           // product id 목록 (로컬 캐시)
-  toggle: (id: string) => void
+  ids: Set<string>
   has: (id: string) => boolean
-  setAll: (ids: string[]) => void
+  toggle: (id: string) => void
+  clear: () => void
 }
 
 export const useWishlistStore = create<WishlistStore>()(
   persist(
     (set, get) => ({
-      ids: [],
+      ids: new Set<string>(),
+      has: (id) => get().ids.has(id),
       toggle: (id) =>
-        set((s) => ({
-          ids: s.ids.includes(id) ? s.ids.filter((i) => i !== id) : [...s.ids, id],
-        })),
-      has: (id) => get().ids.includes(id),
-      setAll: (ids) => set({ ids }),
+        set((s) => {
+          const next = new Set(s.ids)
+          if (next.has(id)) next.delete(id)
+          else next.add(id)
+          return { ids: next }
+        }),
+      clear: () => set({ ids: new Set() }),
     }),
-    { name: 'greeneat-wishlist', storage, skipHydration: true }
+    {
+      name: 'greeneat-wishlist',
+      storage: createJSONStorage(() => {
+        if (typeof window === 'undefined') {
+          return { getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage
+        }
+        return localStorage
+      }),
+      // Set is not JSON-serializable — serialize as array
+      partialize: (s) => ({ ids: [...s.ids] } as any),
+      onRehydrateStorage: () => (state) => {
+        if (state && Array.isArray((state as any).ids)) {
+          state.ids = new Set((state as any).ids)
+        }
+      },
+    }
   )
 )

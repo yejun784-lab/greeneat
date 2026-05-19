@@ -1,7 +1,11 @@
 'use client'
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { X, SlidersHorizontal, ChevronDown } from 'lucide-react'
+
+// 필터로 취급하는 파라미터 키 (search·sort·page 제외)
+const FILTER_KEYS = ['category', 'minCal', 'maxCal', 'exclude', 'difficulty', 'servings']
 
 const CATEGORIES = [
   { slug: 'lunchbox', name: '간편식' },
@@ -59,9 +63,41 @@ export function ProductFilter() {
 
   const active = (key: string, value: string) => searchParams.get(key) === value
 
-  return (
-    <aside className="w-44 shrink-0">
-      <div className="sticky top-24 space-y-6">
+  // 활성 필터 개수 계산
+  const activeFilterCount = FILTER_KEYS.filter((key) => searchParams.has(key)).length
+
+  function resetFilters() {
+    const params = new URLSearchParams(searchParams.toString())
+    FILTER_KEYS.forEach((key) => params.delete(key))
+    router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ''}`)
+  }
+
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const filterContent = (
+    <div className="space-y-6">
+      {/* 헤더 + 초기화 버튼 */}
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-1.5 text-sm font-semibold text-ink">
+          <SlidersHorizontal size={14} />
+          필터
+          {activeFilterCount > 0 && (
+            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#2d7a4f] text-white text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+        </span>
+        {activeFilterCount > 0 && (
+          <button
+            onClick={resetFilters}
+            className="flex items-center gap-0.5 text-xs text-ink-4 hover:text-red-500 transition-colors"
+          >
+            <X size={12} />
+            초기화
+          </button>
+        )}
+      </div>
+
         {/* 카테고리 */}
         <div>
           <h3 className="text-sm font-semibold text-ink mb-3">카테고리</h3>
@@ -136,16 +172,39 @@ export function ProductFilter() {
           </div>
         </div>
 
-        {/* 필터 초기화 */}
-        {searchParams.toString() && (
-          <button
-            onClick={() => router.push(pathname)}
-            className="w-full text-sm text-ink-4 hover:text-ink-2 underline"
-          >
-            필터 초기화
-          </button>
+    </div>
+  )
+
+  return (
+    <>
+      {/* 모바일 필터 토글 */}
+      <div className="lg:hidden mb-4">
+        <button
+          onClick={() => setMobileOpen((v) => !v)}
+          className="flex items-center gap-2 px-4 py-2 border border-line-2 rounded-full text-sm font-medium text-ink bg-white hover:bg-wash transition-colors"
+        >
+          <SlidersHorizontal size={14} />
+          필터
+          {activeFilterCount > 0 && (
+            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#2d7a4f] text-white text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+          <ChevronDown size={14} className={`transition-transform ${mobileOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {mobileOpen && (
+          <div className="mt-3 p-4 bg-white border border-line-2 rounded-2xl shadow-md">
+            {filterContent}
+          </div>
         )}
       </div>
-    </aside>
+
+      {/* 데스크톱 사이드바 */}
+      <aside className="hidden lg:block w-44 shrink-0">
+        <div className="sticky top-24">
+          {filterContent}
+        </div>
+      </aside>
+    </>
   )
 }

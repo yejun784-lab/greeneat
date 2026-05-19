@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
+import { translateAuthError } from '@/lib/utils'
 
 function SignupForm() {
   const router = useRouter()
@@ -58,7 +59,7 @@ function SignupForm() {
     })
 
     if (signupError) {
-      setError(signupError.message)
+      setError(translateAuthError(signupError.message))
       setLoading(false)
       return
     }

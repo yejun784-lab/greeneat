@@ -1,76 +1,67 @@
-'use client'
+﻿'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { toast } from '@/lib/toast-store'
+import { ChevronDown } from 'lucide-react'
 
 const GOALS = [
-  { value: 'diet',     label: '다이어트',  emoji: '🥗', desc: '1,500 kcal / 단백질 80g' },
-  { value: 'balanced', label: '균형식',    emoji: '⚖️', desc: '2,000 kcal / 단백질 100g' },
-  { value: 'muscle',   label: '근육 증가', emoji: '💪', desc: '2,500 kcal / 단백질 150g' },
+  { value: 'diet',     label: '다이어트', emoji: '🥗' },
+  { value: 'balanced', label: '균형식',   emoji: '⚖️' },
+  { value: 'muscle',   label: '근육 증가', emoji: '💪' },
 ]
 
-export function GoalEditor({ current, userId }: { current: string; userId: string }) {
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
-  const [saving, setSaving] = useState(false)
+interface Props {
+  current: string
+  userId: string
+}
 
-  async function handleSelect(value: string) {
-    if (value === current) { setOpen(false); return }
-    setSaving(true)
-    const supabase = createClient()
-    await supabase
-      .from('profiles')
-      .update({ nutrition_goal: value })
-      .eq('id', userId)
-    setSaving(false)
+export function GoalEditor({ current, userId }: Props) {
+  const [goal, setGoal] = useState(current)
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const currentGoal = GOALS.find((g) => g.value === goal) ?? GOALS[1]
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function select(value: string) {
+    setGoal(value)
     setOpen(false)
-    const label = GOALS.find((g) => g.value === value)?.label ?? ''
-    toast.success(`식단 목표를 "${label}"(으)로 변경했어요!`)
-    router.refresh()
+    const supabase = createClient()
+    await supabase.from('profiles').update({ nutrition_goal: value }).eq('id', userId)
   }
 
-  const currentGoal = GOALS.find((g) => g.value === current) ?? GOALS[1]
-
   return (
-    <div className="relative">
+    <div ref={ref} className="relative shrink-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 text-xs text-ink-4 hover:text-[#2d7a4f] transition-colors border border-line-2 rounded-lg px-2 py-1 hover:border-[#2d7a4f]"
+        className="flex items-center gap-1.5 bg-green-tint text-[#2d7a4f] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#d0ead9] transition-colors"
       >
         <span>{currentGoal.emoji}</span>
         <span>{currentGoal.label}</span>
-        <span className="text-ink-5">변경</span>
+        <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-
       {open && (
-        <>
-          {/* 오버레이 */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          {/* 드롭다운 */}
-          <div className="absolute right-0 top-full mt-2 w-56 bg-surface border border-line-2 rounded-2xl shadow-xl z-50 overflow-hidden">
-            {GOALS.map((g) => (
-              <button
-                key={g.value}
-                onClick={() => handleSelect(g.value)}
-                disabled={saving}
-                className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-wash ${
-                  g.value === current ? 'bg-green-tint' : ''
-                }`}
-              >
-                <span className="text-xl mt-0.5">{g.emoji}</span>
-                <div>
-                  <p className={`text-sm font-medium ${g.value === current ? 'text-[#2d7a4f]' : 'text-ink'}`}>
-                    {g.label}
-                    {g.value === current && <span className="ml-1 text-xs">✓</span>}
-                  </p>
-                  <p className="text-xs text-ink-5 mt-0.5">{g.desc}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </>
+        <div className="absolute right-0 top-full mt-1 bg-white border border-line rounded-xl shadow-lg z-20 overflow-hidden w-36">
+          {GOALS.map((g) => (
+            <button
+              key={g.value}
+              onClick={() => select(g.value)}
+              className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-wash transition-colors ${
+                goal === g.value ? 'font-semibold text-[#2d7a4f]' : 'text-ink-3'
+              }`}
+            >
+              <span>{g.emoji}</span>
+              <span>{g.label}</span>
+            </button>
+          ))}
+        </div>
       )}
     </div>
   )

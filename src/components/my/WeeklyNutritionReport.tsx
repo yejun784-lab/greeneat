@@ -1,118 +1,94 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+﻿import { createClient } from '@/lib/supabase/server'
 import { BarChart2 } from 'lucide-react'
 
-type DayData = { day: string; cal: number; protein: number }
+interface Props {
+  userId: string
+}
 
-const DAYS = ['일', '월', '화', '수', '목', '금', '토']
+export async function WeeklyNutritionReport({ userId }: Props) {
+  const supabase = await createClient()
 
-export function WeeklyNutritionReport({ userId }: { userId: string }) {
-  const [data, setData] = useState<DayData[]>([])
-  const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<'cal' | 'protein'>('cal')
+  const since = new Date()
+  since.setDate(since.getDate() - 6)
+  since.setHours(0, 0, 0, 0)
 
-  useEffect(() => {
-    const supabase = createClient()
-    const since = new Date(Date.now() - 7 * 86400000).toISOString()
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('created_at, order_items(quantity, products(calories, protein))')
+    .eq('user_id', userId)
+    .gte('created_at', since.toISOString())
+    .eq('payment_status', 'paid')
 
-    supabase
-      .from('orders')
-      .select('created_at, order_items(quantity, products(calories, protein))')
-      .eq('user_id', userId)
-      .gte('created_at', since)
-      .order('created_at', { ascending: true })
-      .then(({ data: orders }) => {
-        const map: Record<string, { cal: number; protein: number }> = {}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ;(orders ?? []).forEach((o: any) => {
-          const d = DAYS[new Date(o.created_at).getDay()]
-          if (!map[d]) map[d] = { cal: 0, protein: 0 }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ;(o.order_items ?? []).forEach((item: any) => {
-            map[d].cal += (item.products?.calories ?? 0) * item.quantity
-            map[d].protein += (item.products?.protein ?? 0) * item.quantity
-          })
-        })
+  // 날짜별 집계
+  const dayMap: Record<string, { cal: number; protein: number }> = {}
+  for (let i = 0; i < 7; i++) {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    dayMap[d.toISOString().slice(0, 10)] = { cal: 0, protein: 0 }
+  }
 
-        const result: DayData[] = Array.from({ length: 7 }).map((_, i) => {
-          const d = new Date(Date.now() - (6 - i) * 86400000)
-          const label = DAYS[d.getDay()]
-          return { day: label, cal: map[label]?.cal ?? 0, protein: map[label]?.protein ?? 0 }
-        })
-        setData(result)
-        setLoading(false)
-      })
-  }, [userId])
+  for (const order of orders ?? []) {
+    const date = order.created_at.slice(0, 10)
+    if (!dayMap[date]) continue
+    for (const item of (order.order_items as any[]) ?? []) {
+      const cal = (item.products?.calories ?? 0) * item.quantity
+      const protein = (item.products?.protein ?? 0) * item.quantity
+      dayMap[date].cal += cal
+      dayMap[date].protein += protein
+    }
+  }
 
-  if (loading) return <div className="h-40 animate-pulse bg-tint rounded-2xl" />
+  const days = Object.entries(dayMap)
+  const maxCal = Math.max(...days.map(([, v]) => v.cal), 500)
+  const avgCal = Math.round(days.reduce((s, [, v]) => s + v.cal, 0) / 7)
+  const avgProtein = Math.round(days.reduce((s, [, v]) => s + v.protein, 0) / 7)
 
-  const maxCal = Math.max(...data.map((d) => d.cal), 500)
-  const maxProtein = Math.max(...data.map((d) => d.protein), 50)
-  const totalCal = data.reduce((s, d) => s + d.cal, 0)
-  const totalProtein = data.reduce((s, d) => s + d.protein, 0)
+  const weekdayLabels = ['일', '월', '화', '수', '목', '금', '토']
 
   return (
     <div className="bg-surface rounded-2xl border border-line p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <BarChart2 size={16} className="text-[#2d7a4f]" />
-          <h3 className="font-semibold text-ink">주간 영양 리포트</h3>
-        </div>
-        <div className="flex gap-1">
-          {(['cal', 'protein'] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-colors ${
-                view === v ? 'bg-[#2d7a4f] text-white' : 'bg-tint text-ink-4 hover:bg-line-2'
-              }`}
-            >
-              {v === 'cal' ? '칼로리' : '단백질'}
-            </button>
-          ))}
-        </div>
+      <div className="flex items-center gap-2 mb-4">
+        <BarChart2 size={16} className="text-[#2d7a4f]" />
+        <h2 className="font-semibold text-ink">주간 영양 리포트</h2>
+        <span className="text-xs text-ink-5 ml-auto">최근 7일</span>
       </div>
 
-      {/* 막대 그래프 */}
-      <div className="flex items-end gap-2 h-28">
-        {data.map((d, i) => {
-          const val = view === 'cal' ? d.cal : d.protein
-          const max = view === 'cal' ? maxCal : maxProtein
-          const pct = max > 0 ? (val / max) * 100 : 0
-          const isToday = i === 6
+      {/* 바 차트 */}
+      <div className="flex items-end gap-1.5 h-20 mb-2">
+        {days.map(([date, v]) => {
+          const d = new Date(date)
+          const label = weekdayLabels[d.getDay()]
+          const height = v.cal > 0 ? Math.max(8, (v.cal / maxCal) * 100) : 4
+          const isToday = date === new Date().toISOString().slice(0, 10)
           return (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-[10px] text-ink-5">{val > 0 ? (view === 'cal' ? val : `${val}g`) : ''}</span>
-              <div className="w-full flex items-end" style={{ height: '72px' }}>
+            <div key={date} className="flex-1 flex flex-col items-center gap-1">
+              <div className="w-full flex items-end justify-center" style={{ height: '60px' }}>
                 <div
-                  className={`w-full rounded-t-lg transition-all duration-500 ${
-                    isToday ? 'bg-[#2d7a4f]' : 'bg-[#a8d5b8]'
-                  }`}
-                  style={{ height: `${Math.max(4, pct)}%` }}
+                  className={`w-full rounded-t-md transition-all ${isToday ? 'bg-[#2d7a4f]' : 'bg-green-tint'}`}
+                  style={{ height: `${height}%` }}
                 />
               </div>
-              <span className={`text-[10px] font-medium ${isToday ? 'text-[#2d7a4f]' : 'text-ink-5'}`}>
-                {d.day}
+              <span className={`text-[10px] ${isToday ? 'font-bold text-[#2d7a4f]' : 'text-ink-5'}`}>
+                {label}
               </span>
             </div>
           )
         })}
       </div>
 
-      {/* 주간 요약 */}
-      <div className="mt-4 pt-3 border-t border-line grid grid-cols-2 gap-3">
-        <div className="bg-orange-50 rounded-xl p-3 text-center">
-          <p className="text-xs text-ink-4 mb-0.5">주간 총 칼로리</p>
-          <p className="text-lg font-bold text-orange-500">{totalCal.toLocaleString()}</p>
-          <p className="text-xs text-ink-5">kcal</p>
+      {/* 요약 */}
+      <div className="flex gap-4 pt-3 border-t border-line mt-2">
+        <div>
+          <p className="text-[10px] text-ink-5">평균 칼로리</p>
+          <p className="text-sm font-bold text-ink">{avgCal > 0 ? `${avgCal} kcal` : '-'}</p>
         </div>
-        <div className="bg-green-tint rounded-xl p-3 text-center">
-          <p className="text-xs text-ink-4 mb-0.5">주간 총 단백질</p>
-          <p className="text-lg font-bold text-[#2d7a4f]">{totalProtein.toLocaleString()}</p>
-          <p className="text-xs text-ink-5">g</p>
+        <div>
+          <p className="text-[10px] text-ink-5">평균 단백질</p>
+          <p className="text-sm font-bold text-ink">{avgProtein > 0 ? `${avgProtein} g` : '-'}</p>
         </div>
+        {avgCal === 0 && (
+          <p className="text-xs text-ink-5 self-center ml-2">이번 주 결제 완료 주문이 없습니다.</p>
+        )}
       </div>
     </div>
   )

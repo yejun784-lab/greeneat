@@ -237,7 +237,7 @@ export function Header() {
                     onKeyDown={handleKeyDown}
                     onFocus={() => setShowSuggestions(true)}
                     placeholder="도시락 검색..."
-                    className="w-32 sm:w-64 px-3 py-1.5 text-sm border border-line-2 rounded-lg bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
+                    className="w-36 sm:w-64 px-3 py-1.5 text-sm border border-line-2 rounded-lg bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
                     autoComplete="off"
                   />
                   <button type="submit" className="sr-only">검색</button>

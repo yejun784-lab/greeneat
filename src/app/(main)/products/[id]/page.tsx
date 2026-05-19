@@ -232,7 +232,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* 버튼 */}
-          <div className="flex gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
             {product.stock > 0 ? (
               <>
                 <Button
