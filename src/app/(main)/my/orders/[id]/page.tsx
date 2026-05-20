@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL } from '@/lib/utils'
-import { ChevronLeft, Package, MapPin, CreditCard, Truck, ExternalLink } from 'lucide-react'
+import { ChevronLeft, Package, MapPin, CreditCard, Truck, ExternalLink, Gift } from 'lucide-react'
 import type { OrderStatus } from '@/types'
 
 const STATUS_COLOR: Record<string, string> = {
@@ -118,6 +118,32 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             })}
           </div>
         </div>
+
+        {/* 선물 정보 */}
+        {order.is_gift && (
+          <div className="bg-red-50 rounded-2xl border border-red-100 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Gift size={15} className="text-red-400" />
+              <h2 className="font-semibold text-ink">선물 정보</h2>
+            </div>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex gap-2">
+                <span className="text-ink-4 w-16 shrink-0">받는 분</span>
+                <span className="text-ink font-medium">{order.recipient_name}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-ink-4 w-16 shrink-0">연락처</span>
+                <span className="text-ink">{order.recipient_phone}</span>
+              </div>
+              {order.gift_message && (
+                <div className="flex gap-2 mt-2 pt-2 border-t border-red-100">
+                  <span className="text-ink-4 w-16 shrink-0">메시지</span>
+                  <span className="text-ink-3 italic">"{order.gift_message}"</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* 배송지 */}
         {order.addresses && (

@@ -78,7 +78,9 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-ink-5">🍽</div>
+              <div className="w-full h-full flex items-center justify-center bg-tint">
+                <ShoppingBag size={24} className="text-line-3" />
+              </div>
             )}
 
             {/* 품절 */}

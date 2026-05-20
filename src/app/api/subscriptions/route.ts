@@ -25,12 +25,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '플랜과 배송 요일을 선택해주세요.' }, { status: 400 })
   }
 
-  // 기존 활성 구독 취소
+  // 기존 활성/일시중지 구독 취소
   await supabase
     .from('subscriptions')
     .update({ status: 'cancelled' })
     .eq('user_id', user.id)
-    .eq('status', 'active')
+    .in('status', ['active', 'paused'])
 
   const { data, error } = await supabase
     .from('subscriptions')

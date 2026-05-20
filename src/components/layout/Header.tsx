@@ -43,6 +43,7 @@ function removeRecentSearch(query: string) {
 export function Header() {
   const router = useRouter()
   const totalItems = useCartStore((s) => s.totalItems())
+  const [cartMounted, setCartMounted] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [profileName, setProfileName] = useState<string | null>(null)
@@ -58,6 +59,8 @@ export function Header() {
   const searchRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const suggestRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setCartMounted(true) }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -372,7 +375,7 @@ export function Header() {
               aria-label="장바구니"
             >
               <ShoppingCart size={22} />
-              {totalItems > 0 && (
+              {cartMounted && totalItems > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#2d7a4f] text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>

@@ -63,7 +63,7 @@ export default function CheckoutPage() {
 
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return
+      if (!data.user) { router.replace('/login'); return }
       setUserEmail(data.user.email ?? '')
       const { data: profile } = await supabase
         .from('profiles')
