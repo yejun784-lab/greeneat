@@ -265,9 +265,14 @@ export default async function MyPage() {
               <RefreshCw size={16} className="text-[#2d7a4f]" />
               <h2 className="font-semibold text-ink">구독 현황</h2>
             </div>
-            <Link href="/subscription" className="text-sm text-[#2d7a4f] hover:underline">
-              플랜 변경
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/my/subscription" className="text-sm text-[#2d7a4f] hover:underline font-medium">
+                메뉴 변경
+              </Link>
+              <Link href="/subscription" className="text-sm text-ink-4 hover:underline">
+                플랜 변경
+              </Link>
+            </div>
           </div>
 
           {subscription ? (

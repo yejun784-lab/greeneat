@@ -75,21 +75,68 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ subscription: data })
 }
 
-// 구독 취소 / 일시정지
+// 구독 상태 변경 / 메뉴 변경 / 배송 요일 변경
 export async function PATCH(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
-  const { action } = await req.json() // 'pause' | 'cancel'
-  const status = action === 'pause' ? 'paused' : 'cancelled'
+  const body = await req.json()
+  const { action } = body
 
-  const { error } = await supabase
-    .from('subscriptions')
-    .update({ status })
-    .eq('user_id', user.id)
-    .eq('status', 'active')
+  // ── 상태 변경 (pause / cancel / resume) ────────────────────────────────────
+  if (action === 'pause' || action === 'cancel' || action === 'resume') {
+    const status = action === 'pause' ? 'paused' : action === 'resume' ? 'active' : 'cancelled'
+    const fromStatus = action === 'resume' ? 'paused' : action === 'cancel' ? ['active', 'paused'] : 'active'
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ ok: true })
+    const query = supabase.from('subscriptions').update({ status }).eq('user_id', user.id)
+    if (Array.isArray(fromStatus)) query.in('status', fromStatus)
+    else query.eq('status', fromStatus)
+
+    const { error } = await query
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── 메뉴(상품 목록) 변경 ─────────────────────────────────────────────────
+  if (action === 'update_items') {
+    const { subscription_id, product_ids } = body as { subscription_id: string; product_ids: string[] }
+    if (!subscription_id || !product_ids) {
+      return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
+    }
+    // 본인 구독인지 확인
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('id', subscription_id)
+      .eq('user_id', user.id)
+      .single()
+    if (!sub) return NextResponse.json({ error: '구독을 찾을 수 없습니다.' }, { status: 404 })
+
+    // 기존 아이템 삭제 후 재삽입
+    await supabase.from('subscription_items').delete().eq('subscription_id', subscription_id)
+    if (product_ids.length > 0) {
+      await supabase.from('subscription_items').insert(
+        product_ids.map((pid) => ({ subscription_id, product_id: pid, quantity: 1 }))
+      )
+    }
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── 배송 요일 변경 ─────────────────────────────────────────────────────────
+  if (action === 'update_delivery_day') {
+    const { subscription_id, delivery_day } = body as { subscription_id: string; delivery_day: number }
+    if (!subscription_id || delivery_day == null) {
+      return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
+    }
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ delivery_day, next_delivery_at: nextDeliveryDate(delivery_day) })
+      .eq('id', subscription_id)
+      .eq('user_id', user.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  return NextResponse.json({ error: '알 수 없는 action' }, { status: 400 })
 }
