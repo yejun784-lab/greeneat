@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL } from '@/lib/utils'
 import { ChevronLeft, Package, CheckCircle2, Truck, Clock, XCircle } from 'lucide-react'
 import { ReorderButton } from '@/components/my/ReorderButton'
+import { CancelOrderButton } from '@/components/my/CancelOrderButton'
 import type { Order, OrderStatus } from '@/types'
 
 const STATUS_STEPS: { key: OrderStatus; label: string; icon: React.ElementType }[] = [
@@ -106,6 +107,7 @@ export default async function OrdersPage() {
                   <span className="text-xs text-ink-5">{formatDate(order.created_at)}</span>
                 </div>
                 <div className="flex items-center gap-3">
+                  <CancelOrderButton orderId={order.id} status={order.status} />
                   {order.order_items && order.order_items.length > 0 && (
                     <ReorderButton items={order.order_items} />
                   )}
