@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-
-const client = new Anthropic()
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
@@ -35,13 +32,24 @@ export async function GET(req: NextRequest) {
     })
     .join('\n')
 
-  const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 512,
-    messages: [
-      {
-        role: 'user',
-        content: `당신은 건강한 식단 전문가입니다. 사용자에게 GreenEat 밀키트 3가지를 추천해주세요.
+  // Anthropic API 키가 없으면 목표 기반 정렬 폴백
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    const fallback = getFallbackRecommendations(products ?? [], goal, recentNames)
+    return NextResponse.json({ recommendations: fallback })
+  }
+
+  let recommendations: { name: string; reason: string }[] = []
+  try {
+    const { default: Anthropic } = await import('@anthropic-ai/sdk')
+    const client = new Anthropic({ apiKey })
+    const message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 512,
+      messages: [
+        {
+          role: 'user',
+          content: `당신은 건강한 식단 전문가입니다. 사용자에게 GreenEat 밀키트 3가지를 추천해주세요.
 
 사용자 정보:
 - 식단 목표: ${goalLabel}
@@ -54,17 +62,15 @@ ${productList}
 1. 식단 목표에 맞는 메뉴를 우선 추천
 2. 최근 주문과 겹치지 않게 추천
 3. 반드시 JSON 형식으로만 응답: [{"name":"상품명","reason":"추천 이유 한 줄"}] 형태로 3개`,
-      },
-    ],
-  })
-
-  const text = message.content[0].type === 'text' ? message.content[0].text : '[]'
-  let recommendations: { name: string; reason: string }[] = []
-  try {
+        },
+      ],
+    })
+    const text = message.content[0].type === 'text' ? message.content[0].text : '[]'
     const match = text.match(/\[[\s\S]*\]/)
     recommendations = match ? JSON.parse(match[0]) : []
   } catch {
-    recommendations = []
+    const fallback = getFallbackRecommendations(products ?? [], goal, recentNames)
+    return NextResponse.json({ recommendations: fallback })
   }
 
   const enriched = recommendations
@@ -75,4 +81,38 @@ ${productList}
     .filter(Boolean)
 
   return NextResponse.json({ recommendations: enriched })
+}
+
+type ProductRow = { id: string; name: string; price: number; calories?: number | null; protein?: number | null }
+
+function getFallbackRecommendations(
+  products: ProductRow[],
+  goal: string,
+  recentNames: string,
+): { id: string; name: string; price: number; reason: string }[] {
+  const recent = new Set(recentNames.split(', ').filter(Boolean))
+  const scored = products
+    .filter((p) => !recent.has(p.name))
+    .map((p) => {
+      let score = 0
+      if (goal === 'diet')     score = -(p.calories ?? 9999)
+      if (goal === 'muscle')   score =  (p.protein  ?? 0)
+      if (goal === 'balanced') score = -(Math.abs((p.calories ?? 2000) - 600))
+      return { ...p, score }
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+
+  const reasonMap: Record<string, string> = {
+    diet: '칼로리가 낮아 다이어트에 좋아요',
+    muscle: '단백질 함량이 높아 근육 증가에 도움돼요',
+    balanced: '균형 잡힌 영양소 구성이에요',
+  }
+
+  return scored.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    reason: reasonMap[goal] ?? '건강한 한 끼로 추천해요',
+  }))
 }

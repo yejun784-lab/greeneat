@@ -32,6 +32,10 @@ export type Profile = {
   name: string | null
   phone: string | null
   nutrition_goal: string | null
+  point_balance: number
+  referral_code: string | null
+  allergen_profile: string[]
+  role: 'user' | 'admin'
   created_at: string
 }
 

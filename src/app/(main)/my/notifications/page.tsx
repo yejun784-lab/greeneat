@@ -37,9 +37,12 @@ export default function NotificationsPage() {
 
   async function load() {
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
     const { data } = await supabase
       .from('notifications')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(50)
     setNotifications((data ?? []) as Notification[])
@@ -49,13 +52,17 @@ export default function NotificationsPage() {
   async function markRead(id: string) {
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, is_read: true } : n))
     const supabase = createClient()
-    await supabase.from('notifications').update({ is_read: true }).eq('id', id)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('notifications').update({ is_read: true }).eq('id', id).eq('user_id', user.id)
   }
 
   async function markAllRead() {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
     const supabase = createClient()
-    await supabase.from('notifications').update({ is_read: true }).eq('is_read', false)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('notifications').update({ is_read: true }).eq('user_id', user.id).eq('is_read', false)
   }
 
   const filtered = filter === 'all' ? notifications : notifications.filter((n) => n.type === filter)

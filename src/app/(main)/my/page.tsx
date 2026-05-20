@@ -33,7 +33,9 @@ async function getMyData(userId: string) {
       .from('subscriptions')
       .select('*')
       .eq('user_id', userId)
-      .eq('status', 'active')
+      .in('status', ['active', 'paused'])
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle(),
   ])
 
@@ -284,7 +286,7 @@ export default async function MyPage() {
                 </div>
               </div>
               <DeliveryCalendar nextDeliveryAt={subscription.next_delivery_at} />
-              <SubscriptionActions />
+              <SubscriptionActions status={subscription.status as 'active' | 'paused'} />
             </>
           ) : (
             <div className="text-center py-6">
