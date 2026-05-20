@@ -22,10 +22,16 @@ export async function PATCH(
     carrier?: string
   }
 
-  // 주문 상태 업데이트
+  // 주문 상태 업데이트 (배송 중이면 운송장 정보도 저장)
+  const updatePayload: Record<string, string | undefined> = { status }
+  if (status === 'shipped' && trackingNumber) {
+    updatePayload.tracking_number = trackingNumber
+    updatePayload.carrier = carrier ?? 'CJ대한통운'
+  }
+
   const { data: order, error } = await supabase
     .from('orders')
-    .update({ status })
+    .update(updatePayload)
     .eq('id', orderId)
     .select('*, profiles(name), addresses(address)')
     .single()

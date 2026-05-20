@@ -70,6 +70,8 @@ export type Order = {
   payment_method: string | null
   payment_status: PaymentStatus
   address_id: string | null
+  tracking_number: string | null
+  carrier: string | null
   created_at: string
   order_items?: OrderItem[]
   addresses?: Address

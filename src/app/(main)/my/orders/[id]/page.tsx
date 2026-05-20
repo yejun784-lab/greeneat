@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL } from '@/lib/utils'
-import { ChevronLeft, Package, MapPin, CreditCard } from 'lucide-react'
+import { ChevronLeft, Package, MapPin, CreditCard, Truck, ExternalLink } from 'lucide-react'
 import type { OrderStatus } from '@/types'
 
 const STATUS_COLOR: Record<string, string> = {
@@ -129,6 +129,30 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <p className="text-sm font-medium text-ink">{order.addresses.label}</p>
             <p className="text-sm text-ink-3 mt-1">{order.addresses.address}</p>
             {order.addresses.detail && <p className="text-sm text-ink-3">{order.addresses.detail}</p>}
+          </div>
+        )}
+
+        {/* 배송 추적 */}
+        {(order.status === 'shipped' || order.status === 'delivered') && order.tracking_number && (
+          <div className="bg-surface rounded-2xl border border-[#2d7a4f]/20 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Truck size={15} className="text-[#2d7a4f]" />
+              <h2 className="font-semibold text-ink">배송 추적</h2>
+            </div>
+            <div className="flex items-center justify-between bg-green-tint rounded-xl p-3">
+              <div>
+                <p className="text-xs text-ink-4 mb-0.5">{order.carrier ?? 'CJ대한통운'}</p>
+                <p className="text-sm font-mono font-bold text-ink tracking-wider">{order.tracking_number}</p>
+              </div>
+              <a
+                href={`https://trace.cjlogistics.com/next/tracking.html?wblNum=${order.tracking_number}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-3 py-2 bg-[#2d7a4f] text-white text-xs font-semibold rounded-lg hover:bg-[#235f3d] transition-colors"
+              >
+                조회하기 <ExternalLink size={11} />
+              </a>
+            </div>
           </div>
         )}
 
