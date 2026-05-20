@@ -72,6 +72,10 @@ export type Order = {
   address_id: string | null
   tracking_number: string | null
   carrier: string | null
+  is_gift: boolean
+  gift_message: string | null
+  recipient_name: string | null
+  recipient_phone: string | null
   created_at: string
   order_items?: OrderItem[]
   addresses?: Address

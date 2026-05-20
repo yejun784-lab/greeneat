@@ -89,9 +89,9 @@ export async function PATCH(req: NextRequest) {
     const status = action === 'pause' ? 'paused' : action === 'resume' ? 'active' : 'cancelled'
     const fromStatus = action === 'resume' ? 'paused' : action === 'cancel' ? ['active', 'paused'] : 'active'
 
-    const query = supabase.from('subscriptions').update({ status }).eq('user_id', user.id)
-    if (Array.isArray(fromStatus)) query.in('status', fromStatus)
-    else query.eq('status', fromStatus)
+    let query = supabase.from('subscriptions').update({ status }).eq('user_id', user.id)
+    if (Array.isArray(fromStatus)) query = query.in('status', fromStatus)
+    else query = query.eq('status', fromStatus)
 
     const { error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
