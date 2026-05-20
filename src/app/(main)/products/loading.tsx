@@ -1,37 +1,18 @@
-﻿import { ProductCardSkeleton } from '@/components/products/ProductCardSkeleton'
-import { Skeleton } from '@/components/ui/Skeleton'
+﻿import { ProductGridSkeleton } from '@/components/products/ProductCardSkeleton'
 
 export default function ProductsLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10">
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
-        {/* 필터 스켈레톤 (데스크톱만) */}
-        <aside className="hidden lg:block w-44 shrink-0 space-y-4 pt-1">
-          <Skeleton className="h-5 w-16" />
-          <div className="space-y-2 pt-2">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-9 w-full" />
-            ))}
-          </div>
-          <Skeleton className="h-5 w-16 mt-4" />
-          <div className="space-y-2">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-9 w-full" />
-            ))}
-          </div>
-        </aside>
-
-        {/* 상품 그리드 스켈레톤 */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="mb-8">
+        <div className="h-7 bg-tint rounded w-24 animate-pulse mb-2" />
+        <div className="h-4 bg-tint rounded w-48 animate-pulse" />
+      </div>
+      <div className="flex gap-8">
+        <div className="hidden lg:block w-48 space-y-3">
+          {[...Array(6)].map((_, i) => <div key={i} className="h-8 bg-tint rounded-lg animate-pulse" />)}
+        </div>
         <div className="flex-1">
-          <div className="flex justify-between items-center mb-6">
-            <Skeleton className="h-8 w-32" />
-            <Skeleton className="h-8 w-28 rounded-full" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {[...Array(9)].map((_, i) => (
-              <ProductCardSkeleton key={i} />
-            ))}
-          </div>
+          <ProductGridSkeleton count={9} />
         </div>
       </div>
     </div>

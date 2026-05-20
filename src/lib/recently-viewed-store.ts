@@ -1,17 +1,8 @@
-'use client'
+﻿'use client'
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Product } from '@/types'
-
-const MAX = 8
-
-const storage = createJSONStorage(() => {
-  if (typeof window === 'undefined') {
-    return { getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage
-  }
-  return localStorage
-})
 
 type RecentlyViewedStore = {
   items: Product[]
@@ -21,15 +12,14 @@ type RecentlyViewedStore = {
 
 export const useRecentlyViewedStore = create<RecentlyViewedStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       items: [],
-      add: (product) =>
-        set((s) => {
-          const filtered = s.items.filter((p) => p.id !== product.id)
-          return { items: [product, ...filtered].slice(0, MAX) }
-        }),
+      add: (product) => {
+        const filtered = get().items.filter((p) => p.id !== product.id)
+        set({ items: [product, ...filtered].slice(0, 10) })
+      },
       clear: () => set({ items: [] }),
     }),
-    { name: 'greeneat-recently-viewed', storage, skipHydration: true }
+    { name: 'greeneat-recently-viewed', storage: createJSONStorage(() => localStorage) }
   )
 )

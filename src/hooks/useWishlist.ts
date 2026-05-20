@@ -6,11 +6,11 @@ import { toast } from '@/lib/toast-store'
 export function useWishlist() {
   const store = useWishlistStore()
 
-  function toggle(id: string) {
-    const wasWished = store.has(id)
+  const toggle = (id: string, name?: string) => {
+    const wasLiked = store.has(id)
     store.toggle(id)
-    toast.info(wasWished ? '찜 목록에서 제거했어요' : '찜 목록에 추가했어요 ❤️')
+    toast.info(wasLiked ? '찜 목록에서 제거했어요' : '찜 목록에 추가했어요 ❤️')
   }
 
-  return { toggle, has: store.has }
+  return { has: store.has, toggle }
 }

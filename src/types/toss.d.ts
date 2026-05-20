@@ -1,36 +1,39 @@
-// TossPayments v2 SDK type declarations
-interface TossPaymentInstance {
+﻿// 토스페이먼츠 타입 정의 (모의 구현)
+interface TossPaymentsWidgets {
+  setAmount(params: { currency: string; value: number }): Promise<void>
+  renderPaymentMethods(params: { selector: string; variantKey?: string }): Promise<void>
+  renderAgreement(params: { selector: string; variantKey?: string }): Promise<void>
   requestPayment(params: {
-    method: '카드' | '계좌이체' | '가상계좌' | '휴대폰' | '문화상품권' | '도서문화상품권' | '게임문화상품권'
-    amount: { currency: 'KRW'; value: number }
+    orderId: string
+    orderName: string
+    successUrl: string
+    failUrl: string
+    customerEmail?: string
+    customerName?: string
+  }): Promise<void>
+}
+
+interface TossPayment {
+  requestPayment(params: {
+    method: string
+    amount: { currency: string; value: number }
     orderId: string
     orderName: string
     customerName?: string
     customerEmail?: string
-    customerMobilePhone?: string
     successUrl: string
     failUrl: string
-    cardCompany?: string
-    useEscrow?: boolean
-    flowMode?: 'DEFAULT' | 'DIRECT'
-    easyPay?: string
-    country?: string
-    taxFreeAmount?: number
-    taxExemptionAmount?: number
-    couponAmount?: number
-    useCardPoint?: boolean
   }): Promise<void>
 }
 
-interface TossPaymentsSDK {
-  payment(options: { customerKey: string }): TossPaymentInstance
+interface TossPaymentsInstance {
+  widgets(params: { customerKey: string }): TossPaymentsWidgets
+  payment(params: { customerKey: string }): TossPayment
 }
-
-type TossPaymentsFactory = (clientKey: string) => TossPaymentsSDK
 
 declare global {
   interface Window {
-    TossPayments?: TossPaymentsFactory
+    TossPayments?: (clientKey: string) => TossPaymentsInstance
   }
 }
 

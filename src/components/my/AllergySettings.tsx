@@ -1,78 +1,59 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { ShieldCheck } from 'lucide-react'
 
 const ALLERGENS = [
-  { value: 'gluten',  label: '글루텐' },
-  { value: 'dairy',   label: '유제품' },
-  { value: 'egg',     label: '달걀' },
-  { value: 'soy',     label: '대두' },
-  { value: 'pork',    label: '돼지고기' },
-  { value: 'sesame',  label: '참깨' },
+  { id: 'gluten', label: '글루텐' },
+  { id: 'dairy',  label: '유제품' },
+  { id: 'egg',    label: '달걀'   },
+  { id: 'soy',    label: '대두'   },
+  { id: 'pork',   label: '돼지고기' },
+  { id: 'sesame', label: '참깨'   },
 ]
 
-interface Props {
-  userId: string
-  initial: string[]
-}
-
-export function AllergySettings({ userId, initial }: Props) {
-  const [selected, setSelected] = useState<string[]>(initial)
-  const [saving, setSaving] = useState(false)
+export function AllergySettings({ userId, initial }: { userId: string; initial: string[] }) {
+  const [selected, setSelected] = useState(initial)
   const [saved, setSaved] = useState(false)
 
-  function toggle(value: string) {
-    setSelected((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-    )
-  }
+  const toggle = (id: string) =>
+    setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id])
 
-  async function save() {
-    setSaving(true)
+  const save = async () => {
     const supabase = createClient()
     await supabase.from('profiles').update({ allergen_profile: selected }).eq('id', userId)
-    setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
   return (
     <div className="bg-surface rounded-2xl border border-line p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <ShieldCheck size={16} className="text-[#2d7a4f]" />
-          <h2 className="font-semibold text-ink">알레르기 프로필</h2>
-        </div>
-        <button
-          onClick={save}
-          disabled={saving}
-          className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${
-            saved
-              ? 'bg-[#2d7a4f] text-white'
-              : 'border border-line-2 text-ink-3 hover:border-[#2d7a4f] hover:text-[#2d7a4f]'
-          } disabled:opacity-50`}
-        >
-          {saved ? '저장됨 ✓' : saving ? '저장 중...' : '저장'}
-        </button>
+      <p className="text-sm font-semibold text-ink mb-1">알레르기 프로필</p>
+      <p className="text-xs text-ink-4 mb-4">해당 성분이 포함된 상품은 목록에서 자동으로 필터링돼요.</p>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {ALLERGENS.map((a) => {
+          const active = selected.includes(a.id)
+          return (
+            <button
+              key={a.id}
+              onClick={() => toggle(a.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                active
+                  ? 'bg-red-50 border-red-300 text-red-600'
+                  : 'bg-tint border-line-2 text-ink-3 hover:border-line-3'
+              }`}
+            >
+              {active ? '⚠️ ' : ''}{a.label}
+            </button>
+          )
+        })}
       </div>
-      <p className="text-xs text-ink-5 mb-3">선택한 성분이 포함된 상품은 필터링됩니다.</p>
-      <div className="flex flex-wrap gap-2">
-        {ALLERGENS.map((a) => (
-          <button
-            key={a.value}
-            onClick={() => toggle(a.value)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              selected.includes(a.value)
-                ? 'bg-red-50 border-red-200 text-red-600'
-                : 'border-line-2 text-ink-4 hover:border-line-3'
-            }`}
-          >
-            {selected.includes(a.value) ? '✗ ' : ''}{a.label}
-          </button>
-        ))}
-      </div>
+      <button
+        onClick={save}
+        className="text-xs px-4 py-2 bg-[#2d7a4f] text-white rounded-lg hover:bg-[#235f3d] transition-colors"
+      >
+        {saved ? '저장됨 ✓' : '저장하기'}
+      </button>
     </div>
   )
 }
