@@ -138,5 +138,24 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
+  // ── 다음 배송일 변경 ────────────────────────────────────────────────────────
+  if (action === 'update_next_delivery') {
+    const { subscription_id, next_delivery_at } = body as { subscription_id: string; next_delivery_at: string }
+    if (!subscription_id || !next_delivery_at) {
+      return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
+    }
+    const date = new Date(next_delivery_at)
+    if (isNaN(date.getTime()) || date <= new Date()) {
+      return NextResponse.json({ error: '유효하지 않은 날짜입니다.' }, { status: 400 })
+    }
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ next_delivery_at: date.toISOString() })
+      .eq('id', subscription_id)
+      .eq('user_id', user.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   return NextResponse.json({ error: '알 수 없는 action' }, { status: 400 })
 }

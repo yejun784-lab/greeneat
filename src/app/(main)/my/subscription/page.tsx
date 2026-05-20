@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
 import { formatPrice, SUBSCRIPTION_PLAN_LABEL } from '@/lib/utils'
-import { ChevronLeft, RefreshCw, Plus, X, Loader2, Check } from 'lucide-react'
+import { ChevronLeft, RefreshCw, Plus, X, Loader2, Check, Calendar } from 'lucide-react'
 
 type SubProduct = {
   id: string
@@ -35,8 +35,9 @@ export default function SubscriptionManagePage() {
   const [allProducts, setAllProducts] = useState<SubProduct[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [deliveryDay, setDeliveryDay] = useState<number>(1)
+  const [nextDelivery, setNextDelivery] = useState('')
   const [loading, setLoading]   = useState(true)
-  const [saving, setSaving]     = useState<'items' | 'day' | null>(null)
+  const [saving, setSaving]     = useState<'items' | 'day' | 'date' | null>(null)
   const [showPicker, setShowPicker] = useState(false)
 
   useEffect(() => { load() }, [])
@@ -71,6 +72,9 @@ export default function SubscriptionManagePage() {
       const items = (subData.subscription_items ?? []) as { product_id: string }[]
       setSelectedIds(items.map((i) => i.product_id))
       setDeliveryDay(subData.delivery_day)
+      if (subData.next_delivery_at) {
+        setNextDelivery(subData.next_delivery_at.slice(0, 10))
+      }
     }
     setLoading(false)
   }
@@ -112,6 +116,28 @@ export default function SubscriptionManagePage() {
       await load()
     } else {
       toast.error('변경에 실패했어요.')
+    }
+  }
+
+  async function saveNextDelivery() {
+    if (!sub || !nextDelivery) return
+    setSaving('date')
+    const res = await fetch('/api/subscriptions', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update_next_delivery',
+        subscription_id: sub.id,
+        next_delivery_at: nextDelivery,
+      }),
+    })
+    setSaving(null)
+    if (res.ok) {
+      toast.success('다음 배송일이 변경됐어요!')
+      await load()
+    } else {
+      const { error } = await res.json().catch(() => ({ error: '오류' }))
+      toast.error(error ?? '변경에 실패했어요.')
     }
   }
 
@@ -194,6 +220,44 @@ export default function SubscriptionManagePage() {
                 저장
               </button>
             </div>
+          )}
+        </div>
+
+        {/* 다음 배송일 변경 */}
+        <div className="bg-surface rounded-2xl border border-line p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Calendar size={15} className="text-[#2d7a4f]" />
+            <h2 className="text-sm font-semibold text-ink">다음 배송일</h2>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+            <div className="flex-1">
+              <p className="text-xs text-ink-5 mb-1.5">날짜 선택 (오늘 이후)</p>
+              <input
+                type="date"
+                value={nextDelivery}
+                min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
+                onChange={(e) => setNextDelivery(e.target.value)}
+                className="w-full px-3 py-2.5 border border-line-2 rounded-xl text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
+              />
+            </div>
+            <button
+              onClick={saveNextDelivery}
+              disabled={saving !== null || !nextDelivery || nextDelivery === sub?.next_delivery_at?.slice(0, 10)}
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-[#2d7a4f] text-white text-xs font-semibold rounded-xl hover:bg-[#235f3d] transition-colors disabled:opacity-40 shrink-0"
+            >
+              {saving === 'date' ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+              저장
+            </button>
+          </div>
+          {sub?.next_delivery_at && (
+            <p className="text-xs text-ink-5 mt-2">
+              현재:{' '}
+              <span className="text-ink-3 font-medium">
+                {new Date(sub.next_delivery_at).toLocaleDateString('ko-KR', {
+                  year: 'numeric', month: 'long', day: 'numeric', weekday: 'short',
+                })}
+              </span>
+            </p>
           )}
         </div>
 
