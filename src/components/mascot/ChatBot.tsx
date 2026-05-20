@@ -1,56 +1,172 @@
 'use client'
 
-import { useState } from 'react'
-import { MessageCircle, X, Send } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { X, Send, ChevronDown } from 'lucide-react'
+import { GreeniAvatar } from './GreeniAvatar'
+
+type Message = { role: 'bot' | 'user'; text: string }
+
+const QUICK_REPLIES = ['배송은 언제 오나요?', '구독 플랜 알려줘', '포인트 적립 방법', '주문 취소하고 싶어요']
+
+const TYPING_DELAY = 700
 
 export function ChatBot() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState([
-    { role: 'bot', text: '안녕하세요! 그린잇 도우미예요 🌿\n궁금한 점을 물어보세요!' },
+  const [messages, setMessages] = useState<Message[]>([
+    { role: 'bot', text: '안녕하세요! 저는 그린잇 도우미 그린이예요 🌿\n무엇이든 물어보세요!' },
   ])
+  const [typing, setTyping] = useState(false)
+  const [unread, setUnread] = useState(0)
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const send = () => {
-    const text = input.trim()
-    if (!text) return
-    setMessages((m) => [...m, { role: 'user', text }, { role: 'bot', text: '문의가 접수됐어요. 빠르게 답변 드릴게요 😊' }])
+  useEffect(() => {
+    if (open) {
+      setUnread(0)
+      setTimeout(() => inputRef.current?.focus(), 100)
+    }
+  }, [open])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, typing])
+
+  async function send(text?: string) {
+    const msg = (text ?? input).trim()
+    if (!msg) return
     setInput('')
+    setMessages((m) => [...m, { role: 'user', text: msg }])
+    setTyping(true)
+
+    try {
+      const res = await fetch('/api/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg }),
+      })
+      const { reply } = await res.json()
+      setTimeout(() => {
+        setTyping(false)
+        setMessages((m) => [...m, { role: 'bot', text: reply }])
+        if (!open) setUnread((n) => n + 1)
+      }, TYPING_DELAY)
+    } catch {
+      setTimeout(() => {
+        setTyping(false)
+        setMessages((m) => [...m, { role: 'bot', text: '잠깐 오류가 생겼어요. 다시 시도해주세요 😅' }])
+      }, TYPING_DELAY)
+    }
   }
 
   return (
     <>
+      {/* 플로팅 버튼 */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 w-13 h-13 bg-[#2d7a4f] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#235f3d] transition-colors"
-        aria-label="챗봇 열기"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
+        aria-label={open ? '챗봇 닫기' : '그린이에게 물어보기'}
       >
-        {open ? <X size={20} /> : <MessageCircle size={20} />}
+        {open ? (
+          <div className="w-14 h-14 bg-[#2d7a4f] rounded-full flex items-center justify-center">
+            <X size={22} className="text-white" />
+          </div>
+        ) : (
+          <div className="relative">
+            <GreeniAvatar size={56} />
+            {unread > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {unread}
+              </span>
+            )}
+          </div>
+        )}
       </button>
 
+      {/* 채팅창 */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 bg-white rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden">
-          <div className="bg-[#2d7a4f] px-4 py-3 flex items-center gap-2">
-            <span className="text-lg">🌿</span>
-            <span className="text-white font-semibold text-sm">그린잇 도우미</span>
+        <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-[340px] bg-surface rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden animate-fade-up">
+          {/* 헤더 */}
+          <div className="bg-[#2d7a4f] px-4 py-3 flex items-center gap-3">
+            <GreeniAvatar size={36} />
+            <div>
+              <p className="text-white font-bold text-sm leading-tight">그린이</p>
+              <p className="text-green-200 text-[11px]">그린잇 AI 도우미</p>
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="ml-auto p-1 text-green-200 hover:text-white transition-colors"
+            >
+              <ChevronDown size={18} />
+            </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-72">
+
+          {/* 메시지 영역 */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-72 bg-wash">
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`px-3 py-2 rounded-xl text-sm max-w-[85%] whitespace-pre-line ${m.role === 'user' ? 'bg-[#2d7a4f] text-white' : 'bg-tint text-ink'}`}>
+              <div key={i} className={`flex items-end gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {m.role === 'bot' && <GreeniAvatar size={26} className="shrink-0 mb-0.5" />}
+                <div
+                  className={`px-3 py-2 rounded-2xl text-sm max-w-[80%] whitespace-pre-line leading-relaxed ${
+                    m.role === 'user'
+                      ? 'bg-[#2d7a4f] text-white rounded-br-sm'
+                      : 'bg-surface text-ink border border-line rounded-bl-sm shadow-sm'
+                  }`}
+                >
                   {m.text}
                 </div>
               </div>
             ))}
+
+            {/* 타이핑 인디케이터 */}
+            {typing && (
+              <div className="flex items-end gap-2">
+                <GreeniAvatar size={26} className="shrink-0 mb-0.5" />
+                <div className="px-3 py-3 bg-surface border border-line rounded-2xl rounded-bl-sm shadow-sm flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="w-1.5 h-1.5 bg-ink-4 rounded-full animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
           </div>
-          <div className="p-3 border-t border-line flex gap-2">
+
+          {/* 빠른 답변 */}
+          {messages.length <= 1 && (
+            <div className="px-3 pt-2 pb-1 flex flex-wrap gap-1.5 bg-wash border-t border-line">
+              {QUICK_REPLIES.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => send(q)}
+                  className="text-[11px] px-2.5 py-1 rounded-full border border-[#2d7a4f]/40 text-[#2d7a4f] hover:bg-green-tint transition-colors"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* 입력창 */}
+          <div className="p-3 border-t border-line flex gap-2 bg-surface">
             <input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && send()}
-              placeholder="메시지 입력..."
-              className="flex-1 text-sm px-3 py-2 rounded-xl border border-line-2 outline-none focus:border-[#2d7a4f]"
+              onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && send()}
+              placeholder="그린이에게 물어보세요..."
+              className="flex-1 text-sm px-3 py-2 rounded-xl border border-line-2 bg-wash outline-none focus:border-[#2d7a4f] text-ink placeholder:text-ink-5"
+              disabled={typing}
             />
-            <button onClick={send} className="w-9 h-9 bg-[#2d7a4f] text-white rounded-xl flex items-center justify-center hover:bg-[#235f3d]">
+            <button
+              onClick={() => send()}
+              disabled={typing || !input.trim()}
+              className="w-9 h-9 bg-[#2d7a4f] text-white rounded-xl flex items-center justify-center hover:bg-[#235f3d] disabled:opacity-40 transition-colors shrink-0"
+            >
               <Send size={14} />
             </button>
           </div>
