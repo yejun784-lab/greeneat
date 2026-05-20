@@ -1,6 +1,9 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import "tailwindcss";
 
+/* dark: 유틸리티를 클래스 기반으로 동작하게 설정 (next-themes가 <html>에 .dark 추가) */
+@variant dark (&:is(.dark, .dark *));
+
 /* ── 라이트 모드 ──────────────────────────────────────────────── */
 :root {
   /* 브랜드 */
