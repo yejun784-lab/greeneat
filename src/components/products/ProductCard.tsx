@@ -2,10 +2,11 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, ShoppingBag, Zap, Leaf, Dumbbell, Users } from 'lucide-react'
+import { Heart, ShoppingBag, Zap, Leaf, Dumbbell, Users, GitCompareArrows } from 'lucide-react'
 import { useCartStore } from '@/lib/cart-store'
 import { useWishlist } from '@/hooks/useWishlist'
 import { useWishlistStore } from '@/lib/wishlist-store'
+import { useCompareStore } from '@/components/products/CompareTray'
 import { formatPrice } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 import type { Product } from '@/types'
@@ -30,11 +31,13 @@ function getHighlight(p: Product): Highlight | null {
 }
 
 export function ProductCard({ product, compact = false }: ProductCardProps) {
-  const addItem    = useCartStore((s) => s.addItem)
-  const { toggle } = useWishlist()
-  const wished     = useWishlistStore((s) => s.has(product.id))
-  const outOfStock = product.stock <= 0
-  const highlight  = compact ? null : getHighlight(product)
+  const addItem      = useCartStore((s) => s.addItem)
+  const { toggle }   = useWishlist()
+  const wished       = useWishlistStore((s) => s.has(product.id))
+  const { add: addCompare, remove: removeCompare, has: inCompare } = useCompareStore()
+  const compared     = inCompare(product.id)
+  const outOfStock   = product.stock <= 0
+  const highlight    = compact ? null : getHighlight(product)
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
@@ -46,6 +49,17 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
   function handleWish(e: React.MouseEvent) {
     e.preventDefault()
     toggle(product.id)
+  }
+
+  function handleCompare(e: React.MouseEvent) {
+    e.preventDefault()
+    if (compared) {
+      removeCompare(product.id)
+    } else {
+      const store = useCompareStore.getState()
+      if (store.items.length >= 3) { toast.error('최대 3개까지 비교할 수 있어요.'); return }
+      addCompare({ id: product.id, name: product.name })
+    }
   }
 
   return (
@@ -134,9 +148,24 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           </div>
         )}
 
-        <p className={`font-bold text-ink tracking-tight mt-1 ${compact ? 'text-sm' : 'text-[14px]'}`}>
-          {formatPrice(product.price)}
-        </p>
+        <div className="flex items-center justify-between mt-1">
+          <p className={`font-bold text-ink tracking-tight ${compact ? 'text-sm' : 'text-[14px]'}`}>
+            {formatPrice(product.price)}
+          </p>
+          {!compact && (
+            <button
+              onClick={handleCompare}
+              aria-label="비교 담기"
+              className={`p-1 rounded-md transition-colors ${
+                compared
+                  ? 'text-[#2d7a4f] bg-green-tint'
+                  : 'text-ink-5 hover:text-[#2d7a4f] hover:bg-green-tint'
+              }`}
+            >
+              <GitCompareArrows size={13} />
+            </button>
+          )}
+        </div>
 
       </Link>
     </div>
