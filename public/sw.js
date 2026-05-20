@@ -1,9 +1,6 @@
-const CACHE_NAME = 'greeneat-v2'
+const CACHE_NAME = 'greeneat-v3'
+// HTML 페이지는 캐싱 제외 (Next.js 재빌드 시 번들 해시 변경으로 stale 참조 방지)
 const STATIC_ASSETS = [
-  '/',
-  '/products',
-  '/subscription',
-  '/cart',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/favicon.png',
