@@ -1,4 +1,4 @@
-const CACHE_NAME = 'greeneat-v1'
+const CACHE_NAME = 'greeneat-v2'
 const STATIC_ASSETS = [
   '/',
   '/products',
