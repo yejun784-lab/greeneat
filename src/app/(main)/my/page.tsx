@@ -11,6 +11,7 @@ import { GoalEditor } from '@/components/my/GoalEditor'
 import { MembershipBadge } from '@/components/my/MembershipBadge'
 import { AllergySettings } from '@/components/my/AllergySettings'
 import { ProfileEditor } from '@/components/my/ProfileEditor'
+import { WithdrawButton } from '@/components/my/WithdrawButton'
 import type { Order, Subscription } from '@/types'
 
 const GOAL_INFO: Record<string, { label: string; emoji: string; calTarget: number; proteinTarget: number }> = {
@@ -340,6 +341,12 @@ export default async function MyPage() {
               주문 내역이 없습니다.
             </div>
           )}
+        </div>
+
+        {/* 계정 설정 */}
+        <div className="pt-2 flex items-center justify-between text-xs text-ink-5">
+          <span>GreenEat v1.0</span>
+          <WithdrawButton />
         </div>
       </div>
     </div>
