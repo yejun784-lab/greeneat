@@ -63,7 +63,9 @@ export default function LoginPage() {
       provider,
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: provider === 'kakao' ? 'profile_nickname profile_image' : undefined,
+        ...(provider === 'kakao' && {
+          queryParams: { scope: 'profile_nickname profile_image' },
+        }),
       },
     })
     setOauthLoading(null)
