@@ -21,13 +21,16 @@ const CALORIE_RANGES = [
   { label: '700kcal~', min: '700' },
 ]
 
+// DB에 저장된 한국어 알레르기 이름과 일치
 const ALLERGENS = [
-  { value: 'gluten',  label: '글루텐' },
-  { value: 'dairy',   label: '유제품' },
-  { value: 'egg',     label: '달걀' },
-  { value: 'soy',     label: '대두' },
-  { value: 'pork',    label: '돼지고기' },
-  { value: 'sesame',  label: '참깨' },
+  { value: '글루텐',   label: '글루텐' },
+  { value: '우유',     label: '유제품' },
+  { value: '난류',     label: '달걀' },
+  { value: '갑각류',   label: '갑각류' },
+  { value: '대두',     label: '대두' },
+  { value: '견과류',   label: '견과류' },
+  { value: '돼지고기', label: '돼지고기' },
+  { value: '복숭아',   label: '복숭아' },
 ]
 
 const DIFFICULTIES = [
@@ -61,10 +64,32 @@ export function ProductFilter() {
     [router, pathname, searchParams]
   )
 
-  const active = (key: string, value: string) => searchParams.get(key) === value
+  // 알레르기 다중 선택 토글
+  const toggleAllergen = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      const current = params.getAll('exclude')
+      params.delete('exclude')
+      if (current.includes(value)) {
+        // 제거
+        current.filter((v) => v !== value).forEach((v) => params.append('exclude', v))
+      } else {
+        // 추가
+        ;[...current, value].forEach((v) => params.append('exclude', v))
+      }
+      params.delete('page')
+      router.push(`${pathname}?${params.toString()}`)
+    },
+    [router, pathname, searchParams]
+  )
 
-  // 활성 필터 개수 계산
-  const activeFilterCount = FILTER_KEYS.filter((key) => searchParams.has(key)).length
+  const active = (key: string, value: string) => searchParams.get(key) === value
+  const allergenActive = (value: string) => searchParams.getAll('exclude').includes(value)
+
+  // 활성 필터 개수 계산 (exclude는 선택된 개수만큼)
+  const activeFilterCount =
+    FILTER_KEYS.filter((key) => key !== 'exclude' && searchParams.has(key)).length +
+    searchParams.getAll('exclude').length
 
   function resetFilters() {
     const params = new URLSearchParams(searchParams.toString())
@@ -152,21 +177,22 @@ export function ProductFilter() {
           </div>
         </div>
 
-        {/* 알레르기 제외 */}
+        {/* 알레르기 제외 (다중 선택) */}
         <div>
-          <h3 className="text-sm font-semibold text-ink mb-3">알레르기 제외</h3>
+          <h3 className="text-sm font-semibold text-ink mb-1">알레르기 제외</h3>
+          <p className="text-xs text-ink-5 mb-2">복수 선택 가능</p>
           <div className="flex flex-wrap gap-1.5">
             {ALLERGENS.map((a) => (
               <button
                 key={a.value}
-                onClick={() => updateParam('exclude', a.value)}
+                onClick={() => toggleAllergen(a.value)}
                 className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
-                  active('exclude', a.value)
+                  allergenActive(a.value)
                     ? 'bg-red-100 border-red-300 text-red-600 font-medium'
                     : 'border-line-2 text-ink-4 hover:border-line-3'
                 }`}
               >
-                {a.label}
+                {allergenActive(a.value) ? '✕ ' : ''}{a.label}
               </button>
             ))}
           </div>

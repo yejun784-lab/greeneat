@@ -8,11 +8,22 @@ import type { Product } from '@/types'
 
 const PAGE_SIZE = 9
 
+export interface ProductFilters {
+  category?: string
+  difficulty?: string
+  servings?: string
+  sort?: string
+  search?: string
+  exclude?: string | string[]
+  minCal?: string
+  maxCal?: string
+}
+
 interface Props {
   initialProducts: Product[]
   initialHasMore: boolean
   total: number
-  filters: Record<string, string | undefined>
+  filters: ProductFilters
 }
 
 export function InfiniteProductGrid({ initialProducts, initialHasMore, total, filters }: Props) {
@@ -24,24 +35,45 @@ export function InfiniteProductGrid({ initialProducts, initialHasMore, total, fi
   const loadMore = useCallback(async () => {
     setLoading(true)
     const supabase = createClient()
-    const selectClause = filters.category
-      ? '*, product_categories!inner(id, name, slug, description)'
-      : '*, product_categories(id, name, slug, description)'
+
+    // 카테고리 slug → id 변환
+    let categoryId: string | null = null
+    if (filters.category) {
+      const { data: cat } = await supabase
+        .from('product_categories')
+        .select('id')
+        .eq('slug', filters.category)
+        .single()
+      categoryId = cat?.id ?? null
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query: any = supabase.from('products').select(selectClause)
-    if (filters.category)   query = query.eq('product_categories.slug', filters.category)
-    if (filters.difficulty) query = query.eq('difficulty', filters.difficulty)
-    if (filters.servings)   query = query.eq('servings', Number(filters.servings))
-    if (filters.search)     query = query.ilike('name', `%${filters.search}%`)
-    if (filters.minCal)     query = query.gte('calories', Number(filters.minCal))
-    if (filters.maxCal)     query = query.lte('calories', Number(filters.maxCal))
-    if (filters.exclude)    query = query.not('allergens', 'cs', `{${filters.exclude}}`)
+    let query: any = supabase
+      .from('products')
+      .select('*, product_categories(id, name, slug)')
+      .eq('is_active', true)
+
+    if (categoryId)          query = query.eq('category_id', categoryId)
+    if (filters.difficulty)  query = query.eq('difficulty', filters.difficulty)
+    if (filters.servings)    query = query.eq('servings', Number(filters.servings))
+    if (filters.search)      query = query.ilike('name', `%${filters.search}%`)
+    if (filters.minCal)      query = query.gte('calories', Number(filters.minCal))
+    if (filters.maxCal)      query = query.lte('calories', Number(filters.maxCal))
+
+    // 알레르기 다중 제외
+    const excludeRaw = filters.exclude
+    const excludeList: string[] = excludeRaw
+      ? Array.isArray(excludeRaw) ? excludeRaw : [excludeRaw]
+      : []
+    for (const allergen of excludeList) {
+      if (allergen) query = query.not('allergens', 'cs', `{${allergen}}`)
+    }
 
     const sort = filters.sort ?? 'newest'
-    if (sort === 'price_asc')  query = query.order('display_group', { ascending: true }).order('price', { ascending: true })
-    else if (sort === 'price_desc') query = query.order('display_group', { ascending: true }).order('price', { ascending: false })
-    else query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
+    if (sort === 'price_asc')        query = query.order('price', { ascending: true })
+    else if (sort === 'price_desc')  query = query.order('price', { ascending: false })
+    else if (sort === 'cal_asc')     query = query.order('calories', { ascending: true, nullsFirst: false })
+    else  query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
 
     const from = (page + 1) * PAGE_SIZE - PAGE_SIZE
     query = query.range(from, from + PAGE_SIZE - 1)

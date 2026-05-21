@@ -5,15 +5,11 @@ import { createClient } from '@/lib/supabase/server'
 export const metadata: Metadata = {
   title: '도시락 — GreenEat',
   description: '간편식, 베이커리&샐러드, 건강식품, 맞춤식단까지. 진정성 있는 GreenEat 도시락을 만나보세요.',
-  openGraph: {
-    title: '도시락 — GreenEat',
-    description: '진정성 있는 건강한 선택, GreenEat 도시락.',
-    type: 'website',
-  },
 }
 import { ProductFilter } from '@/components/products/ProductFilter'
 import { ProductGridSkeleton } from '@/components/products/ProductCardSkeleton'
 import { InfiniteProductGrid } from '@/components/products/InfiniteProductGrid'
+import type { ProductFilters } from '@/components/products/InfiniteProductGrid'
 import type { Product } from '@/types'
 
 const PAGE_SIZE = 9
@@ -24,107 +20,94 @@ type SearchParams = Promise<{
   servings?: string
   sort?: string
   search?: string
-  exclude?: string
+  exclude?: string | string[]  // 다중 알레르기 지원
   minCal?: string
   maxCal?: string
 }>
 
-async function getProfileAllergens(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return []
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('allergen_profile')
-    .eq('id', user.id)
-    .maybeSingle()
-  return (profile?.allergen_profile as string[]) ?? []
-}
-
-
-async function ProductListServer({ params }: { params: Awaited<SearchParams> }) {
-  const supabase = await createClient()
-  const profileAllergens = await getProfileAllergens(supabase)
-
-  const selectClause = params.category
-    ? '*, product_categories!inner(id, name, slug, description)'
-    : '*, product_categories(id, name, slug, description)'
+async function buildQuery(supabase: Awaited<ReturnType<typeof createClient>>, params: Awaited<SearchParams>, countOnly = false) {
+  // 카테고리 slug → id 변환
+  let categoryId: string | null = null
+  if (params.category) {
+    const { data: cat } = await supabase
+      .from('product_categories')
+      .select('id')
+      .eq('slug', params.category)
+      .single()
+    categoryId = cat?.id ?? null
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query: any = supabase.from('products').select(selectClause, { count: 'exact' })
+  let query: any = supabase
+    .from('products')
+    .select('*, product_categories(id, name, slug)', countOnly ? { count: 'exact', head: true } : { count: 'exact' })
+    .eq('is_active', true)
 
-  if (params.category)   query = query.eq('product_categories.slug', params.category)
+  if (categoryId)        query = query.eq('category_id', categoryId)
   if (params.difficulty) query = query.eq('difficulty', params.difficulty)
   if (params.servings)   query = query.eq('servings', Number(params.servings))
   if (params.search)     query = query.ilike('name', `%${params.search}%`)
   if (params.minCal)     query = query.gte('calories', Number(params.minCal))
   if (params.maxCal)     query = query.lte('calories', Number(params.maxCal))
 
-  // 알레르기 필터: URL exclude 우선, 없으면 프로필 자동 적용
-  const excludeList = params.exclude ? [params.exclude] : profileAllergens
+  // 알레르기 다중 제외 (URL: exclude=글루텐&exclude=달걀 or exclude=글루텐)
+  const excludeRaw = params.exclude
+  const excludeList: string[] = excludeRaw
+    ? Array.isArray(excludeRaw) ? excludeRaw : [excludeRaw]
+    : []
   for (const allergen of excludeList) {
-    query = query.not('allergens', 'cs', `{${allergen}}`)
+    if (allergen) query = query.not('allergens', 'cs', `{${allergen}}`)
   }
 
   const sort = params.sort ?? 'newest'
-  if (sort === 'price_asc')  query = query.order('display_group', { ascending: true }).order('price', { ascending: true })
-  else if (sort === 'price_desc') query = query.order('display_group', { ascending: true }).order('price', { ascending: false })
+  if (sort === 'price_asc')   query = query.order('price', { ascending: true })
+  else if (sort === 'price_desc') query = query.order('price', { ascending: false })
+  else if (sort === 'cal_asc')    query = query.order('calories', { ascending: true, nullsFirst: false })
   else query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
 
-  query = query.range(0, PAGE_SIZE - 1)
+  return { query, categoryId }
+}
 
-  const { data, count } = await query
+async function ProductListServer({ params }: { params: Awaited<SearchParams> }) {
+  const supabase = await createClient()
+  const { query } = await buildQuery(supabase, params)
+  const { data, count } = await query.range(0, PAGE_SIZE - 1)
+
   const products = (data as Product[]) ?? []
   const total = count ?? 0
 
-  const autoFiltered = !params.exclude && profileAllergens.length > 0
+  if (products.length === 0) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-4xl mb-3">🔍</p>
+        <p className="text-sm font-medium text-ink-3">검색 결과가 없어요</p>
+        <p className="text-xs text-ink-5 mt-1">필터를 초기화하거나 다른 검색어를 사용해보세요</p>
+      </div>
+    )
+  }
 
   return (
-    <>
-      {autoFiltered && (
-        <div className="flex items-center gap-2 mb-4 px-1 text-xs text-ink-4">
-          <span className="w-2 h-2 rounded-full bg-red-300 inline-block" />
-          알레르기 프로필({profileAllergens.map((v) => {
-            const MAP: Record<string, string> = { gluten:'글루텐', dairy:'유제품', egg:'달걀', soy:'대두', pork:'돼지고기', sesame:'참깨' }
-            return MAP[v] ?? v
-          }).join(', ')}) 자동 적용 중
-        </div>
-      )}
-      <InfiniteProductGrid
-        initialProducts={products}
-        initialHasMore={total > PAGE_SIZE}
-        total={total}
-        filters={params}
-      />
-    </>
+    <InfiniteProductGrid
+      initialProducts={products}
+      initialHasMore={total > PAGE_SIZE}
+      total={total}
+      filters={params as ProductFilters}
+    />
   )
 }
 
 async function ProductCount({ params }: { params: Awaited<SearchParams> }) {
   const supabase = await createClient()
-  const profileAllergens = await getProfileAllergens(supabase)
-  const selectClause = params.category
-    ? '*, product_categories!inner(id, name, slug, description)'
-    : '*, product_categories(id, name, slug, description)'
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query: any = supabase.from('products').select(selectClause, { count: 'exact', head: true })
-  if (params.category)   query = query.eq('product_categories.slug', params.category)
-  if (params.difficulty) query = query.eq('difficulty', params.difficulty)
-  if (params.servings)   query = query.eq('servings', Number(params.servings))
-  if (params.search)     query = query.ilike('name', `%${params.search}%`)
-  if (params.minCal)     query = query.gte('calories', Number(params.minCal))
-  if (params.maxCal)     query = query.lte('calories', Number(params.maxCal))
-  const excludeList = params.exclude ? [params.exclude] : profileAllergens
-  for (const allergen of excludeList) {
-    query = query.not('allergens', 'cs', `{${allergen}}`)
-  }
+  const { query } = await buildQuery(supabase, params, true)
   const { count } = await query
   return <span className="font-medium text-ink">{count ?? 0}</span>
 }
 
 const SORT_OPTIONS = [
-  { value: 'newest', label: '신상품순' },
-  { value: 'price_asc', label: '낮은 가격순' },
-  { value: 'price_desc', label: '높은 가격순' },
+  { value: 'newest',     label: '최신순' },
+  { value: 'price_asc',  label: '낮은 가격' },
+  { value: 'price_desc', label: '높은 가격' },
+  { value: 'cal_asc',    label: '낮은 칼로리' },
 ]
 
 export default async function ProductsPage({ searchParams }: { searchParams: SearchParams }) {
@@ -140,10 +123,16 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
 
       {/* 검색 바 */}
       <form method="GET" className="mb-6">
-        {params.category && <input type="hidden" name="category" value={params.category} />}
+        {params.category   && <input type="hidden" name="category"   value={params.category} />}
         {params.difficulty && <input type="hidden" name="difficulty" value={params.difficulty} />}
-        {params.servings && <input type="hidden" name="servings" value={params.servings} />}
-        {params.sort && <input type="hidden" name="sort" value={params.sort} />}
+        {params.servings   && <input type="hidden" name="servings"   value={params.servings} />}
+        {params.sort       && <input type="hidden" name="sort"       value={params.sort} />}
+        {params.minCal     && <input type="hidden" name="minCal"     value={params.minCal} />}
+        {params.maxCal     && <input type="hidden" name="maxCal"     value={params.maxCal} />}
+        {/* 다중 알레르기 */}
+        {(Array.isArray(params.exclude) ? params.exclude : params.exclude ? [params.exclude] : []).map((v) => (
+          <input key={v} type="hidden" name="exclude" value={v} />
+        ))}
         <div className="relative max-w-md">
           <input
             type="text"
@@ -152,41 +141,25 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
             placeholder="도시락 검색 (예: 닭가슴살, 그래놀라...)"
             className="w-full pl-10 pr-4 py-2.5 border border-line-2 rounded-xl text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
           />
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-5"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
           {params.search && (
-            <a
-              href={`?${new URLSearchParams({ ...params, search: '' }).toString()}`}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-5 hover:text-ink-3"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
+            <a href={`?${new URLSearchParams({ ...params as Record<string,string>, search: '' }).toString()}`} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-5 hover:text-ink-3">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12" /></svg>
             </a>
           )}
         </div>
       </form>
 
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
-        {/* 필터 (모바일: 토글 버튼, 데스크톱: 사이드바) */}
         <Suspense>
           <ProductFilter />
         </Suspense>
 
-        {/* 상품 그리드 */}
         <div className="flex-1 min-w-0">
-          {/* 정렬 바 */}
-          <div className="flex items-center justify-between mb-5">
+          {/* 정렬 + 카운트 */}
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
             <p className="text-sm text-ink-4">
               총{' '}
               <Suspense fallback={<span className="font-medium text-ink">...</span>}>
@@ -197,11 +170,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
                 <span className="ml-2 text-[#2d7a4f] font-medium">"{params.search}" 검색 결과</span>
               )}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 flex-wrap">
               {SORT_OPTIONS.map((opt) => (
                 <a
                   key={opt.value}
-                  href={`?${new URLSearchParams({ ...params, sort: opt.value }).toString()}`}
+                  href={`?${new URLSearchParams({ ...params as Record<string,string>, sort: opt.value }).toString()}`}
                   className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
                     currentSort === opt.value
                       ? 'border-[#2d7a4f] bg-green-tint text-[#2d7a4f] font-medium'
