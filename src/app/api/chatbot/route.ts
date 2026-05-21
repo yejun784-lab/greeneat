@@ -5,7 +5,7 @@ import Groq from 'groq-sdk'
 type Role = 'bot' | 'user'
 interface HistoryItem { role: Role; text: string }
 
-const SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 이름은 '토마토'야 🍅
+const BASE_SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 이름은 '토마토'야 🍅
 그린잇은 건강한 밀키트를 정기구독으로 배송해주는 이커머스 서비스야.
 
 [그린잇 핵심 정보]
@@ -19,6 +19,11 @@ const SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우미야.
 - 고객센터: support@greeneat.kr, 평일 09:00~18:00
 - 재입고 알림: 품절 상품 페이지에서 신청 가능
 - 선물하기: 상품 상세 페이지 하단 '선물하기' 버튼
+
+[상품 추천 규칙]
+- 반드시 아래 [현재 판매 중인 상품 목록]에 있는 상품만 추천해.
+- 목록에 없는 상품은 절대 언급하거나 만들어내지 마.
+- 상품 이름은 목록에 있는 그대로 정확히 사용해.
 
 [말투 규칙]
 - 친근하고 짧게 답해. 딱딱하게 말하지 마.
@@ -34,14 +39,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '메시지를 입력해주세요.' }, { status: 400 })
   }
 
+  const supabase = await createClient()
+
   // 유저 이름
   let userName: string | null = null
   try {
-    const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       const { data: profile } = await supabase.from('profiles').select('name').eq('id', user.id).single()
       userName = profile?.name ?? null
+    }
+  } catch {}
+
+  // 실제 상품 목록 가져오기
+  let productListText = ''
+  try {
+    const { data: products } = await supabase
+      .from('products')
+      .select('name, price, calories, category_id, is_subscription')
+      .eq('is_active', true)
+      .order('name')
+
+    if (products && products.length > 0) {
+      const lines = products.map((p) =>
+        `- ${p.name} (${p.price.toLocaleString()}원, ${p.calories}kcal${p.is_subscription ? ', 구독 가능' : ''})`
+      )
+      productListText = `\n\n[현재 판매 중인 상품 목록 - 총 ${products.length}개]\n` + lines.join('\n')
     }
   } catch {}
 
@@ -59,20 +82,21 @@ export async function POST(req: NextRequest) {
       content: m.text,
     }))
 
-    // 유저 이름이 있으면 시스템 프롬프트에 추가
-    const systemWithName = userName
-      ? SYSTEM_PROMPT + `\n\n현재 대화 중인 고객 이름은 "${userName}"이야. 자연스럽게 이름을 불러줘.`
-      : SYSTEM_PROMPT
+    // 시스템 프롬프트 조합
+    let systemPrompt = BASE_SYSTEM_PROMPT + productListText
+    if (userName) {
+      systemPrompt += `\n\n현재 대화 중인 고객 이름은 "${userName}"이야. 자연스럽게 이름을 불러줘.`
+    }
 
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: systemWithName },
+        { role: 'system', content: systemPrompt },
         ...historyMessages,
         { role: 'user', content: message },
       ],
       temperature: 0.7,
-      max_tokens: 300,
+      max_tokens: 400,
     })
 
     const raw = completion.choices[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
@@ -81,8 +105,8 @@ export async function POST(req: NextRequest) {
       .replace(/米/g, '밥').replace(/飯/g, '밥').replace(/麵/g, '면').replace(/麺/g, '면')
       .replace(/肉/g, '고기').replace(/魚/g, '생선').replace(/菜/g, '채소').replace(/湯/g, '국')
       .replace(/茶/g, '차').replace(/水/g, '물').replace(/食/g, '식사').replace(/料/g, '요리')
-      // 한자 범위 전체 제거 (위 치환으로 못 잡은 나머지)
       .replace(/[一-鿿]/g, '')
+
     return NextResponse.json({ reply, userName })
 
   } catch (err) {
