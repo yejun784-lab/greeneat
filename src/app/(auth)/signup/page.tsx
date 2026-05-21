@@ -64,6 +64,22 @@ function SignupForm() {
       return
     }
 
+    if (data.user) {
+      // 웰컴 쿠폰 + 포인트 지급 (이메일 가입)
+      const { data: welcomeCoupon } = await supabase
+        .from('coupons')
+        .select('id')
+        .eq('code', 'WELCOME10')
+        .eq('is_active', true)
+        .maybeSingle()
+      if (welcomeCoupon) {
+        try {
+          await supabase.from('user_coupons').insert({ user_id: data.user.id, coupon_id: welcomeCoupon.id })
+        } catch { /* 중복 무시 */ }
+      }
+      await supabase.from('points').insert({ user_id: data.user.id, amount: 1000, reason: '신규 가입 웰컴 포인트' })
+    }
+
     if (referrerId && data.user) {
       await supabase.from('points').insert([
         { user_id: referrerId, amount: 2000, reason: '친구 초대 보상' },

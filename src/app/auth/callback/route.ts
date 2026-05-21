@@ -11,9 +11,12 @@ export async function GET(req: NextRequest) {
     const { data: { user } } = await supabase.auth.exchangeCodeForSession(code)
 
     if (user) {
-      // 신규 유저 판단: 가입한지 2분 이내
-      const createdAt = new Date(user.created_at)
-      const isNew = (Date.now() - createdAt.getTime()) < 2 * 60 * 1000
+      // 신규 유저 판단: user_coupons가 0개 = 아직 웰컴 쿠폰 미지급
+      const { count } = await supabase
+        .from('user_coupons')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+      const isNew = (count ?? 0) === 0
 
       if (isNew) {
         // WELCOME10 쿠폰 찾기
