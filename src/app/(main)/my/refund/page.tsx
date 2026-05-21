@@ -58,7 +58,7 @@ export default function RefundPage() {
         .gte('created_at', thirtyDaysAgo)
         .order('created_at', { ascending: false })
 
-      setOrders((data ?? []) as Order[])
+      setOrders((data ?? []) as unknown as Order[])
       setLoading(false)
     }
     load()
