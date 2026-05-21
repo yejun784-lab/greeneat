@@ -43,7 +43,7 @@ export function ChatBot() {
       const res = await fetch('/api/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg }),
+        body: JSON.stringify({ message: msg, history: messages.slice(-6) }),
       })
       const { reply } = await res.json()
       setTimeout(() => {
