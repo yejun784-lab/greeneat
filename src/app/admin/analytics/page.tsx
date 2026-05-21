@@ -111,7 +111,7 @@ export default function AdminAnalyticsPage() {
       const key = buildDateKey(d)
       dailyMap[key] = 0
     }
-    for (const order of (recentOrders ?? []) as Order[]) {
+    for (const order of (recentOrders ?? []) as unknown as Order[]) {
       const d = new Date(order.created_at)
       const key = buildDateKey(d)
       if (key in dailyMap) dailyMap[key] += order.total_price ?? 0
@@ -126,7 +126,7 @@ export default function AdminAnalyticsPage() {
 
     // 상위 5개 상품 집계
     const productMap: Record<string, { name: string; quantity: number; revenue: number }> = {}
-    for (const order of (recentOrders ?? []) as Order[]) {
+    for (const order of (recentOrders ?? []) as unknown as Order[]) {
       for (const item of order.order_items ?? []) {
         const name = (Array.isArray(item.products) ? item.products[0]?.name : item.products?.name) ?? '기타'
         if (!productMap[name]) productMap[name] = { name, quantity: 0, revenue: 0 }

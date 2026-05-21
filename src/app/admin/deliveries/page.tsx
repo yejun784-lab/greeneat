@@ -88,8 +88,8 @@ export default function AdminDeliveriesPage() {
         .order('created_at', { ascending: false })
         .limit(50),
     ])
-    setPendingOrders((pending ?? []) as Order[])
-    setShippedOrders((shipped ?? []) as Order[])
+    setPendingOrders((pending ?? []) as unknown as Order[])
+    setShippedOrders((shipped ?? []) as unknown as Order[])
     // initialise tracking input state for pending orders
     const inputs: Record<string, { tracking_number: string; carrier: string }> = {}
     for (const o of pending ?? []) {
