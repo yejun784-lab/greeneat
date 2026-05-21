@@ -25,7 +25,8 @@ const SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우미야.
 - 이모지를 적절히 써서 생동감 있게.
 - 모르는 건 솔직하게 말하고 고객센터로 안내해.
 - 그린잇 서비스 외 주제(정치, 연예 등)는 정중히 거절해.
-- 답변은 3~5줄 이내로 짧게. 길면 나눠서 설명해.`
+- 답변은 3~5줄 이내로 짧게. 길면 나눠서 설명해.
+- 반드시 한국어로만 답해. 한자(漢字)나 중국어 절대 사용 금지. 예: 米→밥, 飯→밥, 麵→면.`
 
 export async function POST(req: NextRequest) {
   const { message, history = [] } = await req.json()
@@ -74,7 +75,14 @@ export async function POST(req: NextRequest) {
       max_tokens: 300,
     })
 
-    const reply = completion.choices[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
+    const raw = completion.choices[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
+    // 한자 치환 필터
+    const reply = raw
+      .replace(/米/g, '밥').replace(/飯/g, '밥').replace(/麵/g, '면').replace(/麺/g, '면')
+      .replace(/肉/g, '고기').replace(/魚/g, '생선').replace(/菜/g, '채소').replace(/湯/g, '국')
+      .replace(/茶/g, '차').replace(/水/g, '물').replace(/食/g, '식사').replace(/料/g, '요리')
+      // 한자 범위 전체 제거 (위 치환으로 못 잡은 나머지)
+      .replace(/[一-鿿]/g, '')
     return NextResponse.json({ reply, userName })
 
   } catch (err) {

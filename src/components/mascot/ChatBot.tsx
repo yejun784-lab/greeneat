@@ -13,9 +13,15 @@ const TYPING_DELAY = 700
 export function ChatBot() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', text: '안녕하세요! 저는 그린잇 도우미 그린이예요 🌿\n무엇이든 물어보세요!' },
-  ])
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === 'undefined') return [{ role: 'bot', text: '안녕하세요! 저는 그린잇 도우미 토마토예요 🍅\n무엇이든 물어보세요!' }]
+    try {
+      const saved = localStorage.getItem('greeni-chat')
+      return saved ? JSON.parse(saved) : [{ role: 'bot', text: '안녕하세요! 저는 그린잇 도우미 토마토예요 🍅\n무엇이든 물어보세요!' }]
+    } catch {
+      return [{ role: 'bot', text: '안녕하세요! 저는 그린잇 도우미 토마토예요 🍅\n무엇이든 물어보세요!' }]
+    }
+  })
   const [typing, setTyping] = useState(false)
   const [unread, setUnread] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -32,6 +38,13 @@ export function ChatBot() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, typing])
 
+  // 대화 localStorage 저장 (최근 40개)
+  useEffect(() => {
+    if (messages.length > 1) {
+      try { localStorage.setItem('greeni-chat', JSON.stringify(messages.slice(-40))) } catch {}
+    }
+  }, [messages])
+
   async function send(text?: string) {
     const msg = (text ?? input).trim()
     if (!msg) return
@@ -43,7 +56,7 @@ export function ChatBot() {
       const res = await fetch('/api/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, history: messages.slice(-6) }),
+        body: JSON.stringify({ message: msg, history: messages.slice(-20) }),
       })
       const { reply } = await res.json()
       setTimeout(() => {
