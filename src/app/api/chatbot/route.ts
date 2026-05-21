@@ -41,13 +41,36 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient()
 
-  // 유저 이름
+  // 유저 정보 + 건강 프로필
   let userName: string | null = null
+  let healthContext = ''
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      const { data: profile } = await supabase.from('profiles').select('name').eq('id', user.id).single()
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name, health_goal, activity_level, diet_type, allergen_profile, age, gender, height_cm, weight_kg')
+        .eq('id', user.id)
+        .single()
       userName = profile?.name ?? null
+      if (profile) {
+        const goalMap: Record<string, string> = { diet: '다이어트', muscle: '근육 증가', maintain: '체중 유지', health: '건강 관리' }
+        const actMap: Record<string, string> = { low: '낮음', medium: '보통', high: '높음' }
+        const dietMap: Record<string, string> = { none: '제한 없음', vegetarian: '채식', vegan: '비건', halal: '할랄' }
+        const parts: string[] = []
+        if (profile.age) parts.push(`나이: ${profile.age}세`)
+        if (profile.gender) parts.push(`성별: ${profile.gender === 'male' ? '남성' : profile.gender === 'female' ? '여성' : '기타'}`)
+        if (profile.height_cm && profile.weight_kg) parts.push(`키/몸무게: ${profile.height_cm}cm / ${profile.weight_kg}kg`)
+        if (profile.health_goal) parts.push(`건강 목표: ${goalMap[profile.health_goal] ?? profile.health_goal}`)
+        if (profile.activity_level) parts.push(`활동량: ${actMap[profile.activity_level] ?? profile.activity_level}`)
+        if (profile.diet_type && profile.diet_type !== 'none') parts.push(`식단 유형: ${dietMap[profile.diet_type] ?? profile.diet_type}`)
+        if (Array.isArray(profile.allergen_profile) && profile.allergen_profile.length > 0) {
+          parts.push(`알레르기: ${profile.allergen_profile.join(', ')}`)
+        }
+        if (parts.length > 0) {
+          healthContext = `\n\n[현재 고객 건강 프로필]\n${parts.join('\n')}\n이 정보를 바탕으로 상품 추천 시 고객에게 맞는 상품을 우선 추천해줘. 알레르기 성분이 포함된 상품은 추천하지 마.`
+        }
+      }
     }
   } catch {}
 
@@ -83,7 +106,7 @@ export async function POST(req: NextRequest) {
     }))
 
     // 시스템 프롬프트 조합
-    let systemPrompt = BASE_SYSTEM_PROMPT + productListText
+    let systemPrompt = BASE_SYSTEM_PROMPT + productListText + healthContext
     if (userName) {
       systemPrompt += `\n\n현재 대화 중인 고객 이름은 "${userName}"이야. 자연스럽게 이름을 불러줘.`
     }

@@ -6,7 +6,7 @@ import { ToastContainer } from "@/components/ui/Toast";
 import { ChatBot } from "@/components/mascot/ChatBot";
 import { CompareTray } from "@/components/products/CompareTray";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
+import { HealthQuestionnaire } from "@/components/onboarding/HealthQuestionnaire";
 import { CartAbandonmentGuard } from "@/components/cart/CartAbandonmentGuard";
 import "./globals.css";
 
@@ -81,7 +81,7 @@ export default function RootLayout({
           <ToastContainer />
           <CompareTray />
           <ChatBot />
-          <OnboardingTour />
+          <HealthQuestionnaire />
           <CartAbandonmentGuard />
         </ThemeProvider>
       </body>
