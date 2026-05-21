@@ -21,8 +21,8 @@ export default withSentryConfig(nextConfig, {
   project: process.env.SENTRY_PROJECT,
   silent: true,
   widenClientFileUpload: true,
-  tunnelRoute: '/monitoring',   // ad-blocker 우회
-  hideSourceMaps: true,         // 소스맵 번들에서 제거 (보안)
+  tunnelRoute: '/monitoring',
   disableLogger: true,
   automaticVercelMonitors: false,
+  sourcemaps: { disable: true },
 })
