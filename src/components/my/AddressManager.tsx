@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { MapPin, Plus, Star, Pencil, Trash2, X, Check } from 'lucide-react'
+import { MapPin, Plus, Star, Pencil, Trash2, X, Check, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
 
@@ -14,8 +14,18 @@ type Address = {
   is_default: boolean
 }
 
-type FormState = { label: string; address: string; detail: string }
-const EMPTY: FormState = { label: '', address: '', detail: '' }
+type FormState = { label: string; address: string; detail: string; zonecode: string }
+const EMPTY: FormState = { label: '', address: '', detail: '', zonecode: '' }
+
+declare global {
+  interface Window {
+    daum?: {
+      Postcode: new (options: {
+        oncomplete: (data: { address: string; jibunAddress: string; zonecode: string }) => void
+      }) => { open: () => void }
+    }
+  }
+}
 
 export function AddressManager({
   userId,
@@ -32,6 +42,32 @@ export function AddressManager({
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
+  // 카카오 우편번호 스크립트 로드
+  useEffect(() => {
+    if (document.getElementById('daum-postcode-script')) return
+    const script = document.createElement('script')
+    script.id = 'daum-postcode-script'
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+    script.async = true
+    document.head.appendChild(script)
+  }, [])
+
+  function openAddressSearch() {
+    if (!window.daum?.Postcode) {
+      toast.error('주소 검색 서비스를 불러오는 중이에요. 잠시 후 다시 시도해주세요.')
+      return
+    }
+    new window.daum.Postcode({
+      oncomplete: (data) => {
+        setForm((f) => ({
+          ...f,
+          address: data.address,
+          zonecode: data.zonecode,
+        }))
+      },
+    }).open()
+  }
+
   function openNew() {
     setEditId(null)
     setForm(EMPTY)
@@ -40,7 +76,7 @@ export function AddressManager({
 
   function openEdit(addr: Address) {
     setEditId(addr.id)
-    setForm({ label: addr.label ?? '', address: addr.address, detail: addr.detail ?? '' })
+    setForm({ label: addr.label ?? '', address: addr.address, detail: addr.detail ?? '', zonecode: '' })
     setShowForm(true)
   }
 
@@ -71,6 +107,8 @@ export function AddressManager({
         setAddresses((prev) => prev.map((a) => (a.id === editId ? (data as Address) : a)))
         toast.success('배송지를 수정했습니다.')
         closeForm()
+      } else {
+        toast.error('수정에 실패했어요.')
       }
     } else {
       const isFirst = addresses.length === 0
@@ -90,6 +128,8 @@ export function AddressManager({
         setAddresses((prev) => [...prev, data as Address])
         toast.success('배송지를 추가했습니다.')
         closeForm()
+      } else {
+        toast.error('추가에 실패했어요.')
       }
     }
     setSaving(false)
@@ -108,7 +148,6 @@ export function AddressManager({
 
   async function handleSetDefault(id: string) {
     const supabase = createClient()
-    // 기존 기본 해제 후 새 기본 설정
     await supabase.from('addresses').update({ is_default: false }).eq('user_id', userId)
     await supabase.from('addresses').update({ is_default: true }).eq('id', id)
     setAddresses((prev) =>
@@ -124,7 +163,13 @@ export function AddressManager({
       {addresses.length === 0 && !showForm && (
         <div className="text-center py-14 bg-surface rounded-2xl border border-line">
           <MapPin size={32} className="text-ink-5 mx-auto mb-3" />
-          <p className="text-sm text-ink-5">저장된 배송지가 없습니다.</p>
+          <p className="text-sm text-ink-5 mb-4">저장된 배송지가 없어요.</p>
+          <button
+            onClick={openNew}
+            className="px-5 py-2.5 bg-[#2d7a4f] text-white text-sm font-medium rounded-xl hover:bg-[#235f3d] transition-colors"
+          >
+            첫 배송지 추가하기
+          </button>
         </div>
       )}
 
@@ -187,7 +232,7 @@ export function AddressManager({
         </div>
       ))}
 
-      {/* 추가 폼 */}
+      {/* 추가/수정 폼 */}
       {showForm && (
         <div className="bg-surface rounded-2xl border border-[#2d7a4f]/30 p-5">
           <div className="flex items-center justify-between mb-4">
@@ -209,13 +254,24 @@ export function AddressManager({
             </div>
             <div>
               <label className="block text-xs text-ink-4 mb-1">주소 *</label>
-              <input
-                type="text"
-                value={form.address}
-                onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                placeholder="도로명 주소를 입력하세요"
-                className="w-full px-3 py-2.5 border border-line-2 rounded-xl text-sm bg-surface text-ink focus:outline-none focus:border-[#2d7a4f] transition-colors"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={form.address}
+                  readOnly
+                  placeholder="주소 검색 버튼을 눌러주세요"
+                  className="flex-1 px-3 py-2.5 border border-line-2 rounded-xl text-sm bg-gray-50 text-ink focus:outline-none cursor-pointer"
+                  onClick={openAddressSearch}
+                />
+                <button
+                  type="button"
+                  onClick={openAddressSearch}
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-[#2d7a4f] text-white text-sm font-medium rounded-xl hover:bg-[#235f3d] transition-colors whitespace-nowrap"
+                >
+                  <Search size={14} />
+                  검색
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-xs text-ink-4 mb-1">상세 주소</label>
@@ -223,7 +279,7 @@ export function AddressManager({
                 type="text"
                 value={form.detail}
                 onChange={(e) => setForm((f) => ({ ...f, detail: e.target.value }))}
-                placeholder="동, 호수 등"
+                placeholder="동, 호수 등 상세 주소를 입력하세요"
                 className="w-full px-3 py-2.5 border border-line-2 rounded-xl text-sm bg-surface text-ink focus:outline-none focus:border-[#2d7a4f] transition-colors"
               />
             </div>
@@ -248,7 +304,7 @@ export function AddressManager({
       )}
 
       {/* 추가 버튼 */}
-      {!showForm && (
+      {!showForm && addresses.length > 0 && (
         <button
           onClick={openNew}
           className="w-full flex items-center justify-center gap-2 py-3.5 border-2 border-dashed border-line-2 rounded-2xl text-sm text-ink-4 hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors"
