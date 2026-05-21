@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { X, Send, ChevronDown } from 'lucide-react'
+import { X, Send, ChevronDown, RotateCcw } from 'lucide-react'
 import { GreeniAvatar } from './GreeniAvatar'
 
 type Message = { role: 'bot' | 'user'; text: string }
@@ -44,6 +44,13 @@ export function ChatBot() {
       try { localStorage.setItem('greeni-chat', JSON.stringify(messages.slice(-40))) } catch {}
     }
   }, [messages])
+
+  const INITIAL_MESSAGE: Message = { role: 'bot', text: '안녕하세요! 저는 그린잇 도우미 토마토예요 🍅\n무엇이든 물어보세요!' }
+
+  function resetChat() {
+    setMessages([INITIAL_MESSAGE])
+    try { localStorage.removeItem('greeni-chat') } catch {}
+  }
 
   async function send(text?: string) {
     const msg = (text ?? input).trim()
@@ -106,12 +113,21 @@ export function ChatBot() {
               <p className="text-white font-bold text-base leading-tight">그린이</p>
               <p className="text-green-200 text-xs">그린잇 AI 도우미</p>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="ml-auto p-1.5 text-green-200 hover:text-white transition-colors"
-            >
-              <ChevronDown size={22} />
-            </button>
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                onClick={resetChat}
+                title="새 대화 시작"
+                className="p-1.5 text-green-200 hover:text-white transition-colors"
+              >
+                <RotateCcw size={16} />
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 text-green-200 hover:text-white transition-colors"
+              >
+                <ChevronDown size={22} />
+              </button>
+            </div>
           </div>
 
           {/* 메시지 영역 */}
