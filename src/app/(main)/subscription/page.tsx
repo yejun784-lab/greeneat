@@ -76,7 +76,9 @@ export default function SubscriptionPage() {
       .eq('is_subscription', true)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .then(({ data }) => setProducts((data ?? []) as Product[]))
+      .then(({ data, error }) => {
+        if (!error) setProducts((data ?? []) as unknown as Product[])
+      })
   }, [])
 
   const currentPlan = PLANS.find((p) => p.id === selectedPlan)!

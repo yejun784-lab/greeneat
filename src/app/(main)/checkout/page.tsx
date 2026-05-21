@@ -73,7 +73,7 @@ export default function CheckoutPage() {
       setPointBalance(profile?.point_balance ?? 0)
       setUserName(profile?.name ?? '')
     })
-  }, [])
+  }, [router])
 
   useEffect(() => {
     if (items.length === 0) router.replace('/cart')

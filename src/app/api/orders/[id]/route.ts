@@ -1,6 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+// GET /api/orders/[id] — 주문 상세 조회
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
+
+  const { data: order, error } = await supabase
+    .from('orders')
+    .select('id, total_price, status, created_at, order_items(id, quantity, price_at_purchase, products(name, image_url))')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single()
+
+  if (error || !order) return NextResponse.json({ error: '주문을 찾을 수 없습니다.' }, { status: 404 })
+
+  return NextResponse.json({ order })
+}
+
 // PATCH /api/orders/[id] — 주문 취소 (사용자)
 export async function PATCH(
   _req: NextRequest,
