@@ -9,6 +9,7 @@ import { useWishlistStore } from '@/lib/wishlist-store'
 import { useCompareStore } from '@/components/products/CompareTray'
 import { formatPrice } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
+import { GreeniAvatar } from '@/components/mascot/GreeniAvatar'
 import type { Product } from '@/types'
 
 interface ProductCardProps {
@@ -78,8 +79,9 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-tint">
-                <ShoppingBag size={24} className="text-line-3" />
+              <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[#f0faf4]">
+                <GreeniAvatar size={56} />
+                <span className="text-[11px] text-[#2d7a4f]/60 font-medium">준비 중</span>
               </div>
             )}
 
