@@ -25,6 +25,8 @@ export type Product = {
   stock: number
   created_at: string
   product_categories?: ProductCategory
+  avg_rating?: number | null
+  review_count?: number | null
 }
 
 export type Profile = {

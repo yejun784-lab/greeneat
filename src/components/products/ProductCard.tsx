@@ -152,6 +152,15 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           </div>
         )}
 
+        {/* 별점 */}
+        {!compact && (product as any).review_count > 0 && (
+          <div className="flex items-center gap-1 mt-1">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span className="text-[11px] text-ink-4 font-medium">{(product as any).avg_rating?.toFixed(1)}</span>
+            <span className="text-[10px] text-ink-5">({(product as any).review_count})</span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mt-1">
           <p className={`font-bold text-ink tracking-tight ${compact ? 'text-sm' : 'text-[14px]'}`}>
             {formatPrice(product.price)}

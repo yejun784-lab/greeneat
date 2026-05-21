@@ -124,7 +124,13 @@ export function ReviewSection({ productId }: { productId: string }) {
         .from('reviews')
         .insert({ product_id: productId, user_id: userId, rating, content })
       if (error) { toast.error('리뷰 등록에 실패했어요.'); setSubmitting(false); return }
-      toast.success('리뷰가 등록됐어요! 🎉')
+      // 포인트 200P 보상
+      const { data: prof } = await supabase.from('profiles').select('point_balance').eq('id', userId).single()
+      await Promise.all([
+        supabase.from('points').insert({ user_id: userId, amount: 200, reason: '리뷰 작성 보상' }),
+        supabase.from('profiles').update({ point_balance: (prof?.point_balance ?? 0) + 200 }).eq('id', userId),
+      ])
+      toast.success('리뷰가 등록됐어요! +200P 적립 🎉')
     }
 
     setShowForm(false)
