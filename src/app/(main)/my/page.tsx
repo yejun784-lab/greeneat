@@ -12,6 +12,7 @@ import { MembershipBadge } from '@/components/my/MembershipBadge'
 import { AllergySettings } from '@/components/my/AllergySettings'
 import { ProfileEditor } from '@/components/my/ProfileEditor'
 import { WithdrawButton } from '@/components/my/WithdrawButton'
+import { HealthProfileButton } from '@/components/my/HealthProfileButton'
 import type { Order, Subscription } from '@/types'
 
 const GOAL_INFO: Record<string, { label: string; emoji: string; calTarget: number; proteinTarget: number }> = {
@@ -345,7 +346,10 @@ export default async function MyPage() {
 
         {/* 계정 설정 */}
         <div className="pt-2 flex items-center justify-between text-xs text-ink-5">
-          <span>GreenEat v1.0</span>
+          <div className="flex items-center gap-4">
+            <span>GreenEat v1.0</span>
+            <HealthProfileButton />
+          </div>
           <WithdrawButton />
         </div>
       </div>

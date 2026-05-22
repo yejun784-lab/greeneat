@@ -1,8 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { create } from 'zustand'
 import { createClient } from '@/lib/supabase/client'
 import { X, ChevronRight, ChevronLeft, Check } from 'lucide-react'
+
+// 외부에서 열 수 있는 store
+type QuestionnaireStore = { isOpen: boolean; openQuestionnaire: () => void; closeQuestionnaire: () => void }
+export const useQuestionnaireStore = create<QuestionnaireStore>((set) => ({
+  isOpen: false,
+  openQuestionnaire: () => set({ isOpen: true }),
+  closeQuestionnaire: () => set({ isOpen: false }),
+}))
 
 type Step = 1 | 2 | 3 | 4
 
@@ -45,6 +54,7 @@ const DIET_TYPES = [
 ]
 
 export function HealthQuestionnaire() {
+  const { isOpen, closeQuestionnaire } = useQuestionnaireStore()
   const [show, setShow] = useState(false)
   const [step, setStep] = useState<Step>(1)
   const [form, setForm] = useState<FormData>(INITIAL)
@@ -64,6 +74,11 @@ export function HealthQuestionnaire() {
       if (!profile?.onboarding_completed) setShow(true)
     })
   }, [])
+
+  // store에서 열기 요청 오면 표시
+  useEffect(() => {
+    if (isOpen) { setStep(1); setForm(INITIAL); setShow(true) }
+  }, [isOpen])
 
   const toggleAllergen = (a: string) => {
     setForm((f) => ({
@@ -98,13 +113,15 @@ export function HealthQuestionnaire() {
     }).eq('id', userId)
     setSaving(false)
     setShow(false)
+    closeQuestionnaire()
   }
 
   async function handleSkip() {
-    if (!userId) { setShow(false); return }
+    if (!userId) { setShow(false); closeQuestionnaire(); return }
     const supabase = createClient()
     await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', userId)
     setShow(false)
+    closeQuestionnaire()
   }
 
   if (!show) return null
