@@ -21,16 +21,14 @@ const CALORIE_RANGES = [
   { label: '700kcal~', min: '700' },
 ]
 
-// DB에 저장된 한국어 알레르기 이름과 일치
+// DB products.allergens 컬럼 영문값과 일치
 const ALLERGENS = [
-  { value: '글루텐',   label: '글루텐' },
-  { value: '우유',     label: '유제품' },
-  { value: '난류',     label: '달걀' },
-  { value: '갑각류',   label: '갑각류' },
-  { value: '대두',     label: '대두' },
-  { value: '견과류',   label: '견과류' },
-  { value: '돼지고기', label: '돼지고기' },
-  { value: '복숭아',   label: '복숭아' },
+  { value: 'gluten',  label: '글루텐' },
+  { value: 'dairy',   label: '유제품' },
+  { value: 'egg',     label: '달걀' },
+  { value: 'soy',     label: '대두' },
+  { value: 'pork',    label: '돼지고기' },
+  { value: 'sesame',  label: '참깨' },
 ]
 
 const DIFFICULTIES = [
