@@ -30,6 +30,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
   const { data } = await supabase
     .from('products')
     .select('*, product_categories(id, name, slug, description)')
+    .eq('is_active', true)
     .order('display_group', { ascending: true })
     .order('created_at', { ascending: false })
     .limit(9)
