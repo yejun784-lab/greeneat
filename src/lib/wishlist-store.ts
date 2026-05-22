@@ -3,33 +3,42 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
+const storage = createJSONStorage(() => {
+  if (typeof window === 'undefined') {
+    return { getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage
+  }
+  return localStorage
+})
+
 type WishlistStore = {
-  ids: Set<string>
+  ids: string[]
   has: (id: string) => boolean
+  add: (id: string) => void
+  remove: (id: string) => void
   toggle: (id: string) => void
-  clear: () => void
+  setAll: (ids: string[]) => void
 }
 
 export const useWishlistStore = create<WishlistStore>()(
   persist(
     (set, get) => ({
-      ids: new Set<string>(),
-      has: (id) => get().ids.has(id),
+      ids: [],
+      has: (id) => get().ids.includes(id),
+      add: (id) => set((s) => ({ ids: s.ids.includes(id) ? s.ids : [...s.ids, id] })),
+      remove: (id) => set((s) => ({ ids: s.ids.filter((i) => i !== id) })),
       toggle: (id) => {
-        const next = new Set(get().ids)
-        if (next.has(id)) next.delete(id)
-        else next.add(id)
-        set({ ids: next })
+        if (get().ids.includes(id)) {
+          set((s) => ({ ids: s.ids.filter((i) => i !== id) }))
+        } else {
+          set((s) => ({ ids: [...s.ids, id] }))
+        }
       },
-      clear: () => set({ ids: new Set() }),
+      setAll: (ids) => set({ ids }),
     }),
     {
       name: 'greeneat-wishlist',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ ids: [...s.ids] } as unknown as WishlistStore),
-      onRehydrateStorage: () => (state) => {
-        if (state) state.ids = new Set(state.ids as unknown as string[])
-      },
+      storage,
+      skipHydration: true,
     }
   )
 )

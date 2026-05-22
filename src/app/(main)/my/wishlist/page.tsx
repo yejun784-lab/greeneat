@@ -42,12 +42,12 @@ export default function WishlistPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (ids.size === 0) { setLoading(false); return }
+    if (ids.length === 0) { setLoading(false); return }
     const supabase = createClient()
     supabase
       .from('products')
       .select('*, product_categories(id, name, slug, description)')
-      .in('id', [...ids])
+      .in('id', ids)
       .then(({ data }) => {
         setProducts((data as Product[]) ?? [])
         setLoading(false)
@@ -68,7 +68,7 @@ export default function WishlistPage() {
         <div className="flex items-center gap-3">
           <Heart size={22} className="text-red-500" fill="currentColor" />
           <h1 className="text-2xl font-bold text-ink">찜 목록</h1>
-          <span className="text-sm text-ink-5">({ids.size}개)</span>
+          <span className="text-sm text-ink-5">({ids.length}개)</span>
         </div>
         {products.length > 0 && <KakaoShareButton products={products} />}
       </div>

@@ -29,7 +29,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-800 mt-10 pt-6 text-xs text-center">
-          © 2025 GreenEat. All rights reserved.
+          © 2026 GreenEat. All rights reserved.
         </div>
       </div>
     </footer>
