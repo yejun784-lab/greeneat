@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 import { X, SlidersHorizontal, ChevronDown } from 'lucide-react'
 
 // 필터로 취급하는 파라미터 키 (search·sort·page 제외)
@@ -47,6 +47,7 @@ export function ProductFilter() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
   const updateParam = useCallback(
     (key: string, value: string | null) => {
@@ -57,7 +58,9 @@ export function ProductFilter() {
         params.set(key, value)
       }
       params.delete('page')
-      router.push(`${pathname}?${params.toString()}`)
+      startTransition(() => {
+        router.push(`${pathname}?${params.toString()}`)
+      })
     },
     [router, pathname, searchParams]
   )
@@ -69,14 +72,14 @@ export function ProductFilter() {
       const current = params.getAll('exclude')
       params.delete('exclude')
       if (current.includes(value)) {
-        // 제거
         current.filter((v) => v !== value).forEach((v) => params.append('exclude', v))
       } else {
-        // 추가
         ;[...current, value].forEach((v) => params.append('exclude', v))
       }
       params.delete('page')
-      router.push(`${pathname}?${params.toString()}`)
+      startTransition(() => {
+        router.push(`${pathname}?${params.toString()}`)
+      })
     },
     [router, pathname, searchParams]
   )
@@ -92,7 +95,9 @@ export function ProductFilter() {
   function resetFilters() {
     const params = new URLSearchParams(searchParams.toString())
     FILTER_KEYS.forEach((key) => params.delete(key))
-    router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ''}`)
+    startTransition(() => {
+      router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ''}`)
+    })
   }
 
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -102,7 +107,10 @@ export function ProductFilter() {
       {/* 헤더 + 초기화 버튼 */}
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-sm font-semibold text-ink">
-          <SlidersHorizontal size={14} />
+          {isPending
+            ? <div className="w-3.5 h-3.5 border-2 border-[#2d7a4f] border-t-transparent rounded-full animate-spin" />
+            : <SlidersHorizontal size={14} />
+          }
           필터
           {activeFilterCount > 0 && (
             <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#2d7a4f] text-white text-[10px] font-bold">
@@ -162,7 +170,9 @@ export function ProductFilter() {
                       if (r.max) params.set('maxCal', r.max); else params.delete('maxCal')
                     }
                     params.delete('page')
-                    router.push(`${pathname}?${params.toString()}`)
+                    startTransition(() => {
+                      router.push(`${pathname}?${params.toString()}`)
+                    })
                   }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                     isActive ? 'bg-green-tint text-[#2d7a4f] font-medium' : 'text-ink-3 hover:bg-wash'
