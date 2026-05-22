@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: '도시락 — GreenEat',
   description: '간편식, 베이커리&샐러드, 건강식품, 맞춤식단까지. 진정성 있는 GreenEat 도시락을 만나보세요.',
@@ -86,8 +88,21 @@ async function ProductListServer({ params }: { params: Awaited<SearchParams> }) 
     )
   }
 
+  // 필터가 바뀔 때마다 InfiniteProductGrid를 완전히 리마운트 (stale state 방지)
+  const gridKey = JSON.stringify({
+    category: params.category,
+    difficulty: params.difficulty,
+    servings: params.servings,
+    sort: params.sort,
+    search: params.search,
+    exclude: params.exclude,
+    minCal: params.minCal,
+    maxCal: params.maxCal,
+  })
+
   return (
     <InfiniteProductGrid
+      key={gridKey}
       initialProducts={products}
       initialHasMore={total > PAGE_SIZE}
       total={total}
