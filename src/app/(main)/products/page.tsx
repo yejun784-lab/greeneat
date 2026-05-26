@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 import { ProductFilter } from '@/components/products/ProductFilter'
 import { ProductGridSkeleton } from '@/components/products/ProductCardSkeleton'
 import { InfiniteProductGrid } from '@/components/products/InfiniteProductGrid'
+import { RecentlyOrderedSection } from '@/components/products/RecentlyOrderedSection'
 import type { ProductFilters } from '@/components/products/InfiniteProductGrid'
 import type { Product } from '@/types'
 
@@ -173,6 +174,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
         </Suspense>
 
         <div className="flex-1 min-w-0">
+          {/* 지난 주문 메뉴 — 검색/필터 없을 때만 표시 */}
+          {!params.search && !params.category && !params.difficulty && !params.servings && !params.exclude && (
+            <RecentlyOrderedSection />
+          )}
+
           {/* 정렬 + 카운트 */}
           <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
             <p className="text-sm text-ink-4">

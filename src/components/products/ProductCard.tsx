@@ -2,11 +2,12 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, ShoppingBag, Zap, Leaf, Dumbbell, Users, GitCompareArrows } from 'lucide-react'
+import { Heart, ShoppingBag, Zap, Leaf, Dumbbell, Users, GitCompareArrows, RotateCcw } from 'lucide-react'
 import { useCartStore } from '@/lib/cart-store'
 import { useWishlist } from '@/hooks/useWishlist'
 import { useWishlistStore } from '@/lib/wishlist-store'
 import { useCompareStore } from '@/components/products/CompareTray'
+import { useOrderedStore } from '@/lib/ordered-store'
 import { formatPrice } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 import { GreeniAvatar } from '@/components/mascot/GreeniAvatar'
@@ -36,6 +37,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
   const { toggle }   = useWishlist()
   const wished       = useWishlistStore((s) => s.has(product.id))
   const { add: addCompare, remove: removeCompare, has: inCompare } = useCompareStore()
+  const ordered      = useOrderedStore((s) => s.ids.has(product.id))
   const compared     = inCompare(product.id)
   const outOfStock   = product.stock <= 0
   const highlight    = compact ? null : getHighlight(product)
@@ -101,6 +103,14 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
             {product.is_subscription && !outOfStock && product.stock >= 10 && (
               <span className="absolute top-2.5 left-2.5 bg-[#2d7a4f]/85 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 구독
+              </span>
+            )}
+
+            {/* 재주문 배지 — 이미 주문한 적 있는 상품 */}
+            {ordered && !outOfStock && (
+              <span className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-0.5 bg-white/90 backdrop-blur-sm text-[#2d7a4f] text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-sm">
+                <RotateCcw size={8} />
+                재주문
               </span>
             )}
 
