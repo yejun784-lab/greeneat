@@ -5,6 +5,7 @@ import { WeeklyChart } from '@/components/health/WeeklyChart'
 import { WeightTracker } from '@/components/health/WeightTracker'
 import { AIMealPlan } from '@/components/health/AIMealPlan'
 import { HealthReport } from '@/components/health/HealthReport'
+import { MealPhotoLogger } from '@/components/health/MealPhotoLogger'
 import type { Product } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -171,6 +172,9 @@ export default async function HealthPage() {
             </p>
           )}
         </section>
+
+        {/* Section 1.5: 식단 사진 분석 */}
+        <MealPhotoLogger />
 
         {/* Section 2: 이번 주 칼로리 추이 */}
         <section className="bg-surface rounded-2xl border border-line p-5">
