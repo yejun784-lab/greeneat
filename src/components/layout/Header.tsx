@@ -15,7 +15,7 @@ type SuggestItem = { id: string; name: string; image_url: string | null; price: 
 const NAV_LINKS = [
   { href: '/products', label: '도시락' },
   { href: '/subscription', label: '구독 플랜' },
-  { href: '/planner', label: '식단 플래너' },
+  { href: '/health', label: '건강관리' },
   { href: '/feed', label: '밥로그' },
   { href: '/notice', label: '이벤트' },
 ]
