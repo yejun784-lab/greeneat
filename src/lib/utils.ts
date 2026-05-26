@@ -1,3 +1,47 @@
+// ── 날짜 유틸 ────────────────────────────────────────────
+
+/** 'YYYY-MM-DD' → 'MM/DD' */
+export function formatMMDD(iso: string): string {
+  const [, m, d] = iso.split('-')
+  return `${m}/${d}`
+}
+
+/** 오늘 포함 최근 n일의 ISO 날짜 배열 (오래된 순) */
+export function getLastNDays(n: number): string[] {
+  const days: string[] = []
+  const today = new Date()
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    days.push(d.toISOString().slice(0, 10))
+  }
+  return days
+}
+
+/** 오늘 포함 최근 n일의 { start, end } ISO 날짜 */
+export function getDateRange(n: number): { start: string; end: string } {
+  const end = new Date()
+  const start = new Date()
+  start.setDate(end.getDate() - (n - 1))
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  }
+}
+
+// ── 식사 유형 ────────────────────────────────────────────
+
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+
+export const MEAL_TYPE_META: Record<MealType, { label: string; color: string }> = {
+  breakfast: { label: '아침', color: 'bg-amber-50 text-amber-600' },
+  lunch:     { label: '점심', color: 'bg-blue-50 text-blue-600' },
+  dinner:    { label: '저녁', color: 'bg-purple-50 text-purple-600' },
+  snack:     { label: '간식', color: 'bg-emerald-50 text-emerald-600' },
+}
+
+// ── 가격 포맷 ────────────────────────────────────────────
+
 export function formatPrice(price: number): string {
   return price.toLocaleString('ko-KR') + '원'
 }

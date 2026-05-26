@@ -1,26 +1,9 @@
 import Image from 'next/image'
 import { Flame, Dumbbell, Wheat, Droplets, UtensilsCrossed } from 'lucide-react'
+import { MEAL_TYPE_META } from '@/lib/utils'
+import type { MealLogRow } from '@/lib/health-types'
 
-type MealLog = {
-  date: string
-  calories: number | null
-  protein: number | null
-  carbs: number | null
-  fat: number | null
-  meal_type: string
-  description: string | null
-  image_url: string | null
-  created_at: string
-}
-
-const MEAL_LABEL: Record<string, { label: string; color: string }> = {
-  breakfast: { label: '아침', color: 'bg-amber-50 text-amber-600' },
-  lunch:     { label: '점심', color: 'bg-blue-50 text-blue-600' },
-  dinner:    { label: '저녁', color: 'bg-purple-50 text-purple-600' },
-  snack:     { label: '간식', color: 'bg-emerald-50 text-emerald-600' },
-}
-
-export function TodayMealList({ logs }: { logs: MealLog[] }) {
+export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
   const total = logs.reduce(
     (acc, l) => ({
       cal: acc.cal + (l.calories ?? 0),
@@ -74,7 +57,7 @@ export function TodayMealList({ logs }: { logs: MealLog[] }) {
       {/* 식사 목록 */}
       <div className="divide-y divide-[#f5f5f3]">
         {logs.map((log, i) => {
-          const meta = MEAL_LABEL[log.meal_type] ?? { label: log.meal_type, color: 'bg-gray-50 text-gray-500' }
+          const meta = MEAL_TYPE_META[log.meal_type as keyof typeof MEAL_TYPE_META] ?? { label: log.meal_type, color: 'bg-gray-50 text-gray-500' }
           return (
             <div key={i} className="flex items-center gap-3 px-5 py-3.5">
               {/* 식사 이미지 */}

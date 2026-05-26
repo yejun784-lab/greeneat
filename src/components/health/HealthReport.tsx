@@ -1,4 +1,4 @@
-import type { DayNutrition } from '@/app/(main)/health/page'
+import type { DayNutrition, GoalInfo } from '@/lib/health-types'
 
 type WeightLog = { date: string; weight_kg: number }
 

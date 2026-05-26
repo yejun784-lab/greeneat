@@ -1,11 +1,4 @@
-import type { DayNutrition } from '@/app/(main)/health/page'
-
-type GoalInfo = {
-  calTarget: number
-  proteinTarget: number
-  carbsTarget: number
-  fatTarget: number
-}
+import type { DayNutrition, GoalInfo } from '@/lib/health-types'
 
 type Props = {
   today: DayNutrition

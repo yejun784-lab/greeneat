@@ -5,14 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Camera, Upload, X, Flame, Dumbbell, Wheat, Droplets, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { toast } from '@/lib/toast-store'
-
-type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
-const MEAL_LABELS: Record<MealType, string> = {
-  breakfast: '아침',
-  lunch: '점심',
-  dinner: '저녁',
-  snack: '간식',
-}
+import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 
 type AnalysisResult = {
   description: string
@@ -116,7 +109,7 @@ export function MealPhotoLogger({ onLogged }: { onLogged?: () => void }) {
             className="flex-1 px-3 py-2 text-sm border border-[#e8e8e6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-[#333]"
           />
           <div className="flex gap-1">
-            {(Object.keys(MEAL_LABELS) as MealType[]).map((t) => (
+            {(Object.keys(MEAL_TYPE_META) as MealType[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setMealType(t)}
@@ -126,7 +119,7 @@ export function MealPhotoLogger({ onLogged }: { onLogged?: () => void }) {
                     : 'bg-[#f5f5f3] text-[#666] hover:bg-[#e8f5ee] hover:text-[#2d7a4f]'
                 }`}
               >
-                {MEAL_LABELS[t]}
+                {MEAL_TYPE_META[t].label}
               </button>
             ))}
           </div>

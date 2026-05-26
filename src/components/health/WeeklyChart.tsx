@@ -1,38 +1,16 @@
-import type { DayNutrition } from '@/app/(main)/health/page'
+import { formatMMDD } from '@/lib/utils'
+import type { DayNutrition } from '@/lib/health-types'
 
 type Props = {
   data: DayNutrition[]
   calTarget: number
 }
 
-function formatMMDD(dateStr: string): string {
-  const d = new Date(dateStr)
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${mm}/${dd}`
-}
-
-function getLast7Days(): string[] {
-  const days: string[] = []
-  const today = new Date()
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today)
-    d.setDate(today.getDate() - i)
-    days.push(d.toISOString().slice(0, 10))
-  }
-  return days
-}
-
 export function WeeklyChart({ data, calTarget }: Props) {
-  const days = getLast7Days()
-  const todayStr = days[6]
-  const dataMap = new Map(data.map((d) => [d.date, d]))
-
+  const todayStr = data[data.length - 1]?.date ?? ''
   return (
     <div className="w-full">
-      {/* Chart area */}
       <div className="relative h-36 flex items-end gap-2 px-1 mb-1">
-        {/* Goal line (dashed) */}
         <div
           className="absolute left-0 right-0 border-t-2 border-dashed border-red-400/60 pointer-events-none"
           style={{ bottom: '0%', top: calTarget > 0 ? 'auto' : '0%' }}
@@ -43,9 +21,8 @@ export function WeeklyChart({ data, calTarget }: Props) {
           </span>
         </div>
 
-        {days.map((day) => {
-          const entry = dataMap.get(day)
-          const cal = entry?.cal ?? 0
+        {data.map((entry) => {
+          const { date: day, cal } = entry
           const heightPct = calTarget > 0 ? Math.min((cal / calTarget) * 100, 100) : 0
           const isToday = day === todayStr
 
@@ -76,22 +53,14 @@ export function WeeklyChart({ data, calTarget }: Props) {
         })}
       </div>
 
-      {/* X axis labels */}
       <div className="flex gap-2 px-1">
-        {days.map((day) => {
-          const isToday = day === todayStr
-          return (
-            <div key={day} className="flex-1 text-center">
-              <span
-                className={`text-[10px] font-medium ${
-                  isToday ? 'text-[#2d7a4f] font-bold' : 'text-ink-4'
-                }`}
-              >
-                {formatMMDD(day)}
-              </span>
-            </div>
-          )
-        })}
+        {data.map(({ date: day }) => (
+          <div key={day} className="flex-1 text-center">
+            <span className={`text-[10px] font-medium ${day === todayStr ? 'text-[#2d7a4f] font-bold' : 'text-ink-4'}`}>
+              {formatMMDD(day)}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   )

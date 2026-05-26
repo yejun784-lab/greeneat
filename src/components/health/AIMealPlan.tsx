@@ -1,94 +1,75 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { GOAL_LABEL } from '@/lib/health-types'
 import type { Product } from '@/types'
 
 type Props = {
   products: Product[]
   goal: string
   allergens: string[]
+  userId: string
 }
 
 const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일']
 
-function filterAndSort(products: Product[], goal: string, allergens: string[]): Product[] {
-  // Filter active products (allergen filtering would need product allergen data)
-  let filtered = products.filter((p) => p.is_active)
+const GOAL_SORT_LABEL: Record<string, string> = {
+  diet:     '저칼로리 우선',
+  muscle:   '고단백 우선',
+  maintain: '균형식',
+  health:   '균형식',
+  balanced: '균형식',
+}
 
-  // Goal-based sort/filter
+function filterAndSort(products: Product[], goal: string): Product[] {
+  // TODO: allergen filtering needs product.allergens column data
+  const active = products.filter((p) => p.is_active)
   if (goal === 'diet') {
-    filtered = filtered
+    return active
       .filter((p) => (p.calories ?? 9999) <= 500)
       .sort((a, b) => (a.calories ?? 9999) - (b.calories ?? 9999))
-  } else if (goal === 'muscle') {
-    filtered = filtered.sort((a, b) => (b.protein ?? 0) - (a.protein ?? 0))
-  } else {
-    // health / maintain / balanced / default
-    filtered = filtered
-      .filter((p) => (p.calories ?? 9999) <= 700)
-      .sort((a, b) => (b.protein ?? 0) - (a.protein ?? 0))
   }
-
-  return filtered
+  if (goal === 'muscle') {
+    return active.sort((a, b) => (b.protein ?? 0) - (a.protein ?? 0))
+  }
+  return active
+    .filter((p) => (p.calories ?? 9999) <= 700)
+    .sort((a, b) => (b.protein ?? 0) - (a.protein ?? 0))
 }
 
-function assignWeek(products: Product[]): (Product | null)[] {
-  if (products.length === 0) return Array(7).fill(null)
-  return WEEKDAYS.map((_, i) => products[i % products.length])
-}
-
-export function AIMealPlan({ products, goal, allergens }: Props) {
+export function AIMealPlan({ products, goal, userId }: Props) {
   const [offset, setOffset] = useState(0)
 
-  const filtered = filterAndSort(products, goal, allergens)
-  const baseList = filtered.length > 0 ? filtered : products.slice(0, 7)
+  const baseList = useMemo(() => {
+    const filtered = filterAndSort(products, goal)
+    return filtered.length > 0 ? filtered : products.slice(0, 7)
+  }, [products, goal])
 
   const rotated = baseList.length > 0
     ? WEEKDAYS.map((_, i) => baseList[(i + offset) % baseList.length])
     : Array(7).fill(null)
 
-  const handleShuffle = () => {
-    setOffset((prev) => (prev + 1) % Math.max(baseList.length, 1))
-  }
-
   async function handleAddToCart(product: Product) {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      alert('로그인이 필요해요.')
-      return
-    }
     await supabase.from('cart_items').upsert(
-      {
-        user_id: user.id,
-        product_id: product.id,
-        quantity: 1,
-        is_subscription: false,
-        display_group: product.display_group ?? 1,
-      },
+      { user_id: userId, product_id: product.id, quantity: 1, is_subscription: false, display_group: product.display_group ?? 1 },
       { onConflict: 'user_id,product_id' }
     )
     alert(`"${product.name}"을(를) 장바구니에 담았어요!`)
   }
 
-  const goalLabel: Record<string, string> = {
-    diet: '다이어트 (저칼로리 우선)',
-    muscle: '근육 증가 (고단백 우선)',
-    maintain: '체중 유지 (균형식)',
-    health: '건강 관리 (균형식)',
-    balanced: '균형식',
-  }
+  const goalMeta = GOAL_LABEL[goal]
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-ink-4">
-          기준: {goalLabel[goal] ?? goal}
+          기준: {goalMeta ? `${goalMeta.label} (${GOAL_SORT_LABEL[goal]})` : goal}
         </p>
         <button
-          onClick={handleShuffle}
+          onClick={() => setOffset((prev) => (prev + 1) % Math.max(baseList.length, 1))}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2d7a4f] border border-[#2d7a4f]/30 rounded-xl hover:bg-green-tint transition-colors"
         >
           식단 새로 짜기 ↻
@@ -99,39 +80,23 @@ export function AIMealPlan({ products, goal, allergens }: Props) {
         {WEEKDAYS.map((day, i) => {
           const product = rotated[i]
           return (
-            <div
-              key={day}
-              className="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col"
-            >
-              {/* Day label */}
+            <div key={day} className="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col">
               <div className="px-3 pt-3 pb-1">
                 <span className="text-xs font-bold text-[#2d7a4f]">{day}요일</span>
               </div>
 
-              {/* Product image */}
               <div className="relative w-full aspect-square bg-tint">
                 {product?.image_url ? (
-                  <Image
-                    src={product.image_url}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, 25vw"
-                  />
+                  <Image src={product.image_url} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl text-ink-5">
-                    🍱
-                  </div>
+                  <div className="w-full h-full flex items-center justify-center text-2xl text-ink-5">🍱</div>
                 )}
               </div>
 
-              {/* Info */}
               <div className="p-3 flex-1 flex flex-col gap-2">
                 {product ? (
                   <>
-                    <p className="text-xs font-semibold text-ink line-clamp-2 leading-tight">
-                      {product.name}
-                    </p>
+                    <p className="text-xs font-semibold text-ink line-clamp-2 leading-tight">{product.name}</p>
                     <div className="flex gap-2 text-[11px] text-ink-4">
                       {product.calories && <span>{product.calories}kcal</span>}
                       {product.protein && <span>단백질 {product.protein}g</span>}
