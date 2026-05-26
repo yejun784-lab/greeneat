@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
     const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')?.content ?? ''
 
     // ── Anthropic API 사용 가능하면 AI로 응답 ──
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const apiKey = process.env.GREENEAT_ANTHROPIC_KEY
     const hasValidKey = apiKey && apiKey.trim() !== '' && apiKey !== '여기에_API_키_입력'
 
     if (hasValidKey) {

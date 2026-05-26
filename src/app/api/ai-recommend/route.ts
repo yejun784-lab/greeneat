@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     .join('\n')
 
   // Anthropic API 키가 없으면 목표 기반 정렬 폴백
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GREENEAT_ANTHROPIC_KEY
   if (!apiKey) {
     const fallback = getFallbackRecommendations(products ?? [], goal, recentNames)
     return NextResponse.json({ recommendations: fallback })

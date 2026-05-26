@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     }))
 
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    const anthropic = new Anthropic({ apiKey: process.env.GREENEAT_ANTHROPIC_KEY })
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5',
       max_tokens: 400,
