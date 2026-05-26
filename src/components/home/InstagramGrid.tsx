@@ -17,7 +17,7 @@ export function InstagramGrid() {
       {POSTS.map((post, i) => (
         <a
           key={i}
-          href="https://www.instagram.com/greeneatfood"
+          href="https://www.instagram.com/green_eat_food"
           target="_blank"
           rel="noopener noreferrer"
           className="relative aspect-square overflow-hidden rounded-sm group block bg-tint"

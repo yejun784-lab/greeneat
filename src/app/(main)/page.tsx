@@ -221,10 +221,10 @@ export default async function HomePage() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-2">Instagram</p>
-              <h2 className="text-display text-3xl text-[#111]">@greeneatfood</h2>
+              <h2 className="text-display text-3xl text-[#111]">@green_eat_food</h2>
             </div>
             <a
-              href="https://www.instagram.com/greeneatfood"
+              href="https://www.instagram.com/green_eat_food"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-[#999] hover:text-[#111] transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
