@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Camera, Upload, X, Flame, Dumbbell, Wheat, Droplets, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { toast } from '@/lib/toast-store'
 
@@ -29,6 +30,7 @@ const CONFIDENCE_LABEL = {
 }
 
 export function MealPhotoLogger({ onLogged }: { onLogged?: () => void }) {
+  const router = useRouter()
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [mealType, setMealType] = useState<MealType>('lunch')
@@ -76,6 +78,7 @@ export function MealPhotoLogger({ onLogged }: { onLogged?: () => void }) {
       setDone(true)
       toast.success('식단이 기록됐어요! 🥗')
       onLogged?.()
+      router.refresh() // 서버 컴포넌트 재요청 → 영양 현황 즉시 반영
     } catch {
       toast.error('네트워크 오류가 발생했어요.')
     } finally {

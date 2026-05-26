@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
   // Claude vision으로 분석
   const message = await anthropic.messages.create({
-    model: 'claude-opus-4-5',
+    model: 'claude-sonnet-4-5',
     max_tokens: 512,
     messages: [
       {

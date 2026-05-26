@@ -6,6 +6,7 @@ import { WeightTracker } from '@/components/health/WeightTracker'
 import { AIMealPlan } from '@/components/health/AIMealPlan'
 import { HealthReport } from '@/components/health/HealthReport'
 import { MealPhotoLogger } from '@/components/health/MealPhotoLogger'
+import { TodayMealList } from '@/components/health/TodayMealList'
 import type { Product } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -125,7 +126,53 @@ export default async function HealthPage() {
 
   const weekData: DayNutrition[] = last7.map((d) => dayMap.get(d)!)
   const todayStr = last7[6]
+
+  // meal_logs (사진 분석 기록) — 7일치 합산
+  const { data: rawMealLogs } = await supabase
+    .from('meal_logs')
+    .select('date, calories, protein, carbs, fat, meal_type, description, image_url, created_at')
+    .eq('user_id', user.id)
+    .gte('date', sevenDaysAgo)
+    .order('created_at', { ascending: true })
+
+  type MealLogRow = {
+    date: string
+    calories: number | null
+    protein: number | null
+    carbs: number | null
+    fat: number | null
+    meal_type: string
+    description: string | null
+    image_url: string | null
+    created_at: string
+  }
+
+  const mealLogs: MealLogRow[] = (rawMealLogs ?? []).map((l) => ({
+    date: String(l.date),
+    calories: l.calories ? Number(l.calories) : null,
+    protein: l.protein ? Number(l.protein) : null,
+    carbs: l.carbs ? Number(l.carbs) : null,
+    fat: l.fat ? Number(l.fat) : null,
+    meal_type: String(l.meal_type),
+    description: l.description ? String(l.description) : null,
+    image_url: l.image_url ? String(l.image_url) : null,
+    created_at: String(l.created_at),
+  }))
+
+  // meal_logs도 dayMap에 합산
+  for (const log of mealLogs) {
+    const entry = dayMap.get(log.date)
+    if (!entry) continue
+    entry.cal += log.calories ?? 0
+    entry.protein += log.protein ?? 0
+    entry.carbs += log.carbs ?? 0
+    entry.fat += log.fat ?? 0
+  }
+
+  // weekData는 meal_logs 합산 후 다시 만들어야 함
+  const weekDataFinal: DayNutrition[] = last7.map((d) => dayMap.get(d)!)
   const todayData: DayNutrition = dayMap.get(todayStr) ?? { date: todayStr, cal: 0, protein: 0, carbs: 0, fat: 0 }
+  const todayMealLogs = mealLogs.filter((l) => l.date === todayStr)
 
   // Weight logs (last 30 days)
   const { start: wStart, end: wEnd } = getLast30Days()
@@ -176,10 +223,15 @@ export default async function HealthPage() {
         {/* Section 1.5: 식단 사진 분석 */}
         <MealPhotoLogger />
 
+        {/* Section 1.7: 오늘 먹은 것 */}
+        {todayMealLogs.length > 0 && (
+          <TodayMealList logs={todayMealLogs} />
+        )}
+
         {/* Section 2: 이번 주 칼로리 추이 */}
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">이번 주 칼로리 추이</h2>
-          <WeeklyChart data={weekData} calTarget={goalInfo.calTarget} />
+          <WeeklyChart data={weekDataFinal} calTarget={goalInfo.calTarget} />
         </section>
 
         {/* Section 3: 체중 기록 */}
@@ -201,7 +253,7 @@ export default async function HealthPage() {
         {/* Section 5: 이번 주 리포트 */}
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">이번 주 리포트</h2>
-          <HealthReport weekData={weekData} goal={goalInfo} weightLogs={weightLogs} />
+          <HealthReport weekData={weekDataFinal} goal={goalInfo} weightLogs={weightLogs} />
         </section>
       </div>
     </div>
