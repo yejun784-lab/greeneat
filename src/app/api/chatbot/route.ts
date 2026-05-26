@@ -5,8 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 type Role = 'bot' | 'user'
 interface HistoryItem { role: Role; text: string }
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
 const BASE_SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 이름은 '토마토'야 🍅
 그린잇은 건강한 냉동 도시락을 정기구독으로 배송해주는 이커머스 서비스야.
 
@@ -105,6 +103,7 @@ export async function POST(req: NextRequest) {
     }))
 
   try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5',
       max_tokens: 400,
