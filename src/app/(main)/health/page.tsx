@@ -6,9 +6,11 @@ import { WeightTracker } from '@/components/health/WeightTracker'
 import { AIMealPlan } from '@/components/health/AIMealPlan'
 import { HealthReport } from '@/components/health/HealthReport'
 import { MealPhotoLogger } from '@/components/health/MealPhotoLogger'
+import { ManualMealLogger } from '@/components/health/ManualMealLogger'
 import { TodayMealList } from '@/components/health/TodayMealList'
 import { getLastNDays, getDateRange } from '@/lib/utils'
 import { GOAL_INFO, GOAL_LABEL, type DayNutrition, type GoalInfo, type MealLogRow } from '@/lib/health-types'
+import { GoalEditor } from '@/components/my/GoalEditor'
 import type { Product } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -112,9 +114,7 @@ export default async function HealthPage() {
     <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-ink">건강관리</h1>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full bg-green-tint text-[#2d7a4f] border border-[#2d7a4f]/20">
-          {goalMeta.emoji} {goalMeta.label}
-        </span>
+        <GoalEditor current={goal} userId={user.id} />
       </div>
 
       <div className="flex flex-col gap-6">
@@ -129,6 +129,7 @@ export default async function HealthPage() {
         </section>
 
         <MealPhotoLogger />
+        <ManualMealLogger />
 
         {todayMealLogs.length > 0 && <TodayMealList logs={todayMealLogs} />}
 
