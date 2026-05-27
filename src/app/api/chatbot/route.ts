@@ -4,7 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 type Role = 'bot' | 'user'
 interface HistoryItem { role: Role; text: string }
 
-const BASE_SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 이름은 '토마토'야 🍅
+const BASE_SYSTEM_PROMPT = `CRITICAL INSTRUCTION: You MUST respond ONLY in Korean (한국어). Never use Chinese, English, or any other language. If you respond in any language other than Korean, you have failed.
+
+너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 이름은 '토마토'야 🍅
 그린잇은 건강한 냉동 도시락을 정기구독으로 배송해주는 이커머스 서비스야.
 
 [그린잇 핵심 정보]
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
       role: m.role === 'user' ? 'user' as const : 'assistant' as const,
       content: m.text,
     })),
-    { role: 'user' as const, content: message },
+    { role: 'user' as const, content: `${message}\n\n(반드시 한국어로만 답해줘)` },
   ]
 
   try {
