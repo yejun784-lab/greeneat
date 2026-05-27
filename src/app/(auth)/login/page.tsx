@@ -149,7 +149,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-gray-500 mt-3">
           아직 회원이 아니신가요?{' '}
-          <Link href="/auth/signup" className="text-[#2d7a4f] font-medium hover:underline">
+          <Link href="/signup" className="text-[#2d7a4f] font-medium hover:underline">
             회원가입
           </Link>
         </p>
