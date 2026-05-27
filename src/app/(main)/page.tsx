@@ -113,7 +113,7 @@ export default async function HomePage() {
                                   'rounded-tl-sm rounded-tr-xl rounded-bl-xl rounded-br-3xl'
                       }`}
                     >
-                      <div className="aspect-square">
+                      <div className="aspect-square relative">
                         <Image
                           src={`https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/${item.src}`}
                           alt={item.label}
