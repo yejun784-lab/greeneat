@@ -1,14 +1,17 @@
 import type { Metadata, Viewport } from "next";
+import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/components/providers/CartProvider";
-import { PWAProvider } from "@/components/providers/PWAProvider";
-import { ToastContainer } from "@/components/ui/Toast";
-import { ChatBot } from "@/components/mascot/ChatBot";
-import { CompareTray } from "@/components/products/CompareTray";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { HealthQuestionnaire } from "@/components/onboarding/HealthQuestionnaire";
-import { CartAbandonmentGuard } from "@/components/cart/CartAbandonmentGuard";
+import { ToastContainer } from "@/components/ui/Toast";
 import "./globals.css";
+
+// 초기 번들에서 제외 — 페이지 로드 후 lazy 로드
+const PWAProvider         = dynamic(() => import("@/components/providers/PWAProvider").then(m => ({ default: m.PWAProvider })), { ssr: false });
+const ChatBot             = dynamic(() => import("@/components/mascot/ChatBot").then(m => ({ default: m.ChatBot })), { ssr: false });
+const CompareTray         = dynamic(() => import("@/components/products/CompareTray").then(m => ({ default: m.CompareTray })), { ssr: false });
+const HealthQuestionnaire = dynamic(() => import("@/components/onboarding/HealthQuestionnaire").then(m => ({ default: m.HealthQuestionnaire })), { ssr: false });
+const CartAbandonmentGuard = dynamic(() => import("@/components/cart/CartAbandonmentGuard").then(m => ({ default: m.CartAbandonmentGuard })), { ssr: false });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
