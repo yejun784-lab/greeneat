@@ -1,0 +1,21 @@
+
+> greeneat@0.1.0 dev
+> next dev --webpack
+
+⚠ Port 3000 is in use by process 14840, using available port 3001 instead.
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.9.29:3001
+- Environments: .env.local
+✓ Ready in 3.7s
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead.
+[@sentry/nextjs] DEPRECATION WARNING: automaticVercelMonitors is deprecated and will be removed in a future version. Use webpack.automaticVercelMonitors instead.
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          14840
+- Dir:          C:\Users\kwgs\Desktop\greeneat\greeneat
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 14840 /F to stop it.
+[?25h
