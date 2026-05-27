@@ -218,10 +218,12 @@ export function MealPlanner({ products, userId }: { products: Product[]; userId?
         {/* 행 */}
         {DAYS.map((day, di) => (
           <div key={day} className="border-b border-line last:border-0">
-            <button
-              type="button"
-              className="w-full grid grid-cols-4 items-start hover:bg-wash/50 transition-colors"
+            <div
+              role="button"
+              tabIndex={0}
+              className="w-full grid grid-cols-4 items-start hover:bg-wash/50 transition-colors cursor-pointer"
               onClick={() => setExpandedDay(expandedDay === di ? null : di)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setExpandedDay(expandedDay === di ? null : di) }}
             >
               <div className="px-3 py-3 flex items-center gap-1.5">
                 <span className="text-sm font-semibold text-ink">{day}</span>
@@ -264,7 +266,7 @@ export function MealPlanner({ products, userId }: { products: Product[]; userId?
                   </div>
                 )
               })}
-            </button>
+            </div>
 
             {/* 요일 상세 (확장 시) */}
             {expandedDay === di && (

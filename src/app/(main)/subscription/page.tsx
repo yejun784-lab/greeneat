@@ -66,6 +66,7 @@ export default function SubscriptionPage() {
   const [loading, setLoading] = useState(false)
 
   const [products, setProducts] = useState<Product[]>([])
+  const [productsLoading, setProductsLoading] = useState(true)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
 
   useEffect(() => {
@@ -78,6 +79,7 @@ export default function SubscriptionPage() {
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (!error) setProducts((data ?? []) as unknown as Product[])
+        setProductsLoading(false)
       })
   }, [])
 
@@ -221,8 +223,10 @@ export default function SubscriptionPage() {
               </span>
             </div>
 
-            {products.length === 0 ? (
+            {productsLoading ? (
               <p className="text-center text-sm text-ink-5 py-8">구독 가능한 상품을 불러오는 중...</p>
+            ) : products.length === 0 ? (
+              <p className="text-center text-sm text-ink-5 py-8">현재 구독 가능한 상품이 없습니다.</p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {products.map((product) => {

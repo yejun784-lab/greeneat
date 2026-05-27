@@ -13,7 +13,7 @@ const BUNDLE_THRESHOLD = 3
 const BUNDLE_DISCOUNT = 0.05
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, totalPrice } = useCartStore()
+  const { items, removeItem, updateQuantity, totalPrice, _hasHydrated } = useCartStore()
   const total = totalPrice()
   const totalItems = items.reduce((s, i) => s + i.quantity, 0)
 
@@ -22,6 +22,8 @@ export default function CartPage() {
   const discountedTotal = total - bundleDiscount
   const shipping = discountedTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE
   const finalTotal = discountedTotal + shipping
+
+  if (!_hasHydrated) return null
 
   if (items.length === 0) {
     return (

@@ -60,6 +60,7 @@ export default function RootLayout({
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
       {/* dev 환경: SW + 캐시 정리 */}
       {process.env.NODE_ENV !== 'production' && (
