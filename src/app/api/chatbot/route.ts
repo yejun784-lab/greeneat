@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 
 type Role = 'bot' | 'user'
@@ -32,7 +31,8 @@ const BASE_SYSTEM_PROMPT = `너는 그린잇(GreenEat)의 공식 챗봇 도우�
 - 모르는 건 솔직하게 말하고 고객센터(1555-5952)로 안내해.
 - 그린잇 서비스 외 주제(정치, 연예, 일반 상식 등)는 정중히 거절해.
 - 답변은 3~5줄 이내로 짧게. 길면 나눠서 설명해.
-- 반드시 한국어로만 답해.`
+- 반드시 한국어로만 답해.
+- 영어나 다른 언어로 절대 답하지 마.`
 
 export async function POST(req: NextRequest) {
   const { message, history = [] } = await req.json()
@@ -95,32 +95,44 @@ export async function POST(req: NextRequest) {
     + (userName ? `\n\n현재 대화 중인 고객 이름은 "${userName}"이야. 자연스럽게 이름을 불러줘.` : '')
 
   // 대화 히스토리 변환 (최근 10턴)
-  const historyMessages: Anthropic.MessageParam[] = (history as HistoryItem[])
-    .slice(-10)
-    .map((m) => ({
+  const messages = [
+    ...(history as HistoryItem[]).slice(-10).map((m) => ({
       role: m.role === 'user' ? 'user' as const : 'assistant' as const,
       content: m.text,
-    }))
+    })),
+    { role: 'user' as const, content: message },
+  ]
 
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.GREENEAT_ANTHROPIC_KEY })
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5',
-      max_tokens: 400,
-      system: systemPrompt,
-      messages: [
-        ...historyMessages,
-        { role: 'user', content: message },
-      ],
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+        ],
+        max_tokens: 400,
+        temperature: 0.7,
+      }),
     })
 
-    const reply = response.content[0].type === 'text'
-      ? response.content[0].text
-      : '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
+    if (!res.ok) {
+      const err = await res.text()
+      console.error('[Groq Error]', err)
+      throw new Error(err)
+    }
+
+    const data = await res.json()
+    const reply = data.choices?.[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
 
     return NextResponse.json({ reply, userName })
   } catch (err) {
-    console.error('[Claude Chatbot Error]', err)
+    console.error('[Chatbot Error]', err)
     return NextResponse.json({
       reply: '잠깐 오류가 생겼어요. 다시 시도해주세요 😅',
       userName,
