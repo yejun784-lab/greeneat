@@ -85,9 +85,15 @@ function SignupForm() {
         { user_id: referrerId, amount: 2000, reason: '친구 초대 보상' },
         { user_id: data.user.id, amount: 1000, reason: '초대 코드 사용' },
       ])
+      const { data: refProfileBalance } = await supabase
+        .from('profiles')
+        .select('point_balance')
+        .eq('id', referrerId)
+        .maybeSingle()
+      const currentBalance = refProfileBalance?.point_balance ?? 0
       await supabase
         .from('profiles')
-        .update({ point_balance: 2000 })
+        .update({ point_balance: currentBalance + 2000 })
         .eq('id', referrerId)
     }
 

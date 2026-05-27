@@ -90,10 +90,10 @@ export async function POST(req: NextRequest) {
     const ext = file.name.split('.').pop() || 'jpg'
     const path = `meal-logs/${user.id}/${date}-${Date.now()}.${ext}`
     const { error: uploadError } = await supabase.storage
-      .from('product-images')
+      .from('meal-images')
       .upload(path, file, { contentType: file.type, upsert: false })
     if (!uploadError) {
-      const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path)
+      const { data: urlData } = supabase.storage.from('meal-images').getPublicUrl(path)
       imageUrl = urlData.publicUrl
     }
   } catch {

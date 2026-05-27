@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2, Package, ArrowRight, Loader2, XCircle } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
+import confetti from 'canvas-confetti'
 
 type OrderItem = {
   products?: { name?: string } | null
@@ -32,9 +33,11 @@ export default function CheckoutSuccessPage() {
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
-  const paymentKey = searchParams.get('paymentKey')
-  const orderId    = searchParams.get('orderId')
-  const amount     = Number(searchParams.get('amount'))
+  const paymentKey  = searchParams.get('paymentKey')
+  const orderId     = searchParams.get('orderId')
+  const amountStr   = searchParams.get('amount')
+  const amount      = amountStr != null ? Number(amountStr) : null
+  const usedPoints  = Number(searchParams.get('usedPoints') ?? '0')
 
   const [status, setStatus]           = useState<'confirming' | 'success' | 'error'>('confirming')
   const [earnedPoints, setEarnedPoints] = useState(0)
@@ -42,7 +45,7 @@ function CheckoutSuccessContent() {
   const [errorMsg, setErrorMsg]       = useState('')
 
   useEffect(() => {
-    if (!paymentKey || !orderId || !amount) {
+    if (!paymentKey || !orderId || amount == null) {
       setErrorMsg('결제 정보가 올바르지 않아요.')
       setStatus('error')
       return
@@ -51,13 +54,21 @@ function CheckoutSuccessContent() {
     fetch('/api/payment/confirm', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentKey, orderId, amount }),
+      body: JSON.stringify({ paymentKey, orderId, amount, usedPoints }),
     })
       .then((r) => r.json())
       .then((data) => {
         if (data.success) {
           setEarnedPoints(data.earnedPoints ?? 0)
           setStatus('success')
+          if (!data.alreadyConfirmed) {
+            confetti({
+              particleCount: 120,
+              spread: 80,
+              origin: { y: 0.6 },
+              colors: ['#2d7a4f', '#4caf72', '#a8e6c1', '#ffffff', '#f5c400'],
+            })
+          }
           return fetch(`/api/orders/${orderId}`).then((r) => r.json()).then((d) => {
             if (d.order) setOrder(d.order)
           }).catch(() => {})

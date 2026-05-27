@@ -66,8 +66,9 @@ export const useCartStore = create<CartStore>()(
         set((state) => ({
           items: state.items.map((i) => {
             if (i.product.id !== productId || i.isSubscription !== isSubscription) return i
-            // 재고 상한 초과 방지
-            const maxQty = i.product.stock > 0 ? i.product.stock : quantity
+            // 재고 상한 초과 방지 (재고 0 상품은 수량 변경 불가)
+            if (i.product.stock <= 0) return i
+            const maxQty = i.product.stock
             return { ...i, quantity: Math.min(quantity, maxQty) }
           }),
         }))

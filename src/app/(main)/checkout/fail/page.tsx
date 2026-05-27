@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { XCircle, RefreshCw, ArrowLeft, MessageCircle } from 'lucide-react'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 
 const FAIL_REASONS: Record<string, string> = {
   PAY_PROCESS_CANCELED: '결제를 취소하셨어요.',
@@ -18,6 +18,15 @@ function FailContent() {
   const code    = searchParams.get('code') ?? ''
   const message = searchParams.get('message') ?? ''
   const reason  = FAIL_REASONS[code] ?? (message || '결제 처리 중 문제가 발생했어요.')
+  const orderId = searchParams.get('orderId')
+
+  // 결제 실패 시 생성된 pending 주문 삭제 (orderId가 없거나 이미 처리된 경우 조용히 무시)
+  useEffect(() => {
+    if (!orderId) return
+    fetch(`/api/orders/${orderId}`, { method: 'DELETE' }).catch(() => {
+      // 삭제 실패는 조용히 무시 (이미 삭제됐거나 존재하지 않는 주문)
+    })
+  }, [orderId])
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">

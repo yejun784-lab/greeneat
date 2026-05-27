@@ -36,7 +36,7 @@ export default async function HealthPage() {
     { data: rawWeightLogs },
     { data: productsRaw },
   ] = await Promise.all([
-    supabase.from('profiles').select('nutrition_goal, allergen_profile').eq('id', user.id).maybeSingle(),
+    supabase.from('profiles').select('nutrition_goal, allergen_profile, height_cm, weight_kg').eq('id', user.id).maybeSingle(),
     supabase.from('orders')
       .select('created_at, order_items(quantity, products(calories, protein, carbs, fat))')
       .eq('user_id', user.id).eq('payment_status', 'paid')
@@ -53,6 +53,14 @@ export default async function HealthPage() {
   ])
 
   const goal = profile?.nutrition_goal ?? 'balanced'
+  const heightCm = profile?.height_cm ? Number(profile.height_cm) : null
+  const weightKg = profile?.weight_kg ? Number(profile.weight_kg) : null
+  const bmi = heightCm && weightKg ? weightKg / Math.pow(heightCm / 100, 2) : null
+  const bmiMeta = bmi === null ? null
+    : bmi < 18.5 ? { label: '저체중', color: 'text-blue-500',   bg: 'bg-blue-50',   bar: 'bg-blue-400'   }
+    : bmi < 23   ? { label: '정상',   color: 'text-green-600',  bg: 'bg-green-50',  bar: 'bg-green-500'  }
+    : bmi < 25   ? { label: '과체중', color: 'text-orange-500', bg: 'bg-orange-50', bar: 'bg-orange-400' }
+    :              { label: '비만',   color: 'text-red-500',    bg: 'bg-red-50',    bar: 'bg-red-400'    }
   const goalInfo: GoalInfo = GOAL_INFO[goal] ?? GOAL_INFO.balanced
   const goalMeta = GOAL_LABEL[goal] ?? GOAL_LABEL.balanced
   const allergens: string[] = (profile?.allergen_profile as string[]) ?? []
@@ -128,6 +136,46 @@ export default async function HealthPage() {
           )}
         </section>
 
+        {/* BMI 카드 */}
+        {bmi !== null && bmiMeta !== null ? (
+          <section className="bg-surface rounded-2xl border border-line p-5">
+            <h2 className="text-base font-semibold text-ink mb-3">BMI 체질량지수</h2>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-3xl font-bold text-ink">{bmi.toFixed(1)}</span>
+              <span className={`text-sm font-semibold px-3 py-1 rounded-full ${bmiMeta.color} ${bmiMeta.bg}`}>{bmiMeta.label}</span>
+            </div>
+            {/* 바 */}
+            <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="absolute inset-0 flex">
+                <div className="flex-none w-[23.5%] bg-blue-200 rounded-l-full" />
+                <div className="flex-none w-[22.5%] bg-green-200" />
+                <div className="flex-none w-[10%] bg-orange-200" />
+                <div className="flex-1 bg-red-200 rounded-r-full" />
+              </div>
+              <div
+                className={`absolute top-0 h-2 w-1.5 rounded-full ${bmiMeta.bar} -translate-x-1/2`}
+                style={{ left: `${Math.min(Math.max(((bmi - 15) / 20) * 100, 2), 98)}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[10px] text-ink-4 mt-1">
+              <span>15</span><span>저체중</span><span>정상</span><span>과체중</span><span>35</span>
+            </div>
+            <p className="text-xs text-ink-4 mt-3">
+              {heightCm}cm · {weightKg}kg — 마이페이지에서 수정할 수 있어요
+            </p>
+          </section>
+        ) : (
+          <section className="bg-surface rounded-2xl border border-line p-5 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-ink">BMI 체질량지수</p>
+              <p className="text-xs text-ink-4 mt-0.5">키와 몸무게를 입력하면 BMI를 확인할 수 있어요</p>
+            </div>
+            <a href="/my" className="text-xs font-medium text-primary border border-primary/30 px-3 py-1.5 rounded-full hover:bg-green-tint transition-colors">
+              입력하기
+            </a>
+          </section>
+        )}
+
         <MealPhotoLogger />
         <ManualMealLogger />
 
@@ -140,7 +188,7 @@ export default async function HealthPage() {
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">체중 기록</h2>
-          <WeightTracker initialLogs={weightLogs} userId={user.id} />
+          <WeightTracker initialLogs={weightLogs} userId={user.id} heightCm={heightCm} />
         </section>
 
         <section className="bg-surface rounded-2xl border border-line p-5">

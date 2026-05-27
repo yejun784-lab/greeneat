@@ -171,7 +171,7 @@ export default function CheckoutPage() {
         orderName,
         customerName: userName || undefined,
         customerEmail: userEmail || undefined,
-        successUrl: `${window.location.origin}/checkout/success`,
+        successUrl: `${window.location.origin}/checkout/success?usedPoints=${usedPoints}`,
         failUrl: `${window.location.origin}/checkout/fail`,
       })
       // requestPayment가 성공하면 successUrl로 redirect됨

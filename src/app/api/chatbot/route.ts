@@ -1,13 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+// ── 간단한 인메모리 Rate Limiter ───────────────────────────────────────────
+// 분당 최대 15회 / IP or 유저 기준
+const RATE_WINDOW_MS = 60_000
+const RATE_LIMIT     = 15
+const rateLimitMap   = new Map<string, { count: number; windowStart: number }>()
+
+function checkRateLimit(key: string): boolean {
+  const now  = Date.now()
+  const slot = rateLimitMap.get(key)
+  if (!slot || now - slot.windowStart >= RATE_WINDOW_MS) {
+    rateLimitMap.set(key, { count: 1, windowStart: now })
+    return true
+  }
+  if (slot.count >= RATE_LIMIT) return false
+  slot.count++
+  return true
+}
+
+// 메모리 누수 방지 — 오래된 항목 주기적으로 정리 (서버리스 환경에서 최선)
+if (rateLimitMap.size > 500) {
+  const cutoff = Date.now() - RATE_WINDOW_MS
+  for (const [k, v] of rateLimitMap.entries()) {
+    if (v.windowStart < cutoff) rateLimitMap.delete(k)
+  }
+}
+
 type Role = 'bot' | 'user'
 interface HistoryItem { role: Role; text: string }
 
+type CharKey = 'tomato' | 'broccoli' | 'carrot' | 'corn' | 'avocado' | 'strawberry'
+
+const CHAR_PERSONALITY: Record<CharKey, string> = {
+  tomato: `
+[캐릭터 — 토마토 🍅]
+이름은 '토마토'. 발랄하고 친근한 청년 느낌이야.
+- 말투: "~해요", "~이에요" 기본. 가끔 "ㅎㅎ", "ㅋㅋ" 섞어도 OK.
+- 긍정적이고 에너지 넘침. 토마토 관련 드립 가끔 날려줘 ("저도 토마토처럼 빨갛게 응원할게요 🍅").
+- 짧고 경쾌하게 답해.`,
+
+  broccoli: `
+[캐릭터 — 브로콜리 🥦]
+이름은 '브로콜리'. 건강 전도사 선배 느낌이야.
+- 말투: "~습니다", "~드립니다" 정중하지만 따뜻함.
+- 건강·영양 관련 언급이 나오면 눈을 반짝이며 적극 도움.
+- "파이팅!", "건강이 최고예요 💪" 같은 격려를 잘 씀.
+- 조금 진지하지만 절대 딱딱하지 않음. 응원을 아끼지 마.`,
+
+  carrot: `
+[캐릭터 — 당근이 🥕]
+이름은 '당근이'. 초고에너지 아이돌 스타일이야.
+- 말투: "~요!", "대박!", "완전!", "헐~" 자주 씀.
+- 문장 끝에 느낌표 많고 이모지 풍부하게 🎉🥕✨
+- 뭐든 최선을 다해 빠르게 도와주려 함.
+- 항상 신나고 밝은 에너지. 절대 우울하게 답하지 마.`,
+
+  corn: `
+[캐릭터 — 옥수수 🌽]
+이름은 '옥수수'. 따뜻한 시골 어르신 느낌이야.
+- 말투: "~허이", "~그려", "~허구먼" 같은 구수한 사투리 어미를 살짝 섞어.
+- 느긋하고 여유롭고 정감 있음. 음식 얘기 나오면 더 반김.
+- "잘 먹는 게 최고여~", "몸 좀 챙겨야 허이~" 같은 말 자주 씀.
+- 따뜻하고 든든한 조언자 느낌으로 답해.`,
+
+  avocado: `
+[캐릭터 — 아보카 🥑]
+이름은 '아보카'. 트렌디한 MZ 세대 느낌이야.
+- 말투: "~잖아요", "그니까요", "레알", "찐으로" 가끔 씀.
+- 쿨하게, 너무 힘주지 않는 스타일. 근데 속은 따뜻함.
+- 건강한 라이프스타일·다이어트 토픽에 유독 눈을 빛냄.
+- 유행어·신조어 살짝 섞되 과하지 않게. 세련되게 도와줘.`,
+
+  strawberry: `
+[캐릭터 — 딸기 🍓]
+이름은 '딸기'. 달콤하고 귀여운 애교 캐릭터야.
+- 말투: "~해요~", "~죠?", "~걸요?" 같은 부드럽고 달달한 어미.
+- 이모지를 듬뿍 써줘 🍓✨💕😊
+- 칭찬과 응원을 아끼지 않음. 뭐든 달콤하게 포장해서 전달.
+- 절대 딱딱하거나 차갑게 답하지 마. 항상 따뜻하고 사랑스럽게.`,
+}
+
 const BASE_SYSTEM_PROMPT = `[언어 규칙 — 절대 원칙]
 반드시 한국어로만 답해야 해. 영어·중국어·일본어·독일어 등 어떤 외국어도 절대 사용 금지. 외래어조차 쓰지 마.
+한자(漢字) 사용 절대 금지. 예: 配送(×) → 배송(○), 注文(×) → 주문(○). 무조건 한글로만 써.
 
-너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 이름은 '토마토'야 🍅
+너는 그린잇(GreenEat)의 공식 챗봇 도우미야. 아래 [캐릭터] 섹션에 정의된 이름과 말투를 반드시 따라야 해.
 그린잇은 건강한 냉동 도시락을 정기구독으로 배송해주는 이커머스 서비스야.
 
 [그린잇 서비스 전체 기능]
@@ -63,7 +141,18 @@ const BASE_SYSTEM_PROMPT = `[언어 규칙 — 절대 원칙]
 - 답변은 3~5줄 이내로 짧게.`
 
 export async function POST(req: NextRequest) {
-  const { message, history = [] } = await req.json()
+  // ── Rate Limit 체크 ──────────────────────────────────────────────────────
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+         ?? req.headers.get('x-real-ip')
+         ?? 'unknown'
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { reply: '잠시 후 다시 시도해주세요. (1분에 최대 15회 이용 가능해요)' },
+      { status: 429 }
+    )
+  }
+
+  const { message, history = [], charKey = 'tomato' } = await req.json()
   if (!message?.trim()) {
     return NextResponse.json({ error: '메시지를 입력해주세요.' }, { status: 400 })
   }
@@ -117,7 +206,10 @@ export async function POST(req: NextRequest) {
     }
   } catch {}
 
+  const personality = CHAR_PERSONALITY[charKey as CharKey] ?? CHAR_PERSONALITY.tomato
+
   const systemPrompt = BASE_SYSTEM_PROMPT
+    + personality
     + productListText
     + healthContext
     + (userName ? `\n\n현재 대화 중인 고객 이름은 "${userName}"이야. 자연스럽게 이름을 불러줘.` : '')
@@ -156,7 +248,9 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json()
-    const reply = data.choices?.[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
+    const raw = data.choices?.[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
+    // 한자(CJK) 완전 제거
+    const reply = raw.replace(/[一-鿿㐀-䶿豈-﫿\u{20000}-\u{2A6DF}]/gu, '')
 
     return NextResponse.json({ reply, userName })
   } catch (err) {

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { GOAL_LABEL } from '@/lib/health-types'
+import { toast } from '@/lib/toast-store'
 import type { Product } from '@/types'
 
 type Props = {
@@ -23,9 +24,13 @@ const GOAL_SORT_LABEL: Record<string, string> = {
   balanced: '균형식',
 }
 
-function filterAndSort(products: Product[], goal: string): Product[] {
-  // TODO: allergen filtering needs product.allergens column data
-  const active = products.filter((p) => p.is_active)
+function filterAndSort(products: Product[], goal: string, allergens: string[]): Product[] {
+  const active = products.filter((p) => {
+    if (!p.is_active) return false
+    if (allergens.length === 0) return true
+    const searchText = `${p.name} ${p.description ?? ''}`.toLowerCase()
+    return !allergens.some((a) => searchText.includes(a.toLowerCase()))
+  })
   if (goal === 'diet') {
     return active
       .filter((p) => (p.calories ?? 9999) <= 500)
@@ -39,13 +44,13 @@ function filterAndSort(products: Product[], goal: string): Product[] {
     .sort((a, b) => (b.protein ?? 0) - (a.protein ?? 0))
 }
 
-export function AIMealPlan({ products, goal, userId }: Props) {
+export function AIMealPlan({ products, goal, allergens, userId }: Props) {
   const [offset, setOffset] = useState(0)
 
   const baseList = useMemo(() => {
-    const filtered = filterAndSort(products, goal)
+    const filtered = filterAndSort(products, goal, allergens)
     return filtered.length > 0 ? filtered : products.slice(0, 7)
-  }, [products, goal])
+  }, [products, goal, allergens])
 
   const rotated = baseList.length > 0
     ? WEEKDAYS.map((_, i) => baseList[(i + offset) % baseList.length])
@@ -57,7 +62,7 @@ export function AIMealPlan({ products, goal, userId }: Props) {
       { user_id: userId, product_id: product.id, quantity: 1, is_subscription: false, display_group: product.display_group ?? 1 },
       { onConflict: 'user_id,product_id' }
     )
-    alert(`"${product.name}"을(를) 장바구니에 담았어요!`)
+    toast.success(`"${product.name}"을(를) 장바구니에 담았어요!`)
   }
 
   const goalMeta = GOAL_LABEL[goal]

@@ -12,10 +12,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
   }
 
-  const { paymentKey, orderId, amount } = await req.json() as {
+  const { paymentKey, orderId, amount, usedPoints = 0 } = await req.json() as {
     paymentKey: string
     orderId: string
     amount: number
+    usedPoints?: number
   }
 
   if (!paymentKey || !orderId || !amount) {
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // ── 7) 포인트 적립 ────────────────────────────────────────────────────────
+  // ── 7) 포인트 처리 (적립 + 사용 차감) ───────────────────────────────────
   const { data: profile } = await supabase
     .from('profiles')
     .select('point_balance')
@@ -110,20 +111,25 @@ export async function POST(req: NextRequest) {
     .single()
 
   const currentBalance = profile?.point_balance ?? 0
-  const earnedPoints = Math.floor(order.total_price * POINT_RATE)
+  // 적립: 실결제금액(amount)의 1% — 포인트 사용 후 실제 결제한 금액 기준
+  const earnedPoints = Math.floor(amount * POINT_RATE)
+  const pointRows: { user_id: string; amount: number; reason: string; order_id: string }[] = []
 
+  if (usedPoints > 0) {
+    pointRows.push({ user_id: user.id, amount: -usedPoints, reason: '포인트 사용', order_id: orderId })
+  }
   if (earnedPoints > 0) {
+    pointRows.push({ user_id: user.id, amount: earnedPoints, reason: '주문 적립 (1%)', order_id: orderId })
+  }
+
+  const newBalance = Math.max(0, currentBalance - usedPoints + earnedPoints)
+
+  if (pointRows.length > 0 || currentBalance !== newBalance) {
     await Promise.all([
-      supabase.from('points').insert({
-        user_id: user.id,
-        amount: earnedPoints,
-        reason: '주문 적립 (1%)',
-        order_id: orderId,
-      }),
-      supabase
-        .from('profiles')
-        .update({ point_balance: currentBalance + earnedPoints })
-        .eq('id', user.id),
+      pointRows.length > 0
+        ? supabase.from('points').insert(pointRows)
+        : Promise.resolve(),
+      supabase.from('profiles').update({ point_balance: newBalance }).eq('id', user.id),
     ])
   }
 

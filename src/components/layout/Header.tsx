@@ -69,7 +69,7 @@ export function Header() {
       if (data.user) {
         const [{ data: profile }, { count }] = await Promise.all([
           supabase.from('profiles').select('name').eq('id', data.user.id).maybeSingle(),
-          supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false),
+          supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false).eq('user_id', data.user.id),
         ])
         setProfileName(profile?.name ?? null)
         setUnreadCount(count ?? 0)

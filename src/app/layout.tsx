@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import dynamic from "next/dynamic";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -60,22 +61,20 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      {/* dev 환경: SW + 캐시 즉시 정리 (React 로드 전 실행 → 구 SW가 구 HTML 서빙해도 동작) */}
+      {/* dev 환경: SW + 캐시 정리 */}
       {process.env.NODE_ENV !== 'production' && (
-        <head>
-          <script dangerouslySetInnerHTML={{ __html: `
-            if('serviceWorker' in navigator){
-              navigator.serviceWorker.getRegistrations().then(function(regs){
-                regs.forEach(function(r){ r.unregister(); });
+        <Script id="dev-sw-cleanup" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
+          if('serviceWorker' in navigator){
+            navigator.serviceWorker.getRegistrations().then(function(regs){
+              regs.forEach(function(r){ r.unregister(); });
+            });
+            if(typeof caches !== 'undefined'){
+              caches.keys().then(function(keys){
+                keys.forEach(function(k){ caches.delete(k); });
               });
-              if(typeof caches !== 'undefined'){
-                caches.keys().then(function(keys){
-                  keys.forEach(function(k){ caches.delete(k); });
-                });
-              }
             }
-          `}} />
-        </head>
+          }
+        `}} />
       )}
       <body className="min-h-full flex flex-col bg-surface text-ink">
         <ThemeProvider>
