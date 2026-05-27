@@ -18,6 +18,8 @@ export type LocalCartItem = {
 }
 
 type CartStore = {
+  _hasHydrated: boolean
+  setHasHydrated: (v: boolean) => void
   items: LocalCartItem[]
   addItem: (product: Product, isSubscription?: boolean) => void
   removeItem: (productId: string, isSubscription?: boolean) => void
@@ -30,6 +32,8 @@ type CartStore = {
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
+      _hasHydrated: false,
+      setHasHydrated: (v) => set({ _hasHydrated: v }),
       items: [],
       addItem: (product, isSubscription = false) => {
         set((state) => {
@@ -82,6 +86,7 @@ export const useCartStore = create<CartStore>()(
       name: 'greeneat-cart',
       storage,
       skipHydration: true,
+      onRehydrateStorage: () => (state) => { state?.setHasHydrated(true) },
     }
   )
 )

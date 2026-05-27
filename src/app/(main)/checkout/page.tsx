@@ -30,7 +30,7 @@ function loadTossScript(): Promise<void> {
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, totalPrice } = useCartStore()
+  const { items, totalPrice, _hasHydrated } = useCartStore()
   const [address, setAddress] = useState('')
   const [detail, setDetail] = useState('')
   const [deliveryDate, setDeliveryDate] = useState('')
@@ -76,8 +76,8 @@ export default function CheckoutPage() {
   }, [router])
 
   useEffect(() => {
-    if (items.length === 0) router.replace('/cart')
-  }, [items.length, router])
+    if (_hasHydrated && items.length === 0) router.replace('/cart')
+  }, [_hasHydrated, items.length, router])
 
   async function applyCoupon() {
     if (!couponCode.trim()) return
