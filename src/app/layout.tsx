@@ -6,12 +6,12 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToastContainer } from "@/components/ui/Toast";
 import "./globals.css";
 
-// 초기 번들에서 제외 — 페이지 로드 후 lazy 로드
-const PWAProvider         = dynamic(() => import("@/components/providers/PWAProvider").then(m => ({ default: m.PWAProvider })), { ssr: false });
-const ChatBot             = dynamic(() => import("@/components/mascot/ChatBot").then(m => ({ default: m.ChatBot })), { ssr: false });
-const CompareTray         = dynamic(() => import("@/components/products/CompareTray").then(m => ({ default: m.CompareTray })), { ssr: false });
-const HealthQuestionnaire = dynamic(() => import("@/components/onboarding/HealthQuestionnaire").then(m => ({ default: m.HealthQuestionnaire })), { ssr: false });
-const CartAbandonmentGuard = dynamic(() => import("@/components/cart/CartAbandonmentGuard").then(m => ({ default: m.CartAbandonmentGuard })), { ssr: false });
+// 초기 번들에서 제외 — 코드 스플리팅으로 lazy 로드
+const PWAProvider          = dynamic(() => import("@/components/providers/PWAProvider").then(m => ({ default: m.PWAProvider })));
+const ChatBot              = dynamic(() => import("@/components/mascot/ChatBot").then(m => ({ default: m.ChatBot })));
+const CompareTray          = dynamic(() => import("@/components/products/CompareTray").then(m => ({ default: m.CompareTray })));
+const HealthQuestionnaire  = dynamic(() => import("@/components/onboarding/HealthQuestionnaire").then(m => ({ default: m.HealthQuestionnaire })));
+const CartAbandonmentGuard = dynamic(() => import("@/components/cart/CartAbandonmentGuard").then(m => ({ default: m.CartAbandonmentGuard })));
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
