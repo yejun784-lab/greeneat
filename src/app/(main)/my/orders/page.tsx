@@ -72,6 +72,7 @@ export default async function OrdersPage() {
     .select('*, order_items(id, quantity, price_at_purchase, products(name))')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+    .limit(100)
 
   const orders = (data ?? []) as Order[]
 

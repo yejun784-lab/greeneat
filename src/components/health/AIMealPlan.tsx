@@ -58,10 +58,14 @@ export function AIMealPlan({ products, goal, allergens, userId }: Props) {
 
   async function handleAddToCart(product: Product) {
     const supabase = createClient()
-    await supabase.from('cart_items').upsert(
+    const { error } = await supabase.from('cart_items').upsert(
       { user_id: userId, product_id: product.id, quantity: 1, is_subscription: false, display_group: product.display_group ?? 1 },
       { onConflict: 'user_id,product_id' }
     )
+    if (error) {
+      toast.error('장바구니 담기에 실패했어요.')
+      return
+    }
     toast.success(`"${product.name}"을(를) 장바구니에 담았어요!`)
   }
 

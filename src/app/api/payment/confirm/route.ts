@@ -111,18 +111,20 @@ export async function POST(req: NextRequest) {
     .single()
 
   const currentBalance = profile?.point_balance ?? 0
+  // usedPoints를 실제 잔액·결제금액 범위로 제한 (클라이언트 조작 방어)
+  const safeUsedPoints = Math.min(Math.max(0, usedPoints), currentBalance, amount)
   // 적립: 실결제금액(amount)의 1% — 포인트 사용 후 실제 결제한 금액 기준
   const earnedPoints = Math.floor(amount * POINT_RATE)
   const pointRows: { user_id: string; amount: number; reason: string; order_id: string }[] = []
 
-  if (usedPoints > 0) {
-    pointRows.push({ user_id: user.id, amount: -usedPoints, reason: '포인트 사용', order_id: orderId })
+  if (safeUsedPoints > 0) {
+    pointRows.push({ user_id: user.id, amount: -safeUsedPoints, reason: '포인트 사용', order_id: orderId })
   }
   if (earnedPoints > 0) {
     pointRows.push({ user_id: user.id, amount: earnedPoints, reason: '주문 적립 (1%)', order_id: orderId })
   }
 
-  const newBalance = Math.max(0, currentBalance - usedPoints + earnedPoints)
+  const newBalance = Math.max(0, currentBalance - safeUsedPoints + earnedPoints)
 
   if (pointRows.length > 0 || currentBalance !== newBalance) {
     await Promise.all([

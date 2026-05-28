@@ -44,8 +44,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
   }
 
-  if (rating < 1 || rating > 5) {
-    return NextResponse.json({ error: '평점은 1~5 사이여야 합니다.' }, { status: 400 })
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return NextResponse.json({ error: '평점은 1~5 사이 정수여야 합니다.' }, { status: 400 })
+  }
+
+  if (content && content.length > 500) {
+    return NextResponse.json({ error: '리뷰는 500자 이내로 작성해주세요.' }, { status: 400 })
+  }
+
+  // 구매 이력 확인 (해당 product_id를 실제로 구매한 경우만)
+  const { data: paidOrders } = await supabase
+    .from('orders')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('payment_status', 'paid')
+  const paidOrderIds = (paidOrders ?? []).map((o) => o.id)
+  if (paidOrderIds.length === 0) {
+    return NextResponse.json({ error: '구매한 상품에만 리뷰를 작성할 수 있습니다.' }, { status: 403 })
+  }
+  const { count: purchaseCount } = await supabase
+    .from('order_items')
+    .select('id', { count: 'exact', head: true })
+    .eq('product_id', product_id)
+    .in('order_id', paidOrderIds)
+  if ((purchaseCount ?? 0) === 0) {
+    return NextResponse.json({ error: '구매한 상품에만 리뷰를 작성할 수 있습니다.' }, { status: 403 })
   }
 
   // 중복 리뷰 방지

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -41,36 +41,52 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState<Tab>('info')
   const [added, setAdded] = useState(false)
+  const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const addItem = useCartStore((s) => s.addItem)
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.add)
 
+  // timer cleanup on unmount
+  useEffect(() => {
+    return () => { if (addedTimerRef.current) clearTimeout(addedTimerRef.current) }
+  }, [])
+
   useEffect(() => {
     async function load() {
-      const supabase = createClient()
-      const [{ data: productData }, { data: stepsData }, { data: imagesData }] = await Promise.all([
-        supabase
-          .from('products')
-          .select('*, product_categories(id, name, slug, description)')
-          .eq('id', params.id as string)
-          .single(),
-        supabase
-          .from('recipe_steps')
-          .select('*')
-          .eq('product_id', params.id as string)
-          .order('step_number'),
-        supabase
-          .from('product_images')
-          .select('*')
-          .eq('product_id', params.id as string)
-          .order('order'),
-      ])
-      const p = productData as Product
-      setProduct(p)
-      setRecipeSteps((stepsData ?? []) as RecipeStep[])
-      setGalleryImages((imagesData ?? []) as GalleryImage[])
-      setLoading(false)
-      if (p) addRecentlyViewed(p)
+      try {
+        const supabase = createClient()
+        const [{ data: productData, error: productErr }, { data: stepsData }, { data: imagesData }] = await Promise.all([
+          supabase
+            .from('products')
+            .select('*, product_categories(id, name, slug, description)')
+            .eq('id', params.id as string)
+            .single(),
+          supabase
+            .from('recipe_steps')
+            .select('*')
+            .eq('product_id', params.id as string)
+            .order('step_number'),
+          supabase
+            .from('product_images')
+            .select('*')
+            .eq('product_id', params.id as string)
+            .order('order'),
+        ])
+        if (productErr || !productData) {
+          setProduct(null)
+          setLoading(false)
+          return
+        }
+        const p = productData as Product
+        setProduct(p)
+        setRecipeSteps((stepsData ?? []) as RecipeStep[])
+        setGalleryImages((imagesData ?? []) as GalleryImage[])
+        if (p) addRecentlyViewed(p)
+      } catch {
+        setProduct(null)
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [params.id, addRecentlyViewed])
@@ -97,8 +113,9 @@ export default function ProductDetailPage() {
   function handleAddToCart(isSubscription = false) {
     if (!product) return
     for (let i = 0; i < quantity; i++) addItem(product, isSubscription)
+    if (addedTimerRef.current) clearTimeout(addedTimerRef.current)
     setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+    addedTimerRef.current = setTimeout(() => setAdded(false), 2000)
     if (isSubscription) {
       toast.success(`${product.name}이(가) 구독 장바구니에 담겼습니다.`)
     } else {

@@ -22,6 +22,16 @@ export async function PATCH(
     carrier?: string
   }
 
+  const ALLOWED_STATUSES = ['confirmed', 'preparing', 'shipped', 'delivered', 'cancelled']
+  if (!ALLOWED_STATUSES.includes(status)) {
+    return NextResponse.json({ error: '유효하지 않은 주문 상태입니다.' }, { status: 400 })
+  }
+
+  // 운송장 번호 길이 제한
+  if (trackingNumber && trackingNumber.length > 50) {
+    return NextResponse.json({ error: '운송장 번호가 너무 깁니다.' }, { status: 400 })
+  }
+
   // 주문 상태 업데이트 (배송 중이면 운송장 정보도 저장)
   const updatePayload: Record<string, string | undefined> = { status }
   if (status === 'shipped' && trackingNumber) {

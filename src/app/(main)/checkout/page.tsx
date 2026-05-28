@@ -17,13 +17,14 @@ const FREE_SHIPPING_THRESHOLD = 50000
 type Coupon = { id: string; code: string; discount_type: 'percent' | 'fixed'; discount_value: number; min_order_amount: number }
 
 function loadTossScript(): Promise<void> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (window.TossPayments) { resolve(); return }
     const existing = document.querySelector('script[src*="tosspayments"]')
-    if (existing) { existing.addEventListener('load', () => resolve()); return }
+    if (existing) { existing.addEventListener('load', () => resolve()); existing.addEventListener('error', reject); return }
     const script = document.createElement('script')
     script.src = 'https://js.tosspayments.com/v2/standard'
     script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Toss 결제 스크립트 로드 실패'))
     document.head.appendChild(script)
   })
 }
@@ -59,7 +60,9 @@ export default function CheckoutPage() {
   const finalTotal = Math.max(0, total + shipping - couponDiscount - usedPoints)
 
   useEffect(() => {
-    loadTossScript().then(() => setTossReady(true))
+    loadTossScript()
+      .then(() => setTossReady(true))
+      .catch(() => toast.error('결제 모듈 로드에 실패했습니다. 페이지를 새로고침해주세요.'))
 
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data }) => {
@@ -120,6 +123,11 @@ export default function CheckoutPage() {
     e.preventDefault()
     if (!address) { toast.error('배송지를 입력해주세요.'); return }
     if (!deliveryDate) { toast.error('배송 일정을 선택해주세요.'); return }
+    // 0원 결제는 PG사에서 오류 반환 — 포인트/쿠폰으로 전액 차감된 경우
+    if (finalTotal === 0) {
+      toast.error('결제 금액이 0원입니다. 포인트·쿠폰 사용량을 조정해주세요.')
+      return
+    }
     if (!tossReady || !window.TossPayments) {
       toast.error('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.')
       return

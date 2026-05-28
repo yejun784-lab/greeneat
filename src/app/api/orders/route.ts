@@ -32,6 +32,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '주문 상품이 없습니다.' }, { status: 400 })
   }
 
+  // quantity 양수 검증
+  for (const item of items) {
+    if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99) {
+      return NextResponse.json({ error: '수량은 1~99 사이여야 합니다.' }, { status: 400 })
+    }
+  }
+
+  // usedPoints 음수 방지
+  if (usedPoints < 0) {
+    return NextResponse.json({ error: '포인트 값이 올바르지 않습니다.' }, { status: 400 })
+  }
+
   // ── 1) 재고 검증 ──────────────────────────────────────────────────────────
   const productIds = items.map((i) => i.product_id)
   const { data: products, error: stockErr } = await supabase
@@ -68,7 +80,8 @@ export async function POST(req: NextRequest) {
     .single()
   const currentBalance = profile?.point_balance ?? 0
 
-  if (usedPoints > 0 && currentBalance < usedPoints) {
+  // usedPoints는 serverTotal 계산 후 조정되므로 여기서는 잔액만 확인
+  if (usedPoints > currentBalance) {
     return NextResponse.json({ error: '포인트가 부족합니다.' }, { status: 400 })
   }
 
@@ -83,12 +96,19 @@ export async function POST(req: NextRequest) {
     addressId = savedAddress?.id ?? null
   }
 
-  // ── 4) 주문 생성 ──────────────────────────────────────────────────────────
+  // ── 4) 주문 생성 (totalPrice 서버에서 재계산) ────────────────────────────
+  const serverTotal = items.reduce((sum, item) => {
+    const p = productMap[item.product_id]
+    return sum + (p?.price ?? 0) * item.quantity
+  }, 0)
+  // 사용 포인트는 실제 금액 초과 불가
+  const safeUsedPoints = Math.min(usedPoints, serverTotal, currentBalance)
+
   const { data: order, error } = await supabase
     .from('orders')
     .insert({
       user_id: user.id,
-      total_price: totalPrice,
+      total_price: Math.max(0, serverTotal - safeUsedPoints),
       payment_method: 'card',
       payment_status: pending ? 'pending' : 'paid',
       status: pending ? 'pending' : 'confirmed',
@@ -102,13 +122,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '주문 생성에 실패했습니다.' }, { status: 500 })
   }
 
-  // ── 5) 주문 상품 저장 ─────────────────────────────────────────────────────
+  // ── 5) 주문 상품 저장 (price_at_purchase는 DB의 실제 가격 사용) ──────────
   await supabase.from('order_items').insert(
     items.map((item) => ({
       order_id: order.id,
       product_id: item.product_id,
       quantity: item.quantity,
-      price_at_purchase: item.price,
+      price_at_purchase: productMap[item.product_id]?.price ?? 0,
     }))
   )
 
@@ -134,12 +154,12 @@ export async function POST(req: NextRequest) {
 
   // ── 7) 포인트 처리 (결제 완료된 경우만) ──────────────────────────────────
   if (!pending) {
-    const earnedPoints = Math.floor(totalPrice * POINT_RATE)
-    const newBalance = currentBalance - usedPoints + earnedPoints
+    const earnedPoints = Math.floor(serverTotal * POINT_RATE)
+    const newBalance = currentBalance - safeUsedPoints + earnedPoints
 
     const pointRows = []
-    if (usedPoints > 0) {
-      pointRows.push({ user_id: user.id, amount: -usedPoints, reason: '포인트 사용', order_id: order.id })
+    if (safeUsedPoints > 0) {
+      pointRows.push({ user_id: user.id, amount: -safeUsedPoints, reason: '포인트 사용', order_id: order.id })
     }
     if (earnedPoints > 0) {
       pointRows.push({ user_id: user.id, amount: earnedPoints, reason: '주문 적립 (1%)', order_id: order.id })

@@ -20,6 +20,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '받는 분 정보를 모두 입력해주세요.' }, { status: 400 })
   }
 
+  const safeQty = quantity ?? 1
+  if (!Number.isInteger(safeQty) || safeQty < 1 || safeQty > 10) {
+    return NextResponse.json({ error: '수량은 1~10 사이여야 합니다.' }, { status: 400 })
+  }
+
+  if (gift_message && gift_message.length > 200) {
+    return NextResponse.json({ error: '선물 메시지는 200자 이내로 입력해주세요.' }, { status: 400 })
+  }
+
   // 상품 조회
   const { data: product } = await supabase
     .from('products')
@@ -29,11 +38,11 @@ export async function POST(req: NextRequest) {
 
   if (!product) return NextResponse.json({ error: '존재하지 않는 상품입니다.' }, { status: 404 })
   if (!product.is_active) return NextResponse.json({ error: '현재 판매 중이 아닙니다.' }, { status: 400 })
-  if (product.stock < (quantity ?? 1)) {
+  if (product.stock < safeQty) {
     return NextResponse.json({ error: `재고가 부족합니다. (잔여: ${product.stock}개)` }, { status: 400 })
   }
 
-  const qty = quantity ?? 1
+  const qty = safeQty
   const totalPrice = product.price * qty
 
   // 배송지 저장 (수신자 주소)
