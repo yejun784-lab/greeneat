@@ -40,7 +40,8 @@ export function CancelOrderButton({ orderId, status }: Props) {
         </button>
         <button
           onClick={handleCancel}
-          className="text-xs text-red-500 font-semibold hover:text-red-600 transition-colors"
+          disabled={step === 'loading'}
+          className="text-xs text-red-500 font-semibold hover:text-red-600 transition-colors disabled:opacity-40"
         >
           네, 취소
         </button>

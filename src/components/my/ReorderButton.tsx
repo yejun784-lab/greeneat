@@ -20,6 +20,8 @@ export function ReorderButton({ items }: Props) {
   async function reorder() {
     setLoading(true)
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { router.push('/login'); setLoading(false); return }
     const productIds = items.map((i) => i.product_id).filter(Boolean)
     const { data: products } = await supabase
       .from('products')

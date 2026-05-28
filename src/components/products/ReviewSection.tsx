@@ -91,13 +91,23 @@ export function ReviewSection({ productId }: { productId: string }) {
       setMyReview(mine)
       if (mine) { setRating(mine.rating); setContent(mine.content ?? '') }
 
-      // 구매 이력 확인
-      const { count } = await supabase
+      // 구매 이력 확인 (이 상품을 실제로 구매한 경우만)
+      const { data: paidOrders } = await supabase
         .from('orders')
-        .select('id', { count: 'exact', head: true })
+        .select('id')
         .eq('user_id', user.id)
         .eq('payment_status', 'paid')
-      setHasPurchased((count ?? 0) > 0)
+      const paidOrderIds = (paidOrders ?? []).map((o) => o.id)
+      if (paidOrderIds.length > 0) {
+        const { count } = await supabase
+          .from('order_items')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', productId)
+          .in('order_id', paidOrderIds)
+        setHasPurchased((count ?? 0) > 0)
+      } else {
+        setHasPurchased(false)
+      }
     }
 
     setLoading(false)
@@ -124,12 +134,8 @@ export function ReviewSection({ productId }: { productId: string }) {
         .from('reviews')
         .insert({ product_id: productId, user_id: userId, rating, content })
       if (error) { toast.error('리뷰 등록에 실패했어요.'); setSubmitting(false); return }
-      // 포인트 200P 보상
-      const { data: prof } = await supabase.from('profiles').select('point_balance').eq('id', userId).single()
-      await Promise.all([
-        supabase.from('points').insert({ user_id: userId, amount: 200, reason: '리뷰 작성 보상' }),
-        supabase.from('profiles').update({ point_balance: (prof?.point_balance ?? 0) + 200 }).eq('id', userId),
-      ])
+      // 포인트 200P 보상 (RPC로 원자적 처리)
+      await supabase.rpc('increment_points', { uid: userId, amount: 200 }).catch(() => {/* ignore */})
       toast.success('리뷰가 등록됐어요! +200P 적립 🎉')
     }
 

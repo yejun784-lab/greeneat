@@ -261,6 +261,17 @@ function LogModal({
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast.error('이미지 파일만 업로드 가능해요.')
+      e.target.value = ''
+      return
+    }
+    const MAX_MB = 5
+    if (file.size > MAX_MB * 1024 * 1024) {
+      toast.error(`사진은 ${MAX_MB}MB 이하만 업로드 가능해요.`)
+      e.target.value = ''
+      return
+    }
     setPhotoFile(file)
     setPreview(URL.createObjectURL(file))
   }

@@ -134,9 +134,11 @@ export function Header() {
     setSearchOpen(false)
     setSearchQuery('')
 
-    // 인기 검색어 로그
-    const supabase = createClient()
-    supabase.from('search_logs').insert({ query: q.trim() }).then(() => {})
+    // 인기 검색어 로그 (로그인된 경우에만)
+    if (user) {
+      const supabase = createClient()
+      supabase.from('search_logs').insert({ query: q.trim(), user_id: user.id }).then(() => {})
+    }
   }
 
   function handleSearchSubmit(e: React.FormEvent) {

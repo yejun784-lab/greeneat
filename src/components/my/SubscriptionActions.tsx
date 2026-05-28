@@ -24,7 +24,7 @@ export function SubscriptionActions({ status }: Props) {
     if (!confirm('구독을 일시 중지하시겠어요?')) return
     setLoading('pause')
     const { supabase, user } = await getUser()
-    if (!user) return
+    if (!user) { setLoading(null); return }
     await supabase.from('subscriptions').update({ status: 'paused' }).eq('user_id', user.id).eq('status', 'active')
     toast.info('구독이 일시 중지됐어요.')
     router.refresh()
@@ -35,7 +35,7 @@ export function SubscriptionActions({ status }: Props) {
     if (!confirm('구독을 재개하시겠어요?')) return
     setLoading('resume')
     const { supabase, user } = await getUser()
-    if (!user) return
+    if (!user) { setLoading(null); return }
     await supabase.from('subscriptions').update({ status: 'active' }).eq('user_id', user.id).eq('status', 'paused')
     toast.success('구독이 재개됐어요!')
     router.refresh()
@@ -46,7 +46,7 @@ export function SubscriptionActions({ status }: Props) {
     if (!confirm('구독을 해지하시겠어요? 이 작업은 되돌릴 수 없어요.')) return
     setLoading('cancel')
     const { supabase, user } = await getUser()
-    if (!user) return
+    if (!user) { setLoading(null); return }
     await supabase.from('subscriptions').update({ status: 'cancelled' }).eq('user_id', user.id).in('status', ['active', 'paused'])
     toast.info('구독이 해지됐어요.')
     router.refresh()
