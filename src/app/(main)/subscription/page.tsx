@@ -94,6 +94,8 @@ export default function SubscriptionPage() {
       })
   }, [authChecked])
 
+  if (!authChecked) return null
+
   const currentPlan = PLANS.find((p) => p.id === selectedPlan)!
   const maxProducts = currentPlan.maxProducts
 

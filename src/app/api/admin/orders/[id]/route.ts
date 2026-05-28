@@ -16,11 +16,13 @@ export async function PATCH(
   if (profile?.role !== 'admin') return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 })
 
   const { id: orderId } = await params
-  const { status, trackingNumber, carrier } = await req.json() as {
-    status: string
-    trackingNumber?: string
-    carrier?: string
+  let body: { status: string; trackingNumber?: string; carrier?: string }
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 })
   }
+  const { status, trackingNumber, carrier } = body
 
   const ALLOWED_STATUSES = ['confirmed', 'preparing', 'shipped', 'delivered', 'cancelled']
   if (!ALLOWED_STATUSES.includes(status)) {

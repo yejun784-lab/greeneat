@@ -323,9 +323,10 @@ export default async function MyPage() {
           {orders.length > 0 ? (
             <div className="space-y-3">
               {orders.map((order) => (
-                <div
+                <Link
                   key={order.id}
-                  className="flex items-center justify-between py-3 border-b border-line last:border-0"
+                  href={`/my/orders/${order.id}`}
+                  className="flex items-center justify-between py-3 border-b border-line last:border-0 hover:bg-tint rounded-lg -mx-1 px-1 transition-colors"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">
@@ -337,7 +338,7 @@ export default async function MyPage() {
                     <span className="text-sm font-semibold text-ink">{formatPrice(order.total_price)}</span>
                     <ChevronRight size={14} className="text-ink-5" />
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
