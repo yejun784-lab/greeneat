@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Pencil, Check, X } from 'lucide-react'
+import { toast } from '@/lib/toast-store'
 
 interface Props { userId: string; initialName: string | null; initialPhone: string | null; email: string }
 
@@ -15,10 +16,16 @@ export function ProfileEditor({ userId, initialName, initialPhone, email }: Prop
   const initials = name ? name.slice(0, 2) : email.slice(0, 2).toUpperCase()
 
   const save = async () => {
+    const trimmedName = name.trim()
+    if (!trimmedName) { toast.error('이름을 입력해주세요.'); return }
+    if (trimmedName.length > 20) { toast.error('이름은 20자 이내로 입력해주세요.'); return }
+    if (phone && !/^[\d\-+\s()]{0,20}$/.test(phone)) { toast.error('올바른 전화번호 형식이 아니에요.'); return }
     setSaving(true)
     const supabase = createClient()
-    await supabase.from('profiles').update({ name, phone }).eq('id', userId)
+    const { error } = await supabase.from('profiles').update({ name: trimmedName, phone: phone.trim() || null }).eq('id', userId)
     setSaving(false)
+    if (error) { toast.error('저장에 실패했어요.'); return }
+    toast.success('프로필이 저장됐어요.')
     setEditing(false)
   }
 

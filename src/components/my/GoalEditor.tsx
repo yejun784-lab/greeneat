@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from '@/lib/toast-store'
 
 const GOALS = [
   { value: 'diet',     label: '다이어트', emoji: '🥗', color: 'bg-green-100 text-green-700' },
@@ -15,10 +16,12 @@ export function GoalEditor({ current, userId }: { current: string; userId: strin
   const currentGoal = GOALS.find((g) => g.value === goal) ?? GOALS[1]
 
   const select = async (value: string) => {
+    const prev = goal
     setGoal(value)
     setOpen(false)
     const supabase = createClient()
-    await supabase.from('profiles').update({ nutrition_goal: value }).eq('id', userId)
+    const { error } = await supabase.from('profiles').update({ nutrition_goal: value }).eq('id', userId)
+    if (error) { setGoal(prev); toast.error('저장에 실패했어요.') }
   }
 
   return (

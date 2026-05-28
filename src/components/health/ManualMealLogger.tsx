@@ -10,7 +10,8 @@ import { toast } from '@/lib/toast-store'
 export function ManualMealLogger() {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0])
+  const today = new Date().toISOString().split('T')[0]
+  const [date, setDate] = useState(today)
   const [mealType, setMealType] = useState<MealType>('lunch')
   const [description, setDescription] = useState('')
   const [calories, setCalories] = useState('')
@@ -81,6 +82,7 @@ export function ManualMealLogger() {
             <input
               type="date"
               value={date}
+              max={today}
               onChange={(e) => setDate(e.target.value)}
               className="flex-1 px-3 py-2 text-sm border border-[#e8e8e6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-[#333]"
             />

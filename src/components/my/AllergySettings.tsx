@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from '@/lib/toast-store'
 
 const ALLERGENS = [
   { id: 'gluten', label: '글루텐' },
@@ -21,7 +22,8 @@ export function AllergySettings({ userId, initial }: { userId: string; initial: 
 
   const save = async () => {
     const supabase = createClient()
-    await supabase.from('profiles').update({ allergen_profile: selected }).eq('id', userId)
+    const { error } = await supabase.from('profiles').update({ allergen_profile: selected }).eq('id', userId)
+    if (error) { toast.error('저장에 실패했어요.'); return }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
