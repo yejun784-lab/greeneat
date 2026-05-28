@@ -19,8 +19,9 @@ function consecutiveDays(weekData: DayNutrition[]): number {
   const today = new Date().toISOString().slice(0, 10)
   const dateset = new Set(weekData.filter((d) => d.cal > 0).map((d) => d.date))
   let streak = 0
+  const MAX_STREAK = 365
   const cur = new Date(today)
-  while (true) {
+  while (streak < MAX_STREAK) {
     const ds = cur.toISOString().slice(0, 10)
     if (dateset.has(ds)) {
       streak++

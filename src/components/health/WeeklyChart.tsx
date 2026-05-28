@@ -7,19 +7,21 @@ type Props = {
 }
 
 export function WeeklyChart({ data, calTarget }: Props) {
-  const todayStr = data[data.length - 1]?.date ?? ''
+  const todayStr = new Date().toISOString().slice(0, 10)
   return (
     <div className="w-full">
       <div className="relative h-36 flex items-end gap-2 px-1 mb-1">
-        <div
-          className="absolute left-0 right-0 border-t-2 border-dashed border-red-400/60 pointer-events-none"
-          style={{ bottom: '0%', top: calTarget > 0 ? 'auto' : '0%' }}
-          aria-hidden
-        >
-          <span className="absolute -top-4 right-0 text-[10px] text-red-400 font-medium">
-            목표 {calTarget.toLocaleString()}kcal
-          </span>
-        </div>
+        {calTarget > 0 && (
+          <div
+            className="absolute left-0 right-0 border-t-2 border-dashed border-red-400/60 pointer-events-none"
+            style={{ bottom: '0%' }}
+            aria-hidden
+          >
+            <span className="absolute -top-4 right-0 text-[10px] text-red-400 font-medium">
+              목표 {calTarget.toLocaleString()}kcal
+            </span>
+          </div>
+        )}
 
         {data.map((entry) => {
           const { date: day, cal } = entry

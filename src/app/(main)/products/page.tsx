@@ -50,8 +50,8 @@ async function buildQuery(supabase: Awaited<ReturnType<typeof createClient>>, pa
   if (params.difficulty) query = query.eq('difficulty', params.difficulty)
   if (params.servings)   query = query.eq('servings', Number(params.servings))
   if (params.search)     query = query.ilike('name', `%${params.search}%`)
-  if (params.minCal)     query = query.gte('calories', Number(params.minCal))
-  if (params.maxCal)     query = query.lte('calories', Number(params.maxCal))
+  if (params.minCal) { const v = Number(params.minCal); if (!isNaN(v)) query = query.gte('calories', v) }
+  if (params.maxCal) { const v = Number(params.maxCal); if (!isNaN(v)) query = query.lte('calories', v) }
 
   // 알레르기 다중 제외 (URL: exclude=글루텐&exclude=달걀 or exclude=글루텐)
   const excludeRaw = params.exclude

@@ -79,6 +79,35 @@ export async function PATCH(
     )
   )
 
+  // 포인트 환불 (구매 시 차감된 포인트 복구)
+  const { data: pointTxns } = await supabase
+    .from('points')
+    .select('amount')
+    .eq('order_id', id)
+    .eq('user_id', user.id)
+
+  if (pointTxns && pointTxns.length > 0) {
+    const netPoints = pointTxns.reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
+    if (netPoints < 0) {
+      const refundAmount = -netPoints
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('point_balance')
+        .eq('id', user.id)
+        .single()
+      const newBalance = Math.max(0, (profile?.point_balance ?? 0) + refundAmount)
+      await Promise.all([
+        supabase.from('points').insert({
+          user_id: user.id,
+          amount: refundAmount,
+          reason: '주문 취소 포인트 환불',
+          order_id: id,
+        }),
+        supabase.from('profiles').update({ point_balance: newBalance }).eq('id', user.id),
+      ])
+    }
+  }
+
   return NextResponse.json({ ok: true })
 }
 

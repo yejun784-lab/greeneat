@@ -21,8 +21,19 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
   const { plan_type, delivery_day, product_ids } = await req.json()
-  if (!plan_type || !delivery_day) {
+  if (!plan_type || delivery_day == null) {
     return NextResponse.json({ error: '플랜과 배송 요일을 선택해주세요.' }, { status: 400 })
+  }
+  const VALID_PLAN_TYPES = ['weekly', 'biweekly', 'monthly']
+  if (!VALID_PLAN_TYPES.includes(plan_type)) {
+    return NextResponse.json({ error: '유효하지 않은 플랜 타입입니다.' }, { status: 400 })
+  }
+  const dayNum = Number(delivery_day)
+  if (!Number.isInteger(dayNum) || dayNum < 0 || dayNum > 6) {
+    return NextResponse.json({ error: '배송 요일은 0(일)~6(토) 사이여야 합니다.' }, { status: 400 })
+  }
+  if (product_ids !== undefined && !Array.isArray(product_ids)) {
+    return NextResponse.json({ error: '상품 목록 형식이 올바르지 않습니다.' }, { status: 400 })
   }
 
   // 기존 활성/일시중지 구독 취소

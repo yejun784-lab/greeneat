@@ -9,12 +9,33 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] as const
+  type AllowedMime = typeof ALLOWED_MIME[number]
+  const MIME_TO_EXT: Record<AllowedMime, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+  }
+  const VALID_MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack']
+
   const formData = await req.formData()
   const file = formData.get('image') as File | null
-  const mealType = (formData.get('meal_type') as string) || 'snack'
+  const rawMealType = (formData.get('meal_type') as string) || 'snack'
+  const mealType = VALID_MEAL_TYPES.includes(rawMealType) ? rawMealType : 'snack'
   const date = (formData.get('date') as string) || new Date().toISOString().split('T')[0]
 
   if (!file) return NextResponse.json({ error: 'No image provided' }, { status: 400 })
+
+  // MIME 타입 검증
+  if (!ALLOWED_MIME.includes(file.type as AllowedMime)) {
+    return NextResponse.json({ error: '지원하지 않는 이미지 형식입니다. (jpg/png/webp/gif)' }, { status: 400 })
+  }
+
+  // 날짜 형식 검증
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return NextResponse.json({ error: '날짜 형식이 올바르지 않습니다.' }, { status: 400 })
+  }
 
   // 파일 크기 제한 5MB
   if (file.size > 5 * 1024 * 1024) {
@@ -24,7 +45,7 @@ export async function POST(req: NextRequest) {
   // 이미지 → base64
   const arrayBuffer = await file.arrayBuffer()
   const base64 = Buffer.from(arrayBuffer).toString('base64')
-  const mediaType = (file.type as 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif') || 'image/jpeg'
+  const mediaType = file.type as AllowedMime
 
   // Claude vision으로 분석
   const message = await anthropic.messages.create({
@@ -87,7 +108,7 @@ export async function POST(req: NextRequest) {
   // Supabase Storage에 이미지 업로드
   let imageUrl: string | null = null
   try {
-    const ext = file.name.split('.').pop() || 'jpg'
+    const ext = MIME_TO_EXT[file.type as AllowedMime] ?? 'jpg'
     const path = `meal-logs/${user.id}/${date}-${Date.now()}.${ext}`
     const { error: uploadError } = await supabase.storage
       .from('meal-images')

@@ -50,6 +50,7 @@ function GiftPageInner() {
       .from('products')
       .select('id, name, price, image_url, description, stock')
       .eq('id', productId)
+      .eq('is_active', true)
       .single()
       .then(({ data }) => {
         setProduct(data as Product)
@@ -61,28 +62,33 @@ function GiftPageInner() {
     e.preventDefault()
     if (!product) return
     setSubmitting(true)
-    const res = await fetch('/api/gift', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        product_id: product.id,
-        quantity,
-        recipient_name: recipientName,
-        recipient_phone: recipientPhone,
-        recipient_address: recipientAddress,
-        recipient_address_detail: recipientAddressDetail,
-        gift_message: message,
-      }),
-    })
-    if (res.ok) {
-      const { orderId: id } = await res.json()
-      setOrderId(id)
-      setDone(true)
-    } else {
-      const { error } = await res.json().catch(() => ({ error: '오류' }))
-      toast.error(error ?? '선물 주문에 실패했습니다.')
+    try {
+      const res = await fetch('/api/gift', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: product.id,
+          quantity,
+          recipient_name: recipientName,
+          recipient_phone: recipientPhone,
+          recipient_address: recipientAddress,
+          recipient_address_detail: recipientAddressDetail,
+          gift_message: message,
+        }),
+      })
+      if (res.ok) {
+        const { orderId: id } = await res.json()
+        setOrderId(id)
+        setDone(true)
+      } else {
+        const { error } = await res.json().catch(() => ({ error: '오류' }))
+        toast.error(error ?? '선물 주문에 실패했습니다.')
+      }
+    } catch {
+      toast.error('네트워크 오류가 발생했습니다.')
+    } finally {
+      setSubmitting(false)
     }
-    setSubmitting(false)
   }
 
   if (done) {
