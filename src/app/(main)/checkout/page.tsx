@@ -180,7 +180,7 @@ export default function CheckoutPage() {
         : `${items[0].product.name} 외 ${items.length - 1}개`
 
       await payment.requestPayment({
-        method: '카드',
+        method: 'CARD',
         amount: { currency: 'KRW', value: finalTotal },
         orderId: dbOrderId!,
         orderName,
