@@ -62,22 +62,22 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      {/* dev 환경: SW + 캐시 정리 */}
-      {process.env.NODE_ENV !== 'production' && (
-        <Script id="dev-sw-cleanup" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
-          if('serviceWorker' in navigator){
-            navigator.serviceWorker.getRegistrations().then(function(regs){
-              regs.forEach(function(r){ r.unregister(); });
-            });
-            if(typeof caches !== 'undefined'){
-              caches.keys().then(function(keys){
-                keys.forEach(function(k){ caches.delete(k); });
-              });
-            }
-          }
-        `}} />
-      )}
       <body className="min-h-full flex flex-col bg-surface text-ink">
+        {/* dev: SW + 캐시 정리 — body 안에서만 Script 렌더 가능 */}
+        {process.env.NODE_ENV !== 'production' && (
+          <Script id="dev-sw-cleanup" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
+            if('serviceWorker' in navigator){
+              navigator.serviceWorker.getRegistrations().then(function(regs){
+                regs.forEach(function(r){ r.unregister(); });
+              });
+              if(typeof caches !== 'undefined'){
+                caches.keys().then(function(keys){
+                  keys.forEach(function(k){ caches.delete(k); });
+                });
+              }
+            }
+          `}} />
+        )}
         <ThemeProvider>
           <PWAProvider />
           <CartProvider>{children}</CartProvider>
