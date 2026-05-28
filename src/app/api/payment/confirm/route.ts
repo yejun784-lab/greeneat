@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 2) 중복 confirm 방지 ──────────────────────────────────────────────────
-  if (order.payment_status === 'paid') {
+  if (order.payment_status !== 'pending') {
     return NextResponse.json({ success: true, orderId, earnedPoints: 0, alreadyConfirmed: true })
   }
 
@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
 
   const tossData = await tossRes.json()
 
-  // ── 5) 주문 상태 업데이트 ─────────────────────────────────────────────────
-  await supabase
+  // ── 5) 주문 상태 업데이트 (atomic: pending인 경우에만 → 웹훅과 경합 방지) ─
+  const { data: updatedOrder } = await supabase
     .from('orders')
     .update({
       payment_status: 'paid',
@@ -85,6 +85,14 @@ export async function POST(req: NextRequest) {
       payment_method: tossData.method ?? 'card',
     })
     .eq('id', orderId)
+    .eq('payment_status', 'pending')
+    .select()
+    .single()
+
+  // 웹훅이 먼저 처리한 경우 중복 포인트 적립 방지
+  if (!updatedOrder) {
+    return NextResponse.json({ success: true, orderId, earnedPoints: 0, alreadyConfirmed: true })
+  }
 
   // ── 6) 재고 차감 ──────────────────────────────────────────────────────────
   const { data: orderItems } = await supabase

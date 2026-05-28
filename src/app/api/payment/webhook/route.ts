@@ -29,17 +29,26 @@ async function processConfirm(orderId: string, paymentKey: string) {
     return
   }
 
-  /* ── 2. 멱등성: 이미 처리된 주문은 스킵 ── */
-  if (order.payment_status === 'paid') {
+  /* ── 2. 멱등성: pending인 경우에만 처리 (confirm과 경합 방지) ── */
+  if (order.payment_status !== 'pending') {
     console.log('[webhook] 이미 처리된 주문:', orderId)
     return
   }
 
-  /* ── 3. 주문 상태 업데이트 ── */
-  await supabase
+  /* ── 3. 주문 상태 업데이트 (atomic: pending 조건부 업데이트) ── */
+  const { data: updated } = await supabase
     .from('orders')
     .update({ payment_status: 'paid', status: 'confirmed', payment_method: 'card' })
     .eq('id', orderId)
+    .eq('payment_status', 'pending')
+    .select()
+    .single()
+
+  /* confirm이 먼저 처리한 경우 스킵 */
+  if (!updated) {
+    console.log('[webhook] confirm이 먼저 처리한 주문:', orderId)
+    return
+  }
 
   /* ── 4. 재고 차감 ── */
   const { data: orderItems } = await supabase

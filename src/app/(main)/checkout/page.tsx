@@ -149,6 +149,7 @@ export default function CheckoutPage() {
           address: { address, detail },
           totalPrice: finalTotal,
           usedPoints,
+          couponId: coupon?.id ?? null,
           pending: true,
           deliveryDate: deliveryDate || null,
         }),

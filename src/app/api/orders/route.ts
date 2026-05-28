@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
     address,
     totalPrice,
     usedPoints = 0,
+    couponId = null,
     pending = false,
     deliveryDate = null,
   } = body as {
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
     address: { address: string; detail?: string }
     totalPrice: number
     usedPoints?: number
+    couponId?: string | null
     pending?: boolean
     deliveryDate?: string | null
   }
@@ -152,7 +154,22 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // ── 7) 포인트 처리 (결제 완료된 경우만) ──────────────────────────────────
+  // ── 7-a) 쿠폰 사용 횟수 증가 (결제 완료된 경우만) ──────────────────────
+  if (!pending && couponId) {
+    const { data: couponRow } = await supabase
+      .from('coupons')
+      .select('used_count')
+      .eq('id', couponId)
+      .single()
+    if (couponRow != null) {
+      await supabase
+        .from('coupons')
+        .update({ used_count: (couponRow.used_count ?? 0) + 1 })
+        .eq('id', couponId)
+    }
+  }
+
+  // ── 7-b) 포인트 처리 (결제 완료된 경우만) ─────────────────────────────────
   if (!pending) {
     const earnedPoints = Math.floor(serverTotal * POINT_RATE)
     const newBalance = currentBalance - safeUsedPoints + earnedPoints
