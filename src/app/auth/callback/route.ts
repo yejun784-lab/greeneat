@@ -41,25 +41,12 @@ export async function GET(req: NextRequest) {
           }
         }
 
-        // 웰컴 포인트 1000P
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('point_balance')
-          .eq('id', user.id)
-          .maybeSingle()
-
-        if (profile !== null) {
-          await Promise.all([
-            supabase.from('points').insert({
-              user_id: user.id,
-              amount: 1000,
-              reason: '신규 가입 웰컴 포인트',
-            }),
-            supabase.from('profiles').update({
-              point_balance: (profile.point_balance ?? 0) + 1000,
-            }).eq('id', user.id),
-          ])
-        }
+        // 웰컴 포인트 1000P (원자적 증가 — profile null 여부 무관)
+        await supabase.from('points').insert({
+          user_id: user.id,
+          amount: 1000,
+          reason: '신규 가입 웰컴 포인트',
+        }).then(() => supabase.rpc('increment_points', { uid: user.id, amount: 1000 }))
       }
     }
   }

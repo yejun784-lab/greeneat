@@ -18,7 +18,7 @@ export function ReferralCard({ code }: Props) {
 
   const copyLink = async () => {
     if (!code) return
-    const url = `https://greeneat-six.vercel.app/signup?ref=${code}`
+    const url = `${window.location.origin}/signup?ref=${code}`
     await navigator.clipboard.writeText(url)
     setCopiedLink(true)
     setTimeout(() => setCopiedLink(false), 2000)

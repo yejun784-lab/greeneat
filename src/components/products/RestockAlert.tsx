@@ -7,6 +7,7 @@ import { toast } from '@/lib/toast-store'
 
 export function RestockAlert({ productId, productName }: { productId: string; productName?: string }) {
   const [status, setStatus]   = useState<'idle' | 'loading' | 'on' | 'off'>('loading')
+  const isLoading = status === 'loading'
 
   useEffect(() => {
     async function check() {
@@ -87,7 +88,8 @@ export function RestockAlert({ productId, productName }: { productId: string; pr
   return (
     <button
       onClick={toggle}
-      className="w-full flex items-center justify-center gap-2 py-3 border border-line-2 rounded-xl text-sm font-medium text-ink-3 hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors"
+      disabled={isLoading}
+      className="w-full flex items-center justify-center gap-2 py-3 border border-line-2 rounded-xl text-sm font-medium text-ink-3 hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors disabled:opacity-50"
     >
       <Bell size={15} />
       재입고 알림 신청

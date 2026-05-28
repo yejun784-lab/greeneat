@@ -81,23 +81,14 @@ function SignupForm() {
     }
 
     if (referrerId && data.user) {
+      // points 테이블 기록 + point_balance 원자적 증가 (RPC로 read-modify-write 경합 방지)
       await supabase.from('points').insert([
         { user_id: referrerId, amount: 2000, reason: '친구 초대 보상' },
         { user_id: data.user.id, amount: 1000, reason: '초대 코드 사용' },
       ])
-      const [{ data: refProfileBalance }, { data: newUserProfile }] = await Promise.all([
-        supabase.from('profiles').select('point_balance').eq('id', referrerId).maybeSingle(),
-        supabase.from('profiles').select('point_balance').eq('id', data.user.id).maybeSingle(),
-      ])
       await Promise.all([
-        supabase
-          .from('profiles')
-          .update({ point_balance: (refProfileBalance?.point_balance ?? 0) + 2000 })
-          .eq('id', referrerId),
-        supabase
-          .from('profiles')
-          .update({ point_balance: (newUserProfile?.point_balance ?? 0) + 1000 })
-          .eq('id', data.user.id),
+        supabase.rpc('increment_points', { uid: referrerId, amount: 2000 }),
+        supabase.rpc('increment_points', { uid: data.user.id, amount: 1000 }),
       ])
     }
 
