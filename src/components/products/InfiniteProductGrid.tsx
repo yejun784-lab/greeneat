@@ -81,9 +81,10 @@ export function InfiniteProductGrid({ initialProducts, initialHasMore, total, fi
     const { data } = await query
     const newProducts = (data as Product[]) ?? []
     const nextPage = page + 1
+    const updatedCount = products.length + newProducts.length
     setProducts((p) => [...p, ...newProducts])
     setPage(nextPage)
-    setHasMore(nextPage * PAGE_SIZE < total)
+    setHasMore(updatedCount < total)
     setLoading(false)
   }, [page, filters, total])
 

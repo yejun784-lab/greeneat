@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
     .select('id, rating, content, created_at, profiles(name)')
     .eq('product_id', productId)
     .order('created_at', { ascending: false })
+    .limit(50)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
