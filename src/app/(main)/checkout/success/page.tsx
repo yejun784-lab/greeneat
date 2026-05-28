@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { CheckCircle2, Package, ArrowRight, Loader2, XCircle } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import confetti from 'canvas-confetti'
+import { useCartStore } from '@/lib/cart-store'
 
 type OrderItem = {
   products?: { name?: string } | null
@@ -39,6 +40,7 @@ function CheckoutSuccessContent() {
   const amount      = amountStr != null ? Number(amountStr) : null
   const usedPoints  = Number(searchParams.get('usedPoints') ?? '0')
 
+  const clearCart = useCartStore((s) => s.clearCart)
   const [status, setStatus]           = useState<'confirming' | 'success' | 'error'>('confirming')
   const [earnedPoints, setEarnedPoints] = useState(0)
   const [order, setOrder]             = useState<OrderData | null>(null)
@@ -59,6 +61,7 @@ function CheckoutSuccessContent() {
       .then((r) => r.json())
       .then((data) => {
         if (data.success) {
+          clearCart()
           setEarnedPoints(data.earnedPoints ?? 0)
           setStatus('success')
           if (!data.alreadyConfirmed) {
