@@ -41,7 +41,7 @@ export default async function CouponsPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  const coupons = (data ?? []) as UserCoupon[]
+  const coupons = (data ?? []).filter((c) => c.coupons != null) as UserCoupon[]
   const available = coupons.filter((c) => !c.used_at && !isExpired(c.coupons.expires_at))
   const unavailable = coupons.filter((c) => c.used_at || isExpired(c.coupons.expires_at))
 

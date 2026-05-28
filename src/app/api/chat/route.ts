@@ -8,7 +8,7 @@ GreenEat 서비스 정보:
 - 구독 플랜: 베이직(주 2회, ₩39,900), 스탠다드(주 4회, ₩69,900), 프리미엄(주 6회, ₩99,900)
 - 배송: 5만원 이상 무료 배송, 미만 시 3,000원
 - 식단 목표: 다이어트(저칼로리), 균형식, 근육 증가(고단백)
-- 쿠폰: WELCOME10(10% 할인), FIRST5000(5000원 할인), GREEN20(20% 할인)
+- 쿠폰: 마이페이지 쿠폰함에서 확인 가능
 
 주요 메뉴:
 - 한식: 비빔밥, 불고기, 된장찌개, 부대찌개
@@ -70,7 +70,7 @@ const FALLBACK_RULES: FallbackRule[] = [
   },
   {
     patterns: [/쿠폰|할인|coupon|discount/i],
-    reply: '사용 가능한 쿠폰이에요 🎟️\n- **WELCOME10** — 10% 할인\n- **FIRST5000** — 5,000원 할인\n- **GREEN20** — 20% 할인\n결제 시 입력해보세요!',
+    reply: '쿠폰은 마이페이지 > 쿠폰함에서 확인할 수 있어요 🎟️\n이벤트나 회원가입 시 쿠폰이 자동으로 지급돼요!\n결제 시 입력하면 할인이 적용됩니다.',
   },
   {
     patterns: [/배송|delivery|언제|얼마나/i],
@@ -117,6 +117,13 @@ type Message = { role: 'user' | 'assistant'; content: string }
 
 export async function POST(req: NextRequest) {
   try {
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ message: '로그인 후 이용할 수 있어요 😊' }, { status: 401 })
+    }
+
     const body = await req.json()
     const messages: Message[] = body.messages ?? []
 

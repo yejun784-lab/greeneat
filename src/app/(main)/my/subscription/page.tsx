@@ -87,6 +87,10 @@ export default function SubscriptionManagePage() {
 
   async function saveItems() {
     if (!sub) return
+    if (selectedIds.length === 0) {
+      toast.error('구독 메뉴를 1가지 이상 선택해주세요.')
+      return
+    }
     setSaving('items')
     const res = await fetch('/api/subscriptions', {
       method: 'PATCH',

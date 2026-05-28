@@ -9,8 +9,8 @@ export async function GET(request: NextRequest) {
   const sort       = searchParams.get('sort') ?? 'newest'
   const search     = searchParams.get('search') ?? ''
   const exclude    = searchParams.get('exclude') ?? ''
-  const page       = parseInt(searchParams.get('page') ?? '1', 10)
-  const limit      = parseInt(searchParams.get('limit') ?? '9', 10)
+  const page       = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
+  const limit      = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '9', 10)))
   const from       = (page - 1) * limit
   const to         = from + limit - 1
 
@@ -26,7 +26,11 @@ export async function GET(request: NextRequest) {
   if (difficulty) query = query.eq('difficulty', difficulty)
   if (servings)   query = query.eq('servings', Number(servings))
   if (search)     query = query.ilike('name', `%${search}%`)
-  if (exclude)    query = query.not('allergens', 'cs', `{${exclude}}`)
+  if (exclude) {
+    // 허용 문자만 통과 (알레르기 항목: 영문+숫자+언더스코어+쉼표)
+    const safeExclude = exclude.replace(/[^a-zA-Z0-9_,]/g, '')
+    if (safeExclude) query = query.not('allergens', 'cs', `{${safeExclude}}`)
+  }
 
   if (sort === 'price_asc')  query = query.order('display_group', { ascending: true }).order('price', { ascending: true })
   else if (sort === 'price_desc') query = query.order('display_group', { ascending: true }).order('price', { ascending: false })

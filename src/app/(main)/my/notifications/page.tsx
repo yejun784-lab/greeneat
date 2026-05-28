@@ -38,7 +38,7 @@ export default function NotificationsPage() {
   async function load() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
+    if (!user) { window.location.replace('/login'); return }
     const { data } = await supabase
       .from('notifications')
       .select('*')

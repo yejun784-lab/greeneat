@@ -26,6 +26,7 @@ const TABS = [
 
 function isActive(starts_at: string | null, ends_at: string | null): boolean {
   const today = new Date().toISOString().slice(0, 10)
+  if (starts_at && starts_at > today) return false
   if (ends_at && ends_at < today) return false
   return true
 }

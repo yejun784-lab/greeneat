@@ -15,22 +15,24 @@ export default async function NoticePage({ params }: { params: Promise<{ id: str
   const { id } = await params
   const supabase = await createClient()
 
-  // 현재 공지 조회
+  // 현재 공지 조회 (비활성 공지는 접근 불가)
   const { data: notice } = await supabase
     .from('notices')
     .select('id, title, content, created_at, is_pinned')
     .eq('id', id)
+    .eq('is_active', true)
     .maybeSingle()
 
   if (!notice) notFound()
 
   const current = notice as Notice
 
-  // 이전글·다음글 조회
+  // 이전글·다음글 조회 (활성 공지만)
   const [{ data: prevData }, { data: nextData }] = await Promise.all([
     supabase
       .from('notices')
       .select('id, title')
+      .eq('is_active', true)
       .lt('created_at', current.created_at)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -38,6 +40,7 @@ export default async function NoticePage({ params }: { params: Promise<{ id: str
     supabase
       .from('notices')
       .select('id, title')
+      .eq('is_active', true)
       .gt('created_at', current.created_at)
       .order('created_at', { ascending: true })
       .limit(1)

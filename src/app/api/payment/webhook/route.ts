@@ -155,7 +155,11 @@ export async function POST(req: NextRequest) {
 
   /* ── 웹훅 시크릿 검증 ── */
   const webhookSecret = process.env.TOSS_WEBHOOK_SECRET
-  if (webhookSecret && body.secret !== webhookSecret) {
+  if (!webhookSecret) {
+    console.error('[webhook] TOSS_WEBHOOK_SECRET 환경변수 미설정')
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
+  }
+  if (body.secret !== webhookSecret) {
     console.error('[webhook] 시크릿 불일치')
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
   }
 
-  const { code, orderAmount } = await req.json() as { code: string; orderAmount: number }
+  const { code, orderAmount } = await req.json() as { code: string; orderAmount?: number }
 
   if (!code) {
     return NextResponse.json({ valid: false, reason: '쿠폰 코드를 입력해주세요.' })
@@ -37,13 +37,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ valid: false, reason: '사용횟수초과' })
   }
 
-  if (coupon.min_order_amount !== null && orderAmount < coupon.min_order_amount) {
+  const safeOrderAmount = typeof orderAmount === 'number' && !isNaN(orderAmount) ? orderAmount : 0
+
+  if (coupon.min_order_amount !== null && safeOrderAmount < coupon.min_order_amount) {
     return NextResponse.json({ valid: false, reason: '최소주문금액미달' })
   }
 
   const discount_amount =
     coupon.discount_type === 'percent'
-      ? Math.floor((orderAmount * coupon.discount_value) / 100)
+      ? Math.floor((safeOrderAmount * coupon.discount_value) / 100)
       : coupon.discount_value
 
   return NextResponse.json({
