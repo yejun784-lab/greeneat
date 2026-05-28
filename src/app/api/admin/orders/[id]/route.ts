@@ -29,6 +29,11 @@ export async function PATCH(
     return NextResponse.json({ error: '유효하지 않은 주문 상태입니다.' }, { status: 400 })
   }
 
+  // 배송 중 상태에는 운송장 번호 필수
+  if (status === 'shipped' && !trackingNumber?.trim()) {
+    return NextResponse.json({ error: '배송 중 상태에는 운송장 번호가 필요합니다.' }, { status: 400 })
+  }
+
   // 운송장 번호 길이 제한
   if (trackingNumber && trackingNumber.length > 50) {
     return NextResponse.json({ error: '운송장 번호가 너무 깁니다.' }, { status: 400 })

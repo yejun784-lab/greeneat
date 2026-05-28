@@ -13,10 +13,8 @@ export async function DELETE() {
   const adminKey  = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!adminKey) {
-    // 키가 없을 때: 프로필만 soft-delete 처리
-    await supabase.from('profiles').update({ name: '탈퇴한 회원', phone: null }).eq('id', user.id)
-    await supabase.auth.signOut()
-    return NextResponse.json({ ok: true })
+    console.error('[account/DELETE] SUPABASE_SERVICE_ROLE_KEY 미설정 — auth 계정 삭제 불가')
+    return NextResponse.json({ error: '서버 설정 오류로 탈퇴를 처리할 수 없습니다. 관리자에게 문의해주세요.' }, { status: 503 })
   }
 
   const admin = createAdminClient(adminUrl, adminKey)

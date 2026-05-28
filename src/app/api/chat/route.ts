@@ -125,7 +125,17 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const messages: Message[] = body.messages ?? []
+    const MAX_MSG_LEN = 500
+    const rawMessages: Message[] = body.messages ?? []
+    const messages: Message[] = rawMessages
+      .filter(
+        (m): m is Message =>
+          m != null &&
+          typeof m === 'object' &&
+          (m.role === 'user' || m.role === 'assistant') &&
+          typeof m.content === 'string'
+      )
+      .map((m) => ({ ...m, content: m.content.slice(0, MAX_MSG_LEN) }))
 
     if (messages.length === 0) {
       return NextResponse.json({ message: '메시지를 입력해주세요!' })
