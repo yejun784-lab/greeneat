@@ -135,7 +135,7 @@ export function ReviewSection({ productId }: { productId: string }) {
         .insert({ product_id: productId, user_id: userId, rating, content })
       if (error) { toast.error('리뷰 등록에 실패했어요.'); setSubmitting(false); return }
       // 포인트 200P 보상 (RPC로 원자적 처리)
-      await supabase.rpc('increment_points', { uid: userId, amount: 200 }).catch(() => {/* ignore */})
+      supabase.rpc('increment_points', { uid: userId, amount: 200 }).then(() => {/* ignore */})
       toast.success('리뷰가 등록됐어요! +200P 적립 🎉')
     }
 

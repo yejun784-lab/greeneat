@@ -11,6 +11,7 @@ interface Props {
 
 export function CancelOrderButton({ orderId, status }: Props) {
   const [step, setStep] = useState<'idle' | 'confirm' | 'loading'>('idle')
+  const isLoading = step === 'loading'
 
   if (!['pending', 'confirmed'].includes(status)) return null
 
@@ -40,7 +41,7 @@ export function CancelOrderButton({ orderId, status }: Props) {
         </button>
         <button
           onClick={handleCancel}
-          disabled={step === 'loading'}
+          disabled={isLoading}
           className="text-xs text-red-500 font-semibold hover:text-red-600 transition-colors disabled:opacity-40"
         >
           네, 취소
