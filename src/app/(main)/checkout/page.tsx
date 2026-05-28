@@ -13,6 +13,8 @@ import type {} from '@/types/toss'
 
 const SHIPPING_FEE = 3000
 const FREE_SHIPPING_THRESHOLD = 50000
+const BUNDLE_THRESHOLD = 3
+const BUNDLE_DISCOUNT_RATE = 0.05
 
 type Coupon = { id: string; code: string; discount_type: 'percent' | 'fixed'; discount_value: number; min_order_amount: number }
 
@@ -51,13 +53,16 @@ export default function CheckoutPage() {
   const [userEmail, setUserEmail] = useState('')
 
   const total = totalPrice()
-  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE
+  const totalItems = items.reduce((s, i) => s + i.quantity, 0)
+  const bundleDiscount = totalItems >= BUNDLE_THRESHOLD ? Math.round(total * BUNDLE_DISCOUNT_RATE) : 0
+  const discountedTotal = total - bundleDiscount
+  const shipping = discountedTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE
   const couponDiscount = coupon
     ? coupon.discount_type === 'percent'
-      ? Math.round(total * coupon.discount_value / 100)
+      ? Math.round(discountedTotal * coupon.discount_value / 100)
       : coupon.discount_value
     : 0
-  const finalTotal = Math.max(0, total + shipping - couponDiscount - usedPoints)
+  const finalTotal = Math.max(0, discountedTotal + shipping - couponDiscount - usedPoints)
 
   useEffect(() => {
     loadTossScript()
@@ -107,8 +112,8 @@ export default function CheckoutPage() {
     setCouponLoading(false)
   }
 
-  // 포인트 사용 가능 최대치 = 상품금액 + 배송비 - 쿠폰할인 (결제 전 금액)
-  const maxUsablePoints = Math.min(pointBalance, Math.max(0, total + shipping - couponDiscount))
+  // 포인트 사용 가능 최대치 = 묶음할인 후 금액 + 배송비 - 쿠폰할인 (결제 전 금액)
+  const maxUsablePoints = Math.min(pointBalance, Math.max(0, discountedTotal + shipping - couponDiscount))
 
   function applyPoints() {
     const v = parseInt(usePointInput, 10)
@@ -349,6 +354,12 @@ export default function CheckoutPage() {
                 <span className="text-ink-4">상품 금액</span>
                 <span className="text-ink">{formatPrice(total)}</span>
               </div>
+              {bundleDiscount > 0 && (
+                <div className="flex justify-between text-[#2d7a4f]">
+                  <span className="flex items-center gap-1"><Tag size={12} /> 묶음 할인 (5%)</span>
+                  <span>-{formatPrice(bundleDiscount)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-ink-4">배송비</span>
                 <span className={shipping === 0 ? 'text-[#2d7a4f]' : 'text-ink'}>{shipping === 0 ? '무료' : formatPrice(shipping)}</span>
