@@ -111,9 +111,12 @@ export default async function MyPage() {
   const goal = profile?.nutrition_goal ?? 'balanced'
   const goalInfo = GOAL_INFO[goal] ?? GOAL_INFO.balanced
 
-  const latestOrderItems = orders[0]?.order_items ?? []
-  const todayCal = latestOrderItems.reduce((s: number, i: { products?: { calories?: number | null } | null; quantity: number }) => s + ((i.products?.calories ?? 0) * i.quantity), 0)
-  const todayProtein = latestOrderItems.reduce((s: number, i: { products?: { protein?: number | null } | null; quantity: number }) => s + ((i.products?.protein ?? 0) * i.quantity), 0)
+  const todayStr = new Date().toISOString().split('T')[0]
+  const todayOrderItems = orders
+    .filter((o) => o.payment_status === 'paid' && o.created_at?.startsWith(todayStr))
+    .flatMap((o) => o.order_items ?? [])
+  const todayCal = todayOrderItems.reduce((s: number, i: { products?: { calories?: number | null } | null; quantity: number }) => s + ((i.products?.calories ?? 0) * i.quantity), 0)
+  const todayProtein = todayOrderItems.reduce((s: number, i: { products?: { protein?: number | null } | null; quantity: number }) => s + ((i.products?.protein ?? 0) * i.quantity), 0)
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

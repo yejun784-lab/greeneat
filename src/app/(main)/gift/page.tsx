@@ -37,6 +37,13 @@ function GiftPageInner() {
   const [orderId, setOrderId] = useState('')
 
   useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) router.replace('/login')
+    })
+  }, [router])
+
+  useEffect(() => {
     if (!productId) { setLoadingProduct(false); return }
     const supabase = createClient()
     supabase

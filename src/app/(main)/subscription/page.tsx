@@ -64,12 +64,23 @@ export default function SubscriptionPage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanId>('standard')
   const [selectedDay, setSelectedDay] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
 
   const [products, setProducts] = useState<Product[]>([])
   const [productsLoading, setProductsLoading] = useState(true)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
 
+  // 인증 체크
   useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) { router.replace('/login'); return }
+      setAuthChecked(true)
+    })
+  }, [router])
+
+  useEffect(() => {
+    if (!authChecked) return
     const supabase = createClient()
     supabase
       .from('products')
@@ -81,7 +92,7 @@ export default function SubscriptionPage() {
         if (!error) setProducts((data ?? []) as unknown as Product[])
         setProductsLoading(false)
       })
-  }, [])
+  }, [authChecked])
 
   const currentPlan = PLANS.find((p) => p.id === selectedPlan)!
   const maxProducts = currentPlan.maxProducts

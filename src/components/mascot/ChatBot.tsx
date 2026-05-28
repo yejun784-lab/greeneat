@@ -109,7 +109,8 @@ export function ChatBot() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: msg, history: currentMessages.slice(-20), charKey }),
       })
-      const { reply } = await res.json()
+      const json = await res.json()
+      const reply: string = json.reply ?? (res.ok ? '응답을 받지 못했습니다.' : json.error ?? '오류가 발생했어요. 다시 시도해주세요 😅')
       setTimeout(() => {
         setTyping(false)
         setMessages(m => [...m, { role: 'bot', text: reply }])

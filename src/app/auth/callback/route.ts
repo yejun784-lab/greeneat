@@ -8,7 +8,10 @@ export async function GET(req: NextRequest) {
 
   if (code) {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.exchangeCodeForSession(code)
+    const { data: { user }, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
+    if (sessionError || !user) {
+      return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+    }
 
     if (user) {
       // 신규 유저 판단: user_coupons가 0개 = 아직 웰컴 쿠폰 미지급
@@ -61,5 +64,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}${next}`)
+  const safeNext = next.startsWith('/') ? next : '/'
+  return NextResponse.redirect(`${origin}${safeNext}`)
 }
