@@ -16,6 +16,7 @@ import type { Product } from '@/types'
 interface ProductCardProps {
   product: Product
   compact?: boolean
+  priority?: boolean
 }
 
 type Highlight = { label: string; Icon: React.ElementType; className: string }
@@ -32,7 +33,7 @@ function getHighlight(p: Product): Highlight | null {
   return null
 }
 
-export function ProductCard({ product, compact = false }: ProductCardProps) {
+export function ProductCard({ product, compact = false, priority = false }: ProductCardProps) {
   const addItem      = useCartStore((s) => s.addItem)
   const { toggle }   = useWishlist()
   const wished       = useWishlistStore((s) => s.has(product.id))
@@ -79,6 +80,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
                 fill
                 className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                priority={priority}
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[#f0faf4]">
