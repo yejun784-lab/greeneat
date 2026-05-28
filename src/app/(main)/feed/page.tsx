@@ -59,12 +59,15 @@ export default async function FeedPage() {
     }
   }
 
-  // 오늘 스트릭 계산
+  // 오늘 스트릭 계산 (KST 기준 자정 — 서버가 UTC이더라도 한국 날짜로 정확히 필터)
+  const kstTodayStart = new Date(
+    new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) + 'T00:00:00+09:00'
+  ).toISOString()
   const { data: todayLog } = await supabase
     .from('meal_logs')
     .select('streak_day, created_at')
     .eq('user_id', user.id)
-    .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
+    .gte('created_at', kstTodayStart)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()

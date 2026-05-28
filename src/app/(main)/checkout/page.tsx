@@ -119,6 +119,7 @@ export default function CheckoutPage() {
   const handlePayment = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     if (!address) { toast.error('배송지를 입력해주세요.'); return }
+    if (!deliveryDate) { toast.error('배송 일정을 선택해주세요.'); return }
     if (!tossReady || !window.TossPayments) {
       toast.error('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.')
       return

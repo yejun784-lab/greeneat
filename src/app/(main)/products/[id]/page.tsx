@@ -73,7 +73,7 @@ export default function ProductDetailPage() {
       if (p) addRecentlyViewed(p)
     }
     load()
-  }, [params.id])
+  }, [params.id, addRecentlyViewed])
 
   if (loading) {
     return (

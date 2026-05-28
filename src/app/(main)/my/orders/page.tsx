@@ -69,7 +69,7 @@ export default async function OrdersPage() {
 
   const { data } = await supabase
     .from('orders')
-    .select('*, order_items(quantity, price_at_purchase, products(name))')
+    .select('*, order_items(id, quantity, price_at_purchase, products(name))')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -121,7 +121,7 @@ export default async function OrdersPage() {
               {order.order_items && order.order_items.length > 0 && (
                 <ul className="space-y-1.5">
                   {order.order_items.map((item, i) => (
-                    <li key={i} className="flex justify-between text-sm">
+                    <li key={(item as { id?: string }).id ?? `${order.id}-${i}`} className="flex justify-between text-sm">
                       <span className="text-ink-3">
                         {item.products?.name ?? '상품'} × {item.quantity}
                       </span>

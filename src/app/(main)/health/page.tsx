@@ -107,7 +107,7 @@ export default async function HealthPage() {
     entry.fat     += log.fat      ?? 0
   }
 
-  const todayStr = last7[6]
+  const todayStr = last7[last7.length - 1]
   const weekData: DayNutrition[] = last7.map((d) => dayMap.get(d)!)
   const todayData: DayNutrition = dayMap.get(todayStr) ?? { date: todayStr, cal: 0, protein: 0, carbs: 0, fat: 0 }
   const todayMealLogs = mealLogs.filter((l) => l.date === todayStr)
