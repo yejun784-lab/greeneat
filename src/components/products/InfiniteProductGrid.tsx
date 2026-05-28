@@ -34,58 +34,66 @@ export function InfiniteProductGrid({ initialProducts, initialHasMore, total, fi
 
   const loadMore = useCallback(async () => {
     setLoading(true)
-    const supabase = createClient()
+    try {
+      const supabase = createClient()
 
-    // 카테고리 slug → id 변환
-    let categoryId: string | null = null
-    if (filters.category) {
-      const { data: cat } = await supabase
-        .from('product_categories')
-        .select('id')
-        .eq('slug', filters.category)
-        .single()
-      categoryId = cat?.id ?? null
+      // 카테고리 slug → id 변환
+      let categoryId: string | null = null
+      if (filters.category) {
+        const { data: cat } = await supabase
+          .from('product_categories')
+          .select('id')
+          .eq('slug', filters.category)
+          .single()
+        categoryId = cat?.id ?? null
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let query: any = supabase
+        .from('products')
+        .select('*, product_categories(id, name, slug)')
+        .eq('is_active', true)
+
+      if (categoryId)          query = query.eq('category_id', categoryId)
+      if (filters.difficulty)  query = query.eq('difficulty', filters.difficulty)
+      if (filters.servings)    query = query.eq('servings', Number(filters.servings))
+      if (filters.search)      query = query.ilike('name', `%${filters.search}%`)
+      if (filters.minCal)      query = query.gte('calories', Number(filters.minCal))
+      if (filters.maxCal)      query = query.lte('calories', Number(filters.maxCal))
+
+      // 알레르기 다중 제외
+      const excludeRaw = filters.exclude
+      const excludeList: string[] = excludeRaw
+        ? Array.isArray(excludeRaw) ? excludeRaw : [excludeRaw]
+        : []
+      for (const allergen of excludeList) {
+        if (allergen) query = query.not('allergens', 'cs', `{${allergen}}`)
+      }
+
+      const sort = filters.sort ?? 'newest'
+      if (sort === 'price_asc')        query = query.order('price', { ascending: true })
+      else if (sort === 'price_desc')  query = query.order('price', { ascending: false })
+      else if (sort === 'cal_asc')     query = query.order('calories', { ascending: true, nullsFirst: false })
+      else  query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
+
+      const from = page * PAGE_SIZE
+      query = query.range(from, from + PAGE_SIZE - 1)
+
+      const { data, error } = await query
+      if (error) throw error
+
+      const newProducts = (data as Product[]) ?? []
+      setProducts((prev) => {
+        const updated = [...prev, ...newProducts]
+        setHasMore(updated.length < total)
+        return updated
+      })
+      setPage((p) => p + 1)
+    } catch (err) {
+      console.error('[InfiniteProductGrid] loadMore 실패:', err)
+    } finally {
+      setLoading(false)
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query: any = supabase
-      .from('products')
-      .select('*, product_categories(id, name, slug)')
-      .eq('is_active', true)
-
-    if (categoryId)          query = query.eq('category_id', categoryId)
-    if (filters.difficulty)  query = query.eq('difficulty', filters.difficulty)
-    if (filters.servings)    query = query.eq('servings', Number(filters.servings))
-    if (filters.search)      query = query.ilike('name', `%${filters.search}%`)
-    if (filters.minCal)      query = query.gte('calories', Number(filters.minCal))
-    if (filters.maxCal)      query = query.lte('calories', Number(filters.maxCal))
-
-    // 알레르기 다중 제외
-    const excludeRaw = filters.exclude
-    const excludeList: string[] = excludeRaw
-      ? Array.isArray(excludeRaw) ? excludeRaw : [excludeRaw]
-      : []
-    for (const allergen of excludeList) {
-      if (allergen) query = query.not('allergens', 'cs', `{${allergen}}`)
-    }
-
-    const sort = filters.sort ?? 'newest'
-    if (sort === 'price_asc')        query = query.order('price', { ascending: true })
-    else if (sort === 'price_desc')  query = query.order('price', { ascending: false })
-    else if (sort === 'cal_asc')     query = query.order('calories', { ascending: true, nullsFirst: false })
-    else  query = query.order('display_group', { ascending: true }).order('created_at', { ascending: false })
-
-    const from = (page + 1) * PAGE_SIZE - PAGE_SIZE
-    query = query.range(from, from + PAGE_SIZE - 1)
-
-    const { data } = await query
-    const newProducts = (data as Product[]) ?? []
-    const nextPage = page + 1
-    const updatedCount = products.length + newProducts.length
-    setProducts((p) => [...p, ...newProducts])
-    setPage(nextPage)
-    setHasMore(updatedCount < total)
-    setLoading(false)
   }, [page, filters, total])
 
   if (products.length === 0) {
