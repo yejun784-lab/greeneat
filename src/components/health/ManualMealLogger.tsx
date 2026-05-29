@@ -21,11 +21,13 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const [fat, setFat] = useState('')
   const [saving, setSaving] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
-  const [scannedName, setScannedName] = useState('')   // 스캔된 상품명 표시용
+  const [scannedName, setScannedName] = useState('')
+  const [scannedSource, setScannedSource] = useState<'openfoodfacts' | 'foodsafety' | null>(null)
 
   function handleScanResult(result: BarcodeResult) {
     setShowScanner(false)
     setScannedName(result.name)
+    setScannedSource(result.source)
     if (result.name)     setDescription(result.name)
     if (result.calories) setCalories(String(Math.round(result.calories)))
     if (result.protein)  setProtein(String(Math.round(result.protein * 10) / 10))
@@ -138,7 +140,10 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
             {scannedName && (
               <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-xs text-green-700">
                 <CheckCircle2 size={13} className="shrink-0" />
-                <span className="truncate">"{scannedName}" 영양 정보 자동 입력됨</span>
+                <span className="truncate flex-1">"{scannedName}" 영양 정보 자동 입력됨</span>
+                <span className="text-[10px] text-green-500 shrink-0">
+                  {scannedSource === 'foodsafety' ? '식품안전처' : 'OFF'}
+                </span>
               </div>
             )}
 
