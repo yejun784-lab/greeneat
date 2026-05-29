@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!plan_type || delivery_day == null) {
     return NextResponse.json({ error: '플랜과 배송 요일을 선택해주세요.' }, { status: 400 })
   }
-  const VALID_PLAN_TYPES = ['weekly', 'biweekly', 'monthly']
+  const VALID_PLAN_TYPES = ['basic', 'standard', 'premium']
   if (!VALID_PLAN_TYPES.includes(plan_type)) {
     return NextResponse.json({ error: '유효하지 않은 플랜 타입입니다.' }, { status: 400 })
   }
