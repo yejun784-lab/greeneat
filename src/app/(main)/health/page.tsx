@@ -1,4 +1,10 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = {
+  title: '건강관리',
+  description: '매일의 식단과 영양소를 기록하고 AI 맞춤 식단 플랜을 받아보세요.',
+}
 import { NutritionRings } from '@/components/health/NutritionRings'
 import { WeeklyChart } from '@/components/health/WeeklyChart'
 import { WeightTracker } from '@/components/health/WeightTracker'

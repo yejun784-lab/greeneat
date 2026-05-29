@@ -25,13 +25,5 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any',
       },
     ],
-    screenshots: [
-      {
-        src: '/screenshots/home.png',
-        sizes: '390x844',
-        type: 'image/png',
-        label: 'GreenEat 홈',
-      },
-    ],
   }
 }
