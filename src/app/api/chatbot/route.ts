@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 // ── 간단한 인메모리 Rate Limiter ───────────────────────────────────────────
@@ -213,6 +213,7 @@ export async function POST(req: NextRequest) {
     + productListText
     + healthContext
     + (userName ? `\n\n현재 대화 중인 고객 이름은 "${userName}"이야. 자연스럽게 이름을 불러줘.` : '')
+    + `\n\n[최종 언어 확인 — 이 규칙이 가장 높은 우선순위]\n답변 전체를 반드시 한국어로만 작성해. 영어 단어, 영문 약어, 영어 문장은 단 한 글자도 쓰지 마. 위반 시 답변 전체를 다시 한국어로 번역해서 제출해.`
 
   // 대화 히스토리 변환 (최근 10턴)
   const messages = [
@@ -237,7 +238,7 @@ export async function POST(req: NextRequest) {
           ...messages,
         ],
         max_tokens: 400,
-        temperature: 0.7,
+        temperature: 0.5,
       }),
     })
 
@@ -248,10 +249,35 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json()
-    const raw = data.choices?.[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
-    // 한자(CJK) 완전 제거
-    const reply = raw.replace(/[一-鿿㐀-䶿豈-﫿\u{20000}-\u{2A6DF}]/gu, '')
+    let raw = data.choices?.[0]?.message?.content ?? '잠깐 오류가 생겼어요. 다시 시도해주세요 😅'
 
+    // 영어 비율 15% 초과 시 한국어 재번역 요청 (1회)
+    const englishChars = (raw.match(/[a-zA-Z]/g) ?? []).length
+    const totalChars   = raw.replace(/\s/g, '').length
+    if (totalChars > 0 && englishChars / totalChars > 0.15) {
+      try {
+        const retryRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: '너는 번역가야. 아래 텍스트를 100% 한국어로 번역해. 영어·한자는 모두 한국어로 바꿔. 이모지는 그대로 둬.' },
+              { role: 'user', content: raw },
+            ],
+            max_tokens: 400,
+            temperature: 0.3,
+          }),
+        })
+        if (retryRes.ok) {
+          const retryData = await retryRes.json()
+          raw = retryData.choices?.[0]?.message?.content ?? raw
+        }
+      } catch {}
+    }
+
+    // 한자(CJK) 완전 제거
+    const reply = raw.replace(/[一-鿿㐀-䶿豈-﫿\u{20000}-\u{2A6DF}]/gu, '')
     return NextResponse.json({ reply, userName })
   } catch (err) {
     console.error('[Chatbot Error]', err)
