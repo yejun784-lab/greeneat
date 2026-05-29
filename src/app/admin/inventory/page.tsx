@@ -67,12 +67,32 @@ export default function AdminInventoryPage() {
       return
     }
     setSaving(productId)
+    const prevProduct = products.find((p) => p.id === productId)
+    const prevStock = prevProduct?.stock ?? 0
+
     const { error } = await supabase.from('products').update({ stock: newStock }).eq('id', productId)
     if (error) {
       showToast('error', '재고 업데이트에 실패했습니다.')
     } else {
       setProducts((prev) => prev.map((p) => p.id === productId ? { ...p, stock: newStock } : p))
       showToast('success', '재고가 업데이트됐습니다.')
+
+      // 재입고 알림 발송: 재고 0 → 1 이상으로 변경 시
+      if (prevStock === 0 && newStock > 0 && prevProduct) {
+        const { data: alerts } = await supabase
+          .from('restock_alerts')
+          .select('id')
+          .eq('product_id', productId)
+          .limit(1)
+        if (alerts && alerts.length > 0) {
+          fetch('/api/push/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, productName: prevProduct.name }),
+          }).catch(() => {})
+          showToast('success', `재고 업데이트 완료! 재입고 알림 발송 중...`)
+        }
+      }
     }
     setSaving(null)
   }
