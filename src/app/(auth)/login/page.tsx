@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
+import { usePushSubscribe } from '@/components/providers/PWAProvider'
 
 function KakaoIcon() {
   return (
@@ -32,6 +33,7 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   const router = useRouter()
+  const subscribePush = usePushSubscribe()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -52,6 +54,7 @@ export default function LoginPage() {
       return
     }
 
+    subscribePush()
     router.push('/')
     router.refresh()
   }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'greeneat-v3'
+const CACHE_NAME = 'greeneat-v4'
 // HTML 페이지는 캐싱 제외 (Next.js 재빌드 시 번들 해시 변경으로 stale 참조 방지)
 const STATIC_ASSETS = [
   '/icons/icon-192.png',
@@ -64,5 +64,31 @@ self.addEventListener('fetch', (event) => {
   // 나머지: 캐시 우선
   event.respondWith(
     caches.match(request).then((cached) => cached || fetch(request))
+  )
+})
+
+// ── Web Push 알림 수신 ───────────────────────────────────────
+self.addEventListener('push', (event) => {
+  const data = event.data?.json() ?? {}
+  const title = data.title ?? 'GreenEat'
+  const options = {
+    body: data.body ?? '새로운 알림이 있습니다.',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    data: { url: data.url ?? '/' },
+    vibrate: [200, 100, 200],
+  }
+  event.waitUntil(self.registration.showNotification(title, options))
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url ?? '/'
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      const existing = windowClients.find((c) => c.url.includes(url) && 'focus' in c)
+      if (existing) return existing.focus()
+      return clients.openWindow(url)
+    })
   )
 })
