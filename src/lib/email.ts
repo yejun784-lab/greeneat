@@ -2,6 +2,10 @@ import { Resend } from 'resend'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'GreenEat <noreply@greeneat.kr>'
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+
 // ── 공통 래퍼 — Resend 인스턴스를 런타임에 lazy 생성하여 빌드 오류 방지 ────────
 async function sendEmail(to: string, subject: string, html: string) {
   const apiKey = process.env.RESEND_API_KEY
@@ -119,7 +123,7 @@ export async function sendOrderConfirmEmail(data: OrderEmailData) {
       </div>
     </div>` : ''}
 
-    <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/my/orders" class="cta">주문 내역 확인하기</a>
+    <a href="${SITE_URL}/my/orders" class="cta">주문 내역 확인하기</a>
   `)
 
   await sendEmail(data.to, `[GreenEat] 주문이 완료되었습니다 (#${data.orderId.slice(-8)})`, html)
@@ -161,7 +165,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
       </div>` : ''}
     </div>
 
-    <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/my/orders" class="cta">주문 내역 확인하기</a>
+    <a href="${SITE_URL}/my/orders" class="cta">주문 내역 확인하기</a>
   `)
 
   await sendEmail(data.to, `[GreenEat] 주문하신 상품이 출발했습니다 🚚`, html)
@@ -204,7 +208,7 @@ export async function sendSubscriptionEmail(data: SubscriptionEmailData) {
       </div>
     </div>
 
-    <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/subscription" class="cta">구독 관리하기</a>
+    <a href="${SITE_URL}/subscription" class="cta">구독 관리하기</a>
   `)
 
   await sendEmail(data.to, `[GreenEat] 구독이 시작됐습니다 🌿`, html)
