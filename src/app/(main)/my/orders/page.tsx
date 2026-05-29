@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL } from '@/lib/utils'
-import { ChevronLeft, Package, CheckCircle2, Truck, Clock, XCircle } from 'lucide-react'
+import { ChevronLeft, Package, CheckCircle2, Truck, Clock, XCircle, Star } from 'lucide-react'
 import { ReorderButton } from '@/components/my/ReorderButton'
 import { CancelOrderButton } from '@/components/my/CancelOrderButton'
 import type { Order, OrderStatus } from '@/types'
@@ -69,7 +69,7 @@ export default async function OrdersPage() {
 
   const { data } = await supabase
     .from('orders')
-    .select('*, order_items(id, quantity, price_at_purchase, products(name))')
+    .select('*, order_items(id, product_id, quantity, price_at_purchase, products(name))')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(100)
@@ -122,13 +122,24 @@ export default async function OrdersPage() {
               {order.order_items && order.order_items.length > 0 && (
                 <ul className="space-y-1.5">
                   {order.order_items.map((item, i) => (
-                    <li key={(item as { id?: string }).id ?? `${order.id}-${i}`} className="flex justify-between text-sm">
-                      <span className="text-ink-3">
+                    <li key={(item as { id?: string }).id ?? `${order.id}-${i}`} className="flex items-center justify-between text-sm gap-2">
+                      <span className="text-ink-3 flex-1 truncate">
                         {item.products?.name ?? '상품'} × {item.quantity}
                       </span>
-                      <span className="text-ink">
-                        {formatPrice(item.price_at_purchase * item.quantity)}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {order.status === 'delivered' && (item as { product_id?: string }).product_id && (
+                          <Link
+                            href={`/products/${(item as { product_id: string }).product_id}?tab=reviews`}
+                            className="flex items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-full transition-colors"
+                          >
+                            <Star size={10} fill="currentColor" />
+                            리뷰 쓰기
+                          </Link>
+                        )}
+                        <span className="text-ink">
+                          {formatPrice(item.price_at_purchase * item.quantity)}
+                        </span>
+                      </div>
                     </li>
                   ))}
                 </ul>
