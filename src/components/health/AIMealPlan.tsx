@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Image from 'next/image'
+import { ShoppingCart, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { GOAL_LABEL } from '@/lib/health-types'
 import { toast } from '@/lib/toast-store'
@@ -46,6 +47,7 @@ function filterAndSort(products: Product[], goal: string, allergens: string[]): 
 
 export function AIMealPlan({ products, goal, allergens, userId }: Props) {
   const [offset, setOffset] = useState(0)
+  const [addingAll, setAddingAll] = useState(false)
 
   const baseList = useMemo(() => {
     const filtered = filterAndSort(products, goal, allergens)
@@ -73,20 +75,60 @@ export function AIMealPlan({ products, goal, allergens, userId }: Props) {
     toast.success(`"${product.name}"을(를) 장바구니에 담았어요!`)
   }
 
+  async function handleAddAllToCart() {
+    if (!userId) {
+      toast.info('로그인 후 장바구니를 이용할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      return
+    }
+    const validProducts = rotated.filter(Boolean) as Product[]
+    if (validProducts.length === 0) return
+    setAddingAll(true)
+    try {
+      const supabase = createClient()
+      const rows = validProducts.map((p) => ({
+        user_id: userId,
+        product_id: p.id,
+        quantity: 1,
+        is_subscription: false,
+        display_group: p.display_group ?? 1,
+      }))
+      const { error } = await supabase
+        .from('cart_items')
+        .upsert(rows, { onConflict: 'user_id,product_id' })
+      if (error) {
+        toast.error('일부 상품 담기에 실패했어요.')
+      } else {
+        toast.success(`${validProducts.length}가지 식단을 장바구니에 담았어요! 🛒`)
+      }
+    } finally {
+      setAddingAll(false)
+    }
+  }
+
   const goalMeta = GOAL_LABEL[goal]
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <p className="text-xs text-ink-4">
           기준: {goalMeta ? `${goalMeta.label} (${GOAL_SORT_LABEL[goal]})` : goal}
         </p>
-        <button
-          onClick={() => setOffset((prev) => (prev + 1) % Math.max(baseList.length, 1))}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2d7a4f] border border-[#2d7a4f]/30 rounded-xl hover:bg-green-tint transition-colors"
-        >
-          식단 새로 짜기 ↻
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setOffset((prev) => (prev + 1) % Math.max(baseList.length, 1))}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2d7a4f] border border-[#2d7a4f]/30 rounded-xl hover:bg-green-tint transition-colors"
+          >
+            새로 짜기 ↻
+          </button>
+          <button
+            onClick={handleAddAllToCart}
+            disabled={addingAll}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#2d7a4f] rounded-xl hover:bg-[#235f3d] transition-colors disabled:opacity-60"
+          >
+            {addingAll ? <Loader2 size={12} className="animate-spin" /> : <ShoppingCart size={12} />}
+            전체 담기
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
