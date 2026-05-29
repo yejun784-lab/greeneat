@@ -176,12 +176,22 @@ export type MealLog = {
   created_at: string
   profiles?: { name: string | null }
   meal_reactions?: MealReaction[]
+  meal_log_comments?: MealLogComment[]
 }
 
 export type MealReaction = {
   log_id: string
   user_id: string
   emoji: string
+}
+
+export type MealLogComment = {
+  id: string
+  log_id: string
+  user_id: string
+  content: string
+  created_at: string
+  profiles?: { name: string | null }
 }
 
 export type FilterState = {

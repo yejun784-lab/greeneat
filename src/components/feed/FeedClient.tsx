@@ -2,10 +2,10 @@
 
 import { useState, useRef, useTransition } from 'react'
 import Image from 'next/image'
-import { Camera, Users, Plus, Copy, Check, Flame, LogIn, X, Loader2, Utensils } from 'lucide-react'
+import { Camera, Users, Plus, Copy, Check, Flame, LogIn, X, Loader2, Utensils, MessageCircle, Send, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
-import type { MealLog, FeedGroup, MealType } from '@/types'
+import type { MealLog, FeedGroup, MealType, MealLogComment } from '@/types'
 
 const MEAL_LABELS: Record<MealType, { label: string; emoji: string; time: string }> = {
   breakfast: { label: '아침', emoji: '🌅', time: '~10시' },
@@ -46,14 +46,28 @@ function StreakBadge({ streak }: { streak: number }) {
   )
 }
 
+function timeAgoStr(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return '방금 전'
+  if (m < 60) return `${m}분 전`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}시간 전`
+  return `${Math.floor(h / 24)}일 전`
+}
+
 function MealLogCard({
   log,
   userId,
   onReact,
+  onCommentAdd,
+  onCommentDelete,
 }: {
   log: MealLog
   userId: string
   onReact: (logId: string, emoji: string) => void
+  onCommentAdd: (logId: string, comment: MealLogComment) => void
+  onCommentDelete: (logId: string, commentId: string) => void
 }) {
   const meal = MEAL_LABELS[log.meal_type]
   const myReaction = log.meal_reactions?.find((r) => r.user_id === userId)
@@ -62,15 +76,32 @@ function MealLogCard({
     return acc
   }, {})
 
-  const timeAgo = (() => {
-    const diff = Date.now() - new Date(log.created_at).getTime()
-    const m = Math.floor(diff / 60000)
-    if (m < 1) return '방금 전'
-    if (m < 60) return `${m}분 전`
-    const h = Math.floor(m / 60)
-    if (h < 24) return `${h}시간 전`
-    return `${Math.floor(h / 24)}일 전`
-  })()
+  const comments = log.meal_log_comments ?? []
+  const [showComments, setShowComments] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  async function submitComment() {
+    const text = commentText.trim()
+    if (!text) return
+    setSubmitting(true)
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('meal_log_comments')
+      .insert({ log_id: log.id, user_id: userId, content: text })
+      .select('*, profiles(name)')
+      .single()
+    setSubmitting(false)
+    if (error) { toast.error('댓글 작성에 실패했어요.'); return }
+    setCommentText('')
+    onCommentAdd(log.id, data as MealLogComment)
+  }
+
+  async function deleteComment(commentId: string) {
+    const supabase = createClient()
+    await supabase.from('meal_log_comments').delete().eq('id', commentId).eq('user_id', userId)
+    onCommentDelete(log.id, commentId)
+  }
 
   return (
     <div className="bg-surface border border-line rounded-2xl overflow-hidden">
@@ -83,7 +114,7 @@ function MealLogCard({
           <p className="text-sm font-semibold text-ink truncate">
             {log.profiles?.name ?? '익명'}
           </p>
-          <p className="text-xs text-ink-5">{meal.label} · {timeAgo}</p>
+          <p className="text-xs text-ink-5">{meal.label} · {timeAgoStr(log.created_at)}</p>
         </div>
         {log.streak_day >= STREAK_REWARD_DAY && (
           <span className="text-xs bg-orange-50 text-orange-500 px-2 py-0.5 rounded-full font-medium">
@@ -110,7 +141,7 @@ function MealLogCard({
       )}
 
       {/* 리액션 */}
-      <div className="px-4 pb-4">
+      <div className="px-4 pb-3">
         {/* 기존 리액션 표시 */}
         {Object.keys(reactionCount).length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-2">
@@ -129,8 +160,8 @@ function MealLogCard({
             ))}
           </div>
         )}
-        {/* 이모지 선택 */}
-        <div className="flex gap-1.5">
+        {/* 이모지 선택 + 댓글 버튼 */}
+        <div className="flex items-center gap-1.5">
           {EMOJIS.map((emoji) => (
             <button
               key={emoji}
@@ -142,8 +173,75 @@ function MealLogCard({
               {emoji}
             </button>
           ))}
+          <div className="flex-1" />
+          <button
+            onClick={() => setShowComments((v) => !v)}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-colors ${
+              showComments ? 'bg-green-tint text-[#2d7a4f]' : 'text-ink-4 hover:bg-wash'
+            }`}
+          >
+            <MessageCircle size={14} />
+            {comments.length > 0 && <span>{comments.length}</span>}
+          </button>
         </div>
       </div>
+
+      {/* 댓글 섹션 */}
+      {showComments && (
+        <div className="border-t border-line px-4 py-3 space-y-3">
+          {/* 댓글 목록 */}
+          {comments.length === 0 ? (
+            <p className="text-xs text-ink-5 text-center py-1">첫 댓글을 남겨보세요!</p>
+          ) : (
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {comments.map((c) => (
+                <div key={c.id} className="flex items-start gap-2 group">
+                  <div className="w-6 h-6 rounded-full bg-green-tint flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-[10px] font-bold text-[#2d7a4f]">
+                      {(c.profiles?.name ?? '?')[0]}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs">
+                      <span className="font-semibold text-ink mr-1.5">{c.profiles?.name ?? '익명'}</span>
+                      <span className="text-ink-2">{c.content}</span>
+                    </p>
+                    <p className="text-[10px] text-ink-5 mt-0.5">{timeAgoStr(c.created_at)}</p>
+                  </div>
+                  {c.user_id === userId && (
+                    <button
+                      onClick={() => deleteComment(c.id)}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-ink-5 hover:text-red-400 transition-all"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 댓글 입력 */}
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment() } }}
+              placeholder="댓글 입력..."
+              maxLength={200}
+              className="flex-1 px-3 py-2 text-xs bg-tint border border-line rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2d7a4f] text-ink"
+            />
+            <button
+              onClick={submitComment}
+              disabled={!commentText.trim() || submitting}
+              className="w-8 h-8 bg-[#2d7a4f] text-white rounded-full flex items-center justify-center disabled:opacity-40 hover:bg-[#235f3d] transition-colors"
+            >
+              {submitting ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -512,6 +610,22 @@ export function FeedClient({
     setStreak(log.streak_day)
   }
 
+  function handleCommentAdd(logId: string, comment: MealLogComment) {
+    setLogs((prev) => prev.map((l) =>
+      l.id === logId
+        ? { ...l, meal_log_comments: [...(l.meal_log_comments ?? []), comment] }
+        : l
+    ))
+  }
+
+  function handleCommentDelete(logId: string, commentId: string) {
+    setLogs((prev) => prev.map((l) =>
+      l.id === logId
+        ? { ...l, meal_log_comments: (l.meal_log_comments ?? []).filter((c) => c.id !== commentId) }
+        : l
+    ))
+  }
+
   function copyCode() {
     if (!group) return
     navigator.clipboard.writeText(group.invite_code)
@@ -571,7 +685,14 @@ export function FeedClient({
       ) : (
         <div className="space-y-4">
           {logs.map((log) => (
-            <MealLogCard key={log.id} log={log} userId={userId} onReact={handleReact} />
+            <MealLogCard
+              key={log.id}
+              log={log}
+              userId={userId}
+              onReact={handleReact}
+              onCommentAdd={handleCommentAdd}
+              onCommentDelete={handleCommentDelete}
+            />
           ))}
         </div>
       )}

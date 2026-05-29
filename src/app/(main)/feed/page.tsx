@@ -82,7 +82,7 @@ export default async function FeedPage() {
       const [logsRes, membersRes] = await Promise.all([
         supabase
           .from('meal_logs')
-          .select('*, profiles(name), meal_reactions(*)')
+          .select('*, profiles(name), meal_reactions(*), meal_log_comments(*, profiles(name))')
           .eq('group_id', group.id)
           .order('created_at', { ascending: false })
           .limit(40),
