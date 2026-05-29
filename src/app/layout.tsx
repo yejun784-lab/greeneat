@@ -24,10 +24,32 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Vercel 자동 도메인 대응 — NEXT_PUBLIC_SITE_URL > VERCEL_URL > localhost
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+
 export const metadata: Metadata = {
-  title: "GreenEat — 진정성 있는 건강한 도시락",
+  title: {
+    default: "GreenEat — 진정성 있는 건강한 도시락",
+    template: "%s | GreenEat",
+  },
   description: "진정성 있는 건강한 선택, 맛있는 도시락. GreenEat 정기구독으로 매일 건강한 한 끼를 편리하게 즐겨보세요.",
+  metadataBase: new URL(SITE_URL),
   manifest: "/manifest.webmanifest",
+  openGraph: {
+    type: "website",
+    siteName: "GreenEat",
+    title: "GreenEat — 진정성 있는 건강한 도시락",
+    description: "직접 만든 정직한 재료로 완성한 냉동 도시락 정기구독 서비스",
+    images: [{ url: "/icons/icon-512.png", width: 512, height: 512, alt: "GreenEat" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "GreenEat",
+    description: "직접 만든 정직한 재료로 완성한 냉동 도시락 정기구독 서비스",
+    images: ["/icons/icon-512.png"],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
