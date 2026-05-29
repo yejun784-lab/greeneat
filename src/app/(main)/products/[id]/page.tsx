@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, RefreshCw, Gift } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, RefreshCw, Gift, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCartStore } from '@/lib/cart-store'
 import { formatPrice, DIFFICULTY_LABEL } from '@/lib/utils'
@@ -17,6 +17,8 @@ import { RestockAlert } from '@/components/products/RestockAlert'
 import { ShareButton } from '@/components/products/ShareButton'
 import { Button } from '@/components/ui/Button'
 import { useRecentlyViewedStore } from '@/lib/recently-viewed-store'
+import { useWishlist } from '@/hooks/useWishlist'
+import { useWishlistStore } from '@/lib/wishlist-store'
 import type { Product } from '@/types'
 
 type RecipeStep = {
@@ -45,6 +47,8 @@ export default function ProductDetailPage() {
 
   const addItem = useCartStore((s) => s.addItem)
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.add)
+  const { toggle: toggleWishlist } = useWishlist()
+  const wishedIds = useWishlistStore((s) => s.ids)
 
   // timer cleanup on unmount
   useEffect(() => {
@@ -134,7 +138,20 @@ export default function ProductDetailPage() {
           <ChevronLeft size={16} />
           돌아가기
         </button>
-        <ShareButton productName={product?.name ?? ''} productId={params.id as string} />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => product && toggleWishlist(product.id)}
+            className={`p-2 rounded-xl border transition-colors ${
+              product && wishedIds.has(product.id)
+                ? 'border-red-300 bg-red-50 text-red-500'
+                : 'border-line-2 text-ink-4 hover:border-red-200 hover:text-red-400'
+            }`}
+            title="찜하기"
+          >
+            <Heart size={18} fill={product && wishedIds.has(product.id) ? 'currentColor' : 'none'} />
+          </button>
+          <ShareButton productName={product?.name ?? ''} productId={params.id as string} />
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-10">
