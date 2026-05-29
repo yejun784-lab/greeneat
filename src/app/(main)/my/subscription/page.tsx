@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
 import { formatPrice, SUBSCRIPTION_PLAN_LABEL } from '@/lib/utils'
-import { ChevronLeft, RefreshCw, Plus, X, Loader2, Check, Calendar } from 'lucide-react'
+import { ChevronLeft, RefreshCw, Plus, X, Loader2, Check, Calendar, SkipForward } from 'lucide-react'
 
 type SubProduct = {
   id: string
@@ -37,7 +37,7 @@ export default function SubscriptionManagePage() {
   const [deliveryDay, setDeliveryDay] = useState<number>(1)
   const [nextDelivery, setNextDelivery] = useState('')
   const [loading, setLoading]   = useState(true)
-  const [saving, setSaving]     = useState<'items' | 'day' | 'date' | null>(null)
+  const [saving, setSaving]     = useState<'items' | 'day' | 'date' | 'skip' | null>(null)
   const [showPicker, setShowPicker] = useState(false)
 
   useEffect(() => { load() }, [])
@@ -120,6 +120,26 @@ export default function SubscriptionManagePage() {
       await load()
     } else {
       toast.error('변경에 실패했어요.')
+    }
+  }
+
+  async function skipOneWeek() {
+    if (!sub) return
+    if (!confirm('이번 주 배송을 1주일 미루시겠어요?')) return
+    setSaving('skip')
+    const supabase = createClient()
+    const base = sub.next_delivery_at ? new Date(sub.next_delivery_at) : new Date()
+    const skipped = new Date(base.getTime() + 7 * 24 * 60 * 60 * 1000)
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ next_delivery_at: skipped.toISOString() })
+      .eq('id', sub.id)
+    setSaving(null)
+    if (error) {
+      toast.error('스킵 처리 중 오류가 발생했어요.')
+    } else {
+      toast.success(`배송을 스킵했어요. 다음 배송: ${skipped.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}`)
+      await load()
     }
   }
 
@@ -229,9 +249,21 @@ export default function SubscriptionManagePage() {
 
         {/* 다음 배송일 변경 */}
         <div className="bg-surface rounded-2xl border border-line p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar size={15} className="text-[#2d7a4f]" />
-            <h2 className="text-sm font-semibold text-ink">다음 배송일</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar size={15} className="text-[#2d7a4f]" />
+              <h2 className="text-sm font-semibold text-ink">다음 배송일</h2>
+            </div>
+            {sub.status === 'active' && (
+              <button
+                onClick={skipOneWeek}
+                disabled={saving !== null}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-amber-50 border border-amber-200 rounded-xl text-amber-600 hover:bg-amber-100 transition-colors disabled:opacity-50"
+              >
+                <SkipForward size={11} />
+                {saving === 'skip' ? '처리 중…' : '이번 주 스킵'}
+              </button>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
             <div className="flex-1">

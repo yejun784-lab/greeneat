@@ -296,7 +296,11 @@ export default async function MyPage() {
                 </div>
               </div>
               <DeliveryCalendar nextDeliveryAt={subscription.next_delivery_at} />
-              <SubscriptionActions status={subscription.status as 'active' | 'paused'} />
+              <SubscriptionActions
+                status={subscription.status as 'active' | 'paused'}
+                subscriptionId={subscription.id}
+                nextDeliveryAt={subscription.next_delivery_at}
+              />
             </>
           ) : (
             <div className="text-center py-6">
