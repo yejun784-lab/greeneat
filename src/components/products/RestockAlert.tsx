@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import { Bell, BellOff, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
+import { usePushSubscribe } from '@/components/providers/PWAProvider'
 
 export function RestockAlert({ productId, productName }: { productId: string; productName?: string }) {
   const [status, setStatus]   = useState<'idle' | 'loading' | 'on' | 'off'>('loading')
   const isLoading = status === 'loading'
+  const subscribePush = usePushSubscribe()
 
   useEffect(() => {
     async function check() {
@@ -56,6 +58,8 @@ export function RestockAlert({ productId, productName }: { productId: string; pr
       }
       toast.success(`${productName ?? '상품'} 재입고 시 알림을 드릴게요! 🔔`)
       setStatus('on')
+      // 브라우저 push 구독 요청 (이미 구독 중이면 no-op)
+      subscribePush()
     }
   }
 
