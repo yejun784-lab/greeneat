@@ -6,7 +6,7 @@ import { useCartStore } from '@/lib/cart-store'
 import { createClient } from '@/lib/supabase/client'
 import { formatPrice } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
-import { Tag, Coins, CreditCard, Loader2 } from 'lucide-react'
+import { Tag, Coins, CreditCard, Loader2, Wallet } from 'lucide-react'
 import { toast } from '@/lib/toast-store'
 import { AddressPicker } from '@/components/checkout/AddressPicker'
 import type {} from '@/types/toss'
@@ -17,6 +17,41 @@ const BUNDLE_THRESHOLD = 3
 const BUNDLE_DISCOUNT_RATE = 0.05
 
 type Coupon = { id: string; code: string; discount_type: 'percent' | 'fixed'; discount_value: number; min_order_amount: number }
+
+type PayMethod = 'CARD' | 'KAKAOPAY' | 'NAVERPAY' | 'TOSSPAY'
+
+const PAY_METHODS: { id: PayMethod; label: string; sub: string; color: string; bg: string; border: string }[] = [
+  { id: 'CARD',     label: '신용/체크카드', sub: '토스페이먼츠',  color: 'text-[#2d7a4f]', bg: 'bg-green-tint',   border: 'border-[#2d7a4f]' },
+  { id: 'KAKAOPAY', label: '카카오페이',   sub: '카카오페이',     color: 'text-[#3A1D1D]', bg: 'bg-[#FEE500]/20', border: 'border-[#FEE500]'  },
+  { id: 'NAVERPAY', label: '네이버페이',   sub: '네이버페이',     color: 'text-[#03C75A]', bg: 'bg-[#03C75A]/10', border: 'border-[#03C75A]'  },
+  { id: 'TOSSPAY',  label: '토스페이',    sub: '토스페이',       color: 'text-[#0064FF]', bg: 'bg-[#0064FF]/10', border: 'border-[#0064FF]'  },
+]
+
+function KakaoPayIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 2C5.582 2 2 4.91 2 8.5c0 2.293 1.52 4.306 3.82 5.44L4.6 17l4.06-2.7A9.7 9.7 0 0010 14.5c4.418 0 8-2.91 8-6.5S14.418 2 10 2z" fill="#3A1D1D"/>
+    </svg>
+  )
+}
+
+function NaverPayIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect width="20" height="20" rx="4" fill="#03C75A"/>
+      <path d="M11.2 10.2L8.5 6H6v8h2.8V9.8L11.5 14H14V6h-2.8v4.2z" fill="white"/>
+    </svg>
+  )
+}
+
+function TossPayIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect width="20" height="20" rx="4" fill="#0064FF"/>
+      <path d="M5 10.5C5 8 7 6 9.5 6H15v2h-5.5C8.1 8 7 9.1 7 10.5S8.1 13 9.5 13H15v2H9.5C7 15 5 13 5 10.5z" fill="white"/>
+    </svg>
+  )
+}
 
 function loadTossScript(): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -39,6 +74,7 @@ export default function CheckoutPage() {
   const [deliveryDate, setDeliveryDate] = useState('')
   const [loading, setLoading] = useState(false)
   const [tossReady, setTossReady] = useState(false)
+  const [payMethod, setPayMethod] = useState<PayMethod>('CARD')
 
   const [couponCode, setCouponCode] = useState('')
   const [coupon, setCoupon] = useState<Coupon | null>(null)
@@ -179,8 +215,7 @@ export default function CheckoutPage() {
         ? items[0].product.name
         : `${items[0].product.name} 외 ${items.length - 1}개`
 
-      await payment.requestPayment({
-        method: 'CARD',
+      const commonPayParams = {
         amount: { currency: 'KRW', value: finalTotal },
         orderId: dbOrderId!,
         orderName,
@@ -188,7 +223,22 @@ export default function CheckoutPage() {
         customerEmail: userEmail || undefined,
         successUrl: `${window.location.origin}/checkout/success?usedPoints=${usedPoints}`,
         failUrl: `${window.location.origin}/checkout/fail`,
-      })
+      }
+
+      if (payMethod === 'CARD') {
+        await payment.requestPayment({ method: 'CARD', ...commonPayParams })
+      } else {
+        const providerMap: Record<Exclude<PayMethod, 'CARD'>, string> = {
+          KAKAOPAY: 'KAKAOPAY',
+          NAVERPAY: 'NAVERPAY',
+          TOSSPAY: 'TOSSPAY',
+        }
+        await payment.requestPayment({
+          method: 'EASY_PAY',
+          easyPay: { provider: providerMap[payMethod as Exclude<PayMethod, 'CARD'>] },
+          ...commonPayParams,
+        })
+      }
       // requestPayment가 성공하면 successUrl로 redirect됨
     } catch (err: unknown) {
       // 결제 실패/취소 시 pending 주문 DB에서 삭제
@@ -316,15 +366,35 @@ export default function CheckoutPage() {
           {/* 결제 수단 */}
           <div className="bg-surface rounded-2xl border border-line p-5">
             <h2 className="font-semibold text-ink mb-4">결제 수단</h2>
-            <div className="border-2 border-[#2d7a4f] rounded-xl p-3 flex items-center gap-3">
-              <CreditCard size={20} className="text-[#2d7a4f]" />
-              <div>
-                <p className="text-sm font-medium text-ink">신용/체크카드</p>
-                <p className="text-xs text-ink-4">토스페이먼츠 — 안전한 결제</p>
-              </div>
-              <div className="ml-auto w-4 h-4 rounded-full bg-[#2d7a4f] flex items-center justify-center shrink-0">
-                <div className="w-2 h-2 rounded-full bg-white" />
-              </div>
+            <div className="grid grid-cols-2 gap-2">
+              {PAY_METHODS.map((m) => {
+                const selected = payMethod === m.id
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setPayMethod(m.id)}
+                    className={`flex items-center gap-2.5 p-3 rounded-xl border-2 transition-all text-left ${
+                      selected ? `${m.border} ${m.bg}` : 'border-line-2 hover:border-line'
+                    }`}
+                  >
+                    <div className="shrink-0">
+                      {m.id === 'CARD'     && <CreditCard size={20} className={selected ? m.color : 'text-ink-4'} />}
+                      {m.id === 'KAKAOPAY' && <KakaoPayIcon />}
+                      {m.id === 'NAVERPAY' && <NaverPayIcon />}
+                      {m.id === 'TOSSPAY'  && <TossPayIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className={`text-xs font-semibold truncate ${selected ? m.color : 'text-ink-3'}`}>{m.label}</p>
+                    </div>
+                    {selected && (
+                      <div className={`ml-auto w-3.5 h-3.5 rounded-full ${m.border.replace('border-', 'bg-')} flex items-center justify-center shrink-0`}>
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
             </div>
             {!tossReady && (
               <p className="text-xs text-ink-5 mt-2 flex items-center gap-1">
@@ -392,9 +462,12 @@ export default function CheckoutPage() {
               loading={loading}
               disabled={!tossReady}
             >
-              {loading ? '처리 중...' : `${formatPrice(finalTotal)} 결제하기`}
+              {loading
+                ? '처리 중...'
+                : `${formatPrice(finalTotal)} ${PAY_METHODS.find((m) => m.id === payMethod)?.label ?? ''}로 결제`}
             </Button>
-            <p className="text-xs text-center text-ink-5 mt-3">
+            <p className="text-xs text-center text-ink-5 mt-3 flex items-center justify-center gap-1">
+              <Wallet size={11} />
               토스페이먼츠 보안 결제
             </p>
           </div>

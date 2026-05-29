@@ -23,6 +23,7 @@ interface TossPayment {
     customerEmail?: string
     successUrl: string
     failUrl: string
+    easyPay?: { provider: string }
   }): Promise<void>
 }
 
