@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 
-export function ManualMealLogger() {
+export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const today = new Date().toISOString().split('T')[0]
@@ -59,7 +59,13 @@ export function ManualMealLogger() {
     <div className="bg-white rounded-2xl border border-[#f0f0ee] overflow-hidden">
       {/* 헤더 */}
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!userId) {
+            toast.info('로그인 후 식단을 기록할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+            return
+          }
+          setOpen((o) => !o)
+        }}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#fafaf8] transition-colors"
       >
         <div className="flex items-center gap-3">

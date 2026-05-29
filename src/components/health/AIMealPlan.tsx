@@ -11,7 +11,7 @@ type Props = {
   products: Product[]
   goal: string
   allergens: string[]
-  userId: string
+  userId: string | null
 }
 
 const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일']
@@ -57,6 +57,10 @@ export function AIMealPlan({ products, goal, allergens, userId }: Props) {
     : Array(7).fill(null)
 
   async function handleAddToCart(product: Product) {
+    if (!userId) {
+      toast.info('로그인 후 장바구니를 이용할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      return
+    }
     const supabase = createClient()
     const { error } = await supabase.from('cart_items').upsert(
       { user_id: userId, product_id: product.id, quantity: 1, is_subscription: false, display_group: product.display_group ?? 1 },

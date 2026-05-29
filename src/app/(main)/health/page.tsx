@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NutritionRings } from '@/components/health/NutritionRings'
 import { WeeklyChart } from '@/components/health/WeeklyChart'
@@ -22,35 +21,44 @@ type OrderRow = { created_at: string; order_items: OrderItem[] | null }
 export default async function HealthPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  // 비로그인도 페이지 진입 허용 — 기능 사용 시 로그인 유도
 
   const last7 = getLastNDays(7)
   const sevenDaysAgo = last7[0]
   const { start: wStart, end: wEnd } = getDateRange(30)
 
-  // 모든 쿼리 병렬 실행
-  const [
-    { data: profile },
-    { data: orders },
-    { data: rawMealLogs },
-    { data: rawWeightLogs },
-    { data: productsRaw },
-  ] = await Promise.all([
-    supabase.from('profiles').select('nutrition_goal, allergen_profile, height_cm, weight_kg').eq('id', user.id).maybeSingle(),
-    supabase.from('orders')
-      .select('created_at, order_items(quantity, products(calories, protein, carbs, fat))')
-      .eq('user_id', user.id).eq('payment_status', 'paid')
-      .gte('created_at', sevenDaysAgo + 'T00:00:00').order('created_at', { ascending: true }),
-    supabase.from('meal_logs')
-      .select('date, calories, protein, carbs, fat, meal_type, description, image_url, created_at')
-      .eq('user_id', user.id).gte('date', sevenDaysAgo).order('created_at', { ascending: true }),
-    supabase.from('weight_logs')
-      .select('date, weight_kg').eq('user_id', user.id)
-      .gte('date', wStart).lte('date', wEnd).order('date', { ascending: true }),
-    supabase.from('products')
+  // 로그인 상태에 따라 쿼리 분기
+  let profile = null, orders = null, rawMealLogs = null, rawWeightLogs = null
+  let productsRaw = null
+
+  if (user) {
+    const results = await Promise.all([
+      supabase.from('profiles').select('nutrition_goal, allergen_profile, height_cm, weight_kg').eq('id', user.id).maybeSingle(),
+      supabase.from('orders')
+        .select('created_at, order_items(quantity, products(calories, protein, carbs, fat))')
+        .eq('user_id', user.id).eq('payment_status', 'paid')
+        .gte('created_at', sevenDaysAgo + 'T00:00:00').order('created_at', { ascending: true }),
+      supabase.from('meal_logs')
+        .select('date, calories, protein, carbs, fat, meal_type, description, image_url, created_at')
+        .eq('user_id', user.id).gte('date', sevenDaysAgo).order('created_at', { ascending: true }),
+      supabase.from('weight_logs')
+        .select('date, weight_kg').eq('user_id', user.id)
+        .gte('date', wStart).lte('date', wEnd).order('date', { ascending: true }),
+      supabase.from('products')
+        .select('id, name, description, price, category_id, calories, protein, carbs, fat, servings, cook_time, difficulty, image_url, display_group, is_subscription, is_active, stock, created_at')
+        .eq('is_active', true).limit(30),
+    ])
+    profile      = results[0].data
+    orders       = results[1].data
+    rawMealLogs  = results[2].data
+    rawWeightLogs= results[3].data
+    productsRaw  = results[4].data
+  } else {
+    const { data } = await supabase.from('products')
       .select('id, name, description, price, category_id, calories, protein, carbs, fat, servings, cook_time, difficulty, image_url, display_group, is_subscription, is_active, stock, created_at')
-      .eq('is_active', true).limit(30),
-  ])
+      .eq('is_active', true).limit(30)
+    productsRaw = data
+  }
 
   const goal = profile?.nutrition_goal ?? 'balanced'
   const heightCm = profile?.height_cm ? Number(profile.height_cm) : null
@@ -120,9 +128,25 @@ export default async function HealthPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
+      {/* 비로그인 안내 배너 */}
+      {!user && (
+        <div className="mb-6 flex items-center justify-between gap-4 bg-green-tint border border-primary/20 rounded-2xl px-5 py-4">
+          <div>
+            <p className="text-sm font-semibold text-primary">로그인하면 건강 데이터를 기록할 수 있어요</p>
+            <p className="text-xs text-ink-4 mt-0.5">식단 기록, 체중 추적, AI 식단 플랜 등 모든 기능을 이용해보세요.</p>
+          </div>
+          <a
+            href="/login"
+            className="shrink-0 px-4 py-2 bg-primary text-white text-xs font-semibold rounded-xl hover:bg-primary-hover transition-colors"
+          >
+            로그인
+          </a>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-ink">건강관리</h1>
-        <GoalEditor current={goal} userId={user.id} />
+        <GoalEditor current={goal} userId={user?.id ?? null} />
       </div>
 
       <div className="flex flex-col gap-6">
@@ -176,8 +200,8 @@ export default async function HealthPage() {
           </section>
         )}
 
-        <MealPhotoLogger />
-        <ManualMealLogger />
+        <MealPhotoLogger userId={user?.id ?? null} />
+        <ManualMealLogger userId={user?.id ?? null} />
 
         {todayMealLogs.length > 0 && <TodayMealList logs={todayMealLogs} />}
 
@@ -188,13 +212,13 @@ export default async function HealthPage() {
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">체중 기록</h2>
-          <WeightTracker initialLogs={weightLogs} userId={user.id} heightCm={heightCm} />
+          <WeightTracker initialLogs={weightLogs} userId={user?.id ?? null} heightCm={heightCm} />
         </section>
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-1">AI 추천 주간 식단</h2>
           <p className="text-xs text-ink-4 mb-4">건강 목표에 맞게 자동으로 구성된 7일 식단이에요.</p>
-          <AIMealPlan products={products} goal={goal} allergens={allergens} userId={user.id} />
+          <AIMealPlan products={products} goal={goal} allergens={allergens} userId={user?.id ?? null} />
         </section>
 
         <section className="bg-surface rounded-2xl border border-line p-5">

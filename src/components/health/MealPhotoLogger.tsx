@@ -22,7 +22,7 @@ const CONFIDENCE_LABEL = {
   low: { text: '낮음', color: 'text-red-500 bg-red-50' },
 }
 
-export function MealPhotoLogger({ onLogged }: { onLogged?: () => void }) {
+export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; userId?: string | null }) {
   const router = useRouter()
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
@@ -52,6 +52,10 @@ export function MealPhotoLogger({ onLogged }: { onLogged?: () => void }) {
 
   async function analyze() {
     if (!file) return
+    if (userId === null || userId === undefined) {
+      toast.info('로그인 후 식단을 기록할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      return
+    }
     setLoading(true)
     setResult(null)
     try {

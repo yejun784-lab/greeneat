@@ -10,12 +10,17 @@ const GOALS = [
   { value: 'muscle',   label: '근육 증가', emoji: '💪', color: 'bg-orange-100 text-orange-700' },
 ]
 
-export function GoalEditor({ current, userId }: { current: string; userId: string }) {
+export function GoalEditor({ current, userId }: { current: string; userId: string | null }) {
   const [goal, setGoal] = useState(current)
   const [open, setOpen] = useState(false)
   const currentGoal = GOALS.find((g) => g.value === goal) ?? GOALS[1]
 
   const select = async (value: string) => {
+    if (!userId) {
+      toast.info('로그인 후 목표를 설정할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      setOpen(false)
+      return
+    }
     const prev = goal
     setGoal(value)
     setOpen(false)

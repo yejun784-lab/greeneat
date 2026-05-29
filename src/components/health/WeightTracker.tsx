@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { formatMMDD } from '@/lib/utils'
+import { toast } from '@/lib/toast-store'
 
 type WeightLog = { date: string; weight_kg: number }
 
 type Props = {
   initialLogs: WeightLog[]
-  userId: string
+  userId: string | null
   heightCm?: number | null
 }
 
@@ -26,6 +27,10 @@ export function WeightTracker({ initialLogs, userId, heightCm }: Props) {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
+    if (!userId) {
+      toast.info('로그인 후 체중을 기록할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      return
+    }
     const kg = parseFloat(weight)
     if (isNaN(kg) || kg <= 0) {
       setError('올바른 체중을 입력해주세요.')
