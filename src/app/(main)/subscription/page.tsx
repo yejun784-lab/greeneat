@@ -64,25 +64,22 @@ export default function SubscriptionPage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanId>('standard')
   const [selectedDay, setSelectedDay] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
 
   const [products, setProducts] = useState<Product[]>([])
   const [productsLoading, setProductsLoading] = useState(true)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
 
-  // 인증 체크
+  // 인증 상태 확인 (로그인 강제 아님)
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { router.replace('/login'); return }
-      setAuthChecked(true)
+    createClient().auth.getUser().then(({ data }) => {
+      setUserId(data.user?.id ?? null)
     })
-  }, [router])
+  }, [])
 
+  // 구독 가능 상품 로드
   useEffect(() => {
-    if (!authChecked) return
-    const supabase = createClient()
-    supabase
+    createClient()
       .from('products')
       .select('id, name, price, image_url, calories, servings')
       .eq('is_subscription', true)
@@ -92,9 +89,7 @@ export default function SubscriptionPage() {
         if (!error) setProducts((data ?? []) as unknown as Product[])
         setProductsLoading(false)
       })
-  }, [authChecked])
-
-  if (!authChecked) return null
+  }, [])
 
   const currentPlan = PLANS.find((p) => p.id === selectedPlan)!
   const maxProducts = currentPlan.maxProducts
@@ -118,6 +113,10 @@ export default function SubscriptionPage() {
   }
 
   async function handleSubscribe() {
+    if (!userId) {
+      toast.info('로그인 후 구독을 시작할 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      return
+    }
     if (selectedProductIds.length === 0) {
       toast.error('구독할 메뉴를 1가지 이상 선택해주세요.')
       return

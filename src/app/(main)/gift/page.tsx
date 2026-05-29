@@ -36,12 +36,13 @@ function GiftPageInner() {
   const [done, setDone] = useState(false)
   const [orderId, setOrderId] = useState('')
 
+  const [userId, setUserId] = useState<string | null>(null)
+
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.replace('/login')
+    createClient().auth.getUser().then(({ data }) => {
+      setUserId(data.user?.id ?? null)
     })
-  }, [router])
+  }, [])
 
   useEffect(() => {
     if (!productId) { setLoadingProduct(false); return }
@@ -61,6 +62,10 @@ function GiftPageInner() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!product) return
+    if (!userId) {
+      toast.info('로그인 후 선물을 보낼 수 있어요.', { action: { label: '로그인', href: '/login' } })
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch('/api/gift', {
