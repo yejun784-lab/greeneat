@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, RefreshCw, Gift, Heart } from 'lucide-react'
@@ -35,13 +35,17 @@ type GalleryImage = { id: string; url: string; order: number }
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [product, setProduct] = useState<Product | null>(null)
   const [recipeSteps, setRecipeSteps] = useState<RecipeStep[]>([])
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [activeImage, setActiveImage] = useState(0)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
-  const [activeTab, setActiveTab] = useState<Tab>('info')
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    const t = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') : null
+    return (t === 'calc' || t === 'recipe' || t === 'reviews') ? t : 'info'
+  })
   const [added, setAdded] = useState(false)
   const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -54,6 +58,18 @@ export default function ProductDetailPage() {
   // timer cleanup on unmount
   useEffect(() => {
     return () => { if (addedTimerRef.current) clearTimeout(addedTimerRef.current) }
+  }, [])
+
+  // URL ?tab 파라미터로 탭 초기화 + 스크롤
+  useEffect(() => {
+    const t = searchParams.get('tab')
+    if (t === 'reviews' || t === 'calc' || t === 'recipe') {
+      setActiveTab(t)
+      setTimeout(() => {
+        document.getElementById('product-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 300)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -313,7 +329,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* 탭 */}
-      <div className="mt-12">
+      <div id="product-tabs" className="mt-12">
         <div className="flex border-b border-line-2 mb-6 overflow-x-auto scrollbar-none">
           {(['info', 'calc', 'recipe', 'reviews'] as Tab[]).map((tab) => (
             <button
