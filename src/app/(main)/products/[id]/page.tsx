@@ -49,6 +49,7 @@ export default function ProductDetailPage() {
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.add)
   const { toggle: toggleWishlist } = useWishlist()
   const wishedIds = useWishlistStore((s) => s.ids)
+  const isWished = product ? wishedIds.includes(product.id) : false
 
   // timer cleanup on unmount
   useEffect(() => {
@@ -142,13 +143,13 @@ export default function ProductDetailPage() {
           <button
             onClick={() => product && toggleWishlist(product.id)}
             className={`p-2 rounded-xl border transition-colors ${
-              product && wishedIds.has(product.id)
+              isWished
                 ? 'border-red-300 bg-red-50 text-red-500'
                 : 'border-line-2 text-ink-4 hover:border-red-200 hover:text-red-400'
             }`}
             title="찜하기"
           >
-            <Heart size={18} fill={product && wishedIds.has(product.id) ? 'currentColor' : 'none'} />
+            <Heart size={18} fill={isWished ? 'currentColor' : 'none'} />
           </button>
           <ShareButton productName={product?.name ?? ''} productId={params.id as string} />
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Megaphone, Gift, Bell } from 'lucide-react'
+import { Megaphone, Gift, Bell, Pin } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: '이벤트 · 공지사항 | GreenEat',
@@ -41,8 +41,9 @@ export default async function NoticePage({
 
   let query = supabase
     .from('notices')
-    .select('id, title, type, starts_at, ends_at, created_at')
+    .select('id, title, type, starts_at, ends_at, created_at, is_pinned')
     .eq('is_active', true)
+    .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
 
   if (tab !== 'all') {
@@ -81,17 +82,24 @@ export default async function NoticePage({
             const meta = TYPE_META[n.type as NoticeType] ?? TYPE_META.notice
             const Icon = meta.icon
             const active = isActive(n.starts_at, n.ends_at)
+            const pinned = (n as typeof n & { is_pinned?: boolean }).is_pinned
             return (
               <li key={n.id}>
                 <Link
                   href={`/notice/${n.id}`}
-                  className="flex items-start gap-3 py-4 hover:bg-tint px-2 rounded-xl transition-colors"
+                  className={`flex items-start gap-3 py-4 hover:bg-tint px-2 rounded-xl transition-colors ${pinned ? 'bg-amber-50/60' : ''}`}
                 >
                   <div className={`mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${meta.color}`}>
                     <Icon size={15} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
+                      {pinned && (
+                        <span className="flex items-center gap-0.5 text-[11px] font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-md">
+                          <Pin size={10} />
+                          필독
+                        </span>
+                      )}
                       <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md ${meta.color}`}>
                         {meta.label}
                       </span>
