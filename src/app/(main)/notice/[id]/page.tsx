@@ -8,7 +8,6 @@ type Notice = {
   title: string
   content: string
   created_at: string
-  is_pinned?: boolean
 }
 
 export default async function NoticePage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,9 +15,10 @@ export default async function NoticePage({ params }: { params: Promise<{ id: str
   const supabase = await createClient()
 
   // 현재 공지 조회 (비활성 공지는 접근 불가)
+  // is_pinned는 컬럼이 없을 수 있어 select에서 제외 후 기본값 처리
   const { data: notice } = await supabase
     .from('notices')
-    .select('id, title, content, created_at, is_pinned')
+    .select('id, title, content, created_at')
     .eq('id', id)
     .eq('is_active', true)
     .maybeSingle()
@@ -69,11 +69,6 @@ export default async function NoticePage({ params }: { params: Promise<{ id: str
 
       {/* 공지 본문 */}
       <article className="bg-surface rounded-2xl border border-line p-6 sm:p-8 mb-6">
-        {current.is_pinned && (
-          <span className="inline-block text-xs font-medium bg-[#2d7a4f] text-white px-2.5 py-1 rounded-full mb-3">
-            필독
-          </span>
-        )}
         <h1 className="text-xl sm:text-2xl font-bold text-ink mb-3 leading-snug">
           {current.title}
         </h1>
