@@ -15,7 +15,7 @@ function urlBase64ToUint8Array(base64String: string) {
 export function PWAProvider() {
   const subscribePush = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
-    if (!VAPID_PUBLIC) return
+    if (!VAPID_PUBLIC || process.env.NODE_ENV !== 'production') return
 
     try {
       const reg = await navigator.serviceWorker.ready

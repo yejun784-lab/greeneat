@@ -42,10 +42,7 @@ export default function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
-    const t = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') : null
-    return (t === 'calc' || t === 'recipe' || t === 'reviews') ? t : 'info'
-  })
+  const [activeTab, setActiveTab] = useState<Tab>('info')
   const [added, setAdded] = useState(false)
   const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 

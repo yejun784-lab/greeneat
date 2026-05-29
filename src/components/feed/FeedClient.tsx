@@ -421,7 +421,7 @@ function LogModal({
           meal_type: mealType,
           streak_day: newStreak,
         })
-        .select('*, profiles(name), meal_reactions(*)')
+        .select('*, profiles(name), meal_reactions(*), meal_log_comments(*, profiles(name))')
         .single()
 
       if (error) throw error

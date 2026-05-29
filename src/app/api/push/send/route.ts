@@ -94,8 +94,10 @@ export async function POST(req: NextRequest) {
     await supabase.from('push_subscriptions').delete().in('endpoint', staleEndpoints)
   }
 
-  // 알림 신청 목록에서 제거
-  await supabase.from('restock_alerts').delete().eq('product_id', productId)
+  // 1건 이상 발송 성공 시에만 알림 신청 목록에서 제거
+  if (sent > 0) {
+    await supabase.from('restock_alerts').delete().eq('product_id', productId)
+  }
 
   return NextResponse.json({ sent, staleRemoved: staleEndpoints.length })
 }

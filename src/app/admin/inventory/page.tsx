@@ -85,12 +85,21 @@ export default function AdminInventoryPage() {
           .eq('product_id', productId)
           .limit(1)
         if (alerts && alerts.length > 0) {
-          fetch('/api/push/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId, productName: prevProduct.name }),
-          }).catch(() => {})
-          showToast('success', `재고 업데이트 완료! 재입고 알림 발송 중...`)
+          try {
+            const res = await fetch('/api/push/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ productId, productName: prevProduct.name }),
+            })
+            if (res.ok) {
+              const result = await res.json()
+              showToast('success', `재입고 알림 ${result.sent}명에게 발송 완료!`)
+            } else {
+              showToast('error', '재입고 알림 발송에 실패했습니다.')
+            }
+          } catch {
+            showToast('error', '재입고 알림 발송 중 오류가 발생했습니다.')
+          }
         }
       }
     }
