@@ -159,6 +159,15 @@ body {
 .animate-toast-in {
   animation: toast-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes scan {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(152px); }
+  100% { transform: translateY(0); }
+}
+.animate-scan {
+  animation: scan 2s ease-in-out infinite;
+}
 .delay-400 { animation-delay: 0.4s; }
 
 /* ── 타이포 유틸 ────────────────────────────────────────────────── */
