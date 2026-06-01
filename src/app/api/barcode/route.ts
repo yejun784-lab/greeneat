@@ -13,8 +13,8 @@ export type BarcodeResult = {
 
 /**
  * GET /api/barcode?code=8801234567890
- * 1순위: Open Food Facts (글로벌, 무료)
- * 2순위: 식품안전처 식품영양성분 DB (국내 제품)
+ * Open Food Facts로 바코드 조회 (글로벌 + 일부 국내)
+ * 국내 전용: 식품안전처 B553748 바코드API 신청 후 fetchFoodSafetyByName 연동 예정
  */
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code')
@@ -22,13 +22,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid barcode' }, { status: 400 })
   }
 
-  // 1순위: Open Food Facts
   const off = await fetchOpenFoodFacts(code)
   if (off) return NextResponse.json(off)
-
-  // 2순위: 식품안전처
-  const kfood = await fetchFoodSafety(code)
-  if (kfood) return NextResponse.json(kfood)
 
   return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 }
@@ -67,32 +62,18 @@ async function fetchOpenFoodFacts(code: string): Promise<BarcodeResult | null> {
   }
 }
 
-// ── 식품안전처 식품영양성분 DB ─────────────────────────────────────────────────
-async function fetchFoodSafety(barcode: string): Promise<BarcodeResult | null> {
+// ── 식품안전처 식품영양성분 DB (상품명 검색용) ────────────────────────────────
+// 바코드→상품명 변환 API(B553748)는 별도 신청 필요 → 현재 미지원
+// 향후 B553748 신청 후 productName 파라미터 활성화 가능
+export async function fetchFoodSafetyByName(productName: string): Promise<BarcodeResult | null> {
   const apiKey = process.env.FOOD_SAFETY_API_KEY
-  if (!apiKey) return null
+  if (!apiKey || !productName.trim()) return null
 
   try {
-    // 바코드로 상품명 조회 (식품 바코드 통합 API)
-    const barcodeRes = await fetch(
-      `https://apis.data.go.kr/B553748/CertImgListServiceV3/getCertImgListServiceV3` +
-      `?serviceKey=${apiKey}&pageNo=1&numOfRows=1&type=json&BRCD_NO=${barcode}`,
-      { next: { revalidate: 86400 } }
-    )
-
-    let productName = ''
-    if (barcodeRes.ok) {
-      const bd = await barcodeRes.json()
-      const item = bd?.body?.items?.[0]
-      productName = item?.PRDLST_NM ?? ''
-    }
-
-    // 상품명으로 영양성분 조회
-    const searchName = productName || barcode
     const nutriRes = await fetch(
-      `https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo01/getFoodNtrCpntDbInq01` +
-      `?serviceKey=${apiKey}&pageNo=1&numOfRows=3&type=json` +
-      `&FOOD_NM_KR=${encodeURIComponent(searchName)}`,
+      `https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02/getFoodNtrCpntDbInq02` +
+      `?serviceKey=${apiKey}&pageNo=1&numOfRows=1&type=json` +
+      `&FOOD_NM_KR=${encodeURIComponent(productName)}`,
       { next: { revalidate: 86400 } }
     )
 
@@ -102,14 +83,14 @@ async function fetchFoodSafety(barcode: string): Promise<BarcodeResult | null> {
     if (!item) return null
 
     return {
-      name: item.FOOD_NM_KR ?? productName ?? '',
-      calories: toNum(item.ENERC_KCAL),
-      protein:  toNum(item.PROT),
-      carbs:    toNum(item.CHOCDF),
-      fat:      toNum(item.FAT),
-      servingSize: item.SERVING_WT ? `${item.SERVING_WT}g` : null,
-      imageUrl: null,
-      source: 'foodsafety',
+      name:       item.FOOD_NM_KR ?? productName ?? '',
+      calories:   toNum(item.AMT_NUM1),   // 에너지(kcal)
+      protein:    toNum(item.AMT_NUM3),   // 단백질(g)
+      fat:        toNum(item.AMT_NUM4),   // 지방(g)
+      carbs:      toNum(item.AMT_NUM6),   // 탄수화물(g)
+      servingSize: item.SERVING_SIZE ?? null,
+      imageUrl:   null,
+      source:     'foodsafety',
     }
   } catch {
     return null
