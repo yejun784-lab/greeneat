@@ -74,7 +74,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-[#f0f0ee] overflow-hidden">
+      <div className="bg-surface rounded-2xl border border-line overflow-hidden">
         {/* 헤더 */}
         <button
           onClick={() => {
@@ -84,23 +84,23 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
             }
             setOpen((o) => !o)
           }}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#fafaf8] transition-colors"
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-wash transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#f0f4ff] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
               <PenLine size={15} className="text-blue-500" />
             </div>
             <div className="text-left">
-              <p className="font-semibold text-[#111] text-sm">직접 입력</p>
-              <p className="text-xs text-[#999]">사진 없이 칼로리를 수동으로 기록해요</p>
+              <p className="font-semibold text-ink text-sm">직접 입력</p>
+              <p className="text-xs text-ink-4">사진 없이 칼로리를 수동으로 기록해요</p>
             </div>
           </div>
-          <Plus size={18} className={`text-[#999] transition-transform ${open ? 'rotate-45' : ''}`} />
+          <Plus size={18} className={`text-ink-4 transition-transform ${open ? 'rotate-45' : ''}`} />
         </button>
 
         {/* 폼 */}
         {open && (
-          <form onSubmit={handleSave} className="px-5 pb-5 space-y-3 border-t border-[#f0f0ee] pt-4">
+          <form onSubmit={handleSave} className="px-5 pb-5 space-y-3 border-t border-line pt-4">
             {/* 날짜 + 식사 유형 */}
             <div className="flex gap-2">
               <input
@@ -108,7 +108,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
                 value={date}
                 max={today}
                 onChange={(e) => setDate(e.target.value)}
-                className="flex-1 px-3 py-2 text-sm border border-[#e8e8e6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-[#333]"
+                className="flex-1 px-3 py-2 text-sm border border-line-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-ink-2"
               />
               <div className="flex gap-1">
                 {(Object.keys(MEAL_TYPE_META) as MealType[]).map((t) => (
@@ -117,7 +117,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
                     type="button"
                     onClick={() => setMealType(t)}
                     className={`px-2.5 py-2 text-xs rounded-xl font-medium transition-colors ${
-                      mealType === t ? 'bg-[#2d7a4f] text-white' : 'bg-[#f5f5f3] text-[#666] hover:bg-[#e8f5ee] hover:text-[#2d7a4f]'
+                      mealType === t ? 'bg-[#2d7a4f] text-white' : 'bg-tint text-ink-3 hover:bg-green-tint hover:text-[#2d7a4f]'
                     }`}
                   >
                     {MEAL_TYPE_META[t].label}
@@ -130,7 +130,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
             <button
               type="button"
               onClick={() => setShowScanner(true)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-[#2d7a4f]/40 rounded-xl text-sm font-medium text-[#2d7a4f] hover:border-[#2d7a4f] hover:bg-[#f0faf5] transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-[#2d7a4f]/40 rounded-xl text-sm font-medium text-[#2d7a4f] hover:border-[#2d7a4f] hover:bg-green-tint-2 transition-colors"
             >
               <ScanBarcode size={16} />
               바코드 스캔으로 자동 입력
@@ -153,7 +153,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="음식 이름 (예: 된장찌개, 삼겹살 200g)"
-              className="w-full px-3 py-2.5 text-sm border border-[#e8e8e6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-[#333] placeholder:text-[#bbb]"
+              className="w-full px-3 py-2.5 text-sm border border-line-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-ink-2 placeholder:text-ink-5"
             />
 
             {/* 칼로리 (필수) + 영양소 (선택) */}
@@ -165,7 +165,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
                 { key: 'fat',      label: '지방',    unit: 'g',    value: fat,      setter: setFat      },
               ].map(({ key, label, unit, value, setter }) => (
                 <div key={key}>
-                  <label className="block text-[10px] text-[#999] mb-1">{label} <span className="text-[#ccc]">({unit})</span></label>
+                  <label className="block text-[10px] text-ink-4 mb-1">{label} <span className="text-ink-5">({unit})</span></label>
                   <input
                     type="number"
                     min="0"
@@ -173,7 +173,7 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
                     value={value}
                     onChange={(e) => setter(e.target.value)}
                     placeholder="0"
-                    className="w-full px-2 py-2 text-sm border border-[#e8e8e6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-[#333] text-center"
+                    className="w-full px-2 py-2 text-sm border border-line-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-ink-2 text-center"
                   />
                 </div>
               ))}

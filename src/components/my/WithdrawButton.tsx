@@ -64,7 +64,7 @@ export function WithdrawButton() {
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           placeholder={CONFIRM_WORD}
-          className="w-full px-3 py-2 border border-red-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400"
+          className="w-full px-3 py-2 border border-red-300 rounded-lg text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-red-400"
           disabled={step === 'loading'}
         />
       </div>

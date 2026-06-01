@@ -139,7 +139,7 @@ export function RecentlyOrderedSection() {
             <RotateCcw size={12} className="text-[#2d7a4f]" />
           </div>
           <span className="text-sm font-semibold text-ink">지난 주문 메뉴</span>
-          <span className="text-[11px] text-ink-5 bg-white px-1.5 py-0.5 rounded-full border border-line">
+          <span className="text-[11px] text-ink-5 bg-surface px-1.5 py-0.5 rounded-full border border-line">
             {products.length}개
           </span>
         </div>

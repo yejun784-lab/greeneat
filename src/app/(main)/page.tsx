@@ -41,10 +41,10 @@ export default async function HomePage() {
   const products = await getFeaturedProducts()
 
   return (
-    <div className="bg-[#f8f8f6]">
+    <div className="bg-wash">
 
       {/* ── 히어로 ──────────────────────────────────────────────── */}
-      <section className="bg-white">
+      <section className="bg-surface">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="grid md:grid-cols-2 gap-8 items-center py-16 md:py-20">
 
@@ -53,7 +53,7 @@ export default async function HomePage() {
               <span className="inline-flex items-center gap-1.5 bg-[#e8f5ee] text-[#2d7a4f] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
                 🌿 진정성 있는 건강한 선택
               </span>
-              <h1 className="text-display text-3xl sm:text-4xl lg:text-[3.5rem] text-[#111] leading-[1.12] mb-5">
+              <h1 className="text-display text-3xl sm:text-4xl lg:text-[3.5rem] text-ink leading-[1.12] mb-5">
                 바쁜 일상 속<br />
                 <span className="text-[#2d7a4f]">건강한 한 끼</span>
               </h1>
@@ -70,18 +70,18 @@ export default async function HomePage() {
                 </Link>
                 <Link
                   href="/subscription"
-                  className="inline-flex items-center px-7 py-3.5 bg-white text-[#333] font-semibold rounded-full text-sm hover:bg-[#f0faf4] hover:text-[#2d7a4f] hover:border-[#2d7a4f] transition-colors border border-[#ccc]"
+                  className="inline-flex items-center px-7 py-3.5 bg-surface text-ink-2 font-semibold rounded-full text-sm hover:bg-[#f0faf4] hover:text-[#2d7a4f] hover:border-[#2d7a4f] transition-colors border border-[#ccc]"
                 >
                   정기구독
                 </Link>
               </div>
 
               {/* 스탯 */}
-              <div className="flex gap-5 sm:gap-8 pt-8 border-t border-[#f0f0ee]">
+              <div className="flex gap-5 sm:gap-8 pt-8 border-t border-line">
                 {[['20+', '다양한 메뉴'], ['4,900원~', '한끼 가격'], ['100%', '건강 재료']].map(([num, label]) => (
                   <div key={label}>
-                    <p className="text-[#111] font-bold text-xl tracking-tight">{num}</p>
-                    <p className="text-[#999] text-xs mt-0.5">{label}</p>
+                    <p className="text-ink font-bold text-xl tracking-tight">{num}</p>
+                    <p className="text-ink-4 text-xs mt-0.5">{label}</p>
                   </div>
                 ))}
               </div>
@@ -105,7 +105,7 @@ export default async function HomePage() {
                       key={i}
                       href="/products"
                       className={`relative overflow-hidden shadow-md shadow-black/8 group block ${
-                        item.contain ? 'bg-[#fffbf0]' : 'bg-white'
+                        item.contain ? 'bg-[#fffbf0]' : 'bg-surface'
                       } ${
                         i === 0 ? 'rounded-tl-3xl rounded-tr-xl rounded-bl-xl rounded-br-sm' :
                         i === 1 ? 'rounded-tl-xl rounded-tr-3xl rounded-bl-sm rounded-br-xl' :
@@ -128,7 +128,7 @@ export default async function HomePage() {
                       {/* 하단 텍스트 — 배지 있으면 같이 표시 */}
                       <div className="absolute inset-x-0 bottom-0 px-2.5 pb-2.5">
                         {item.badge && (
-                          <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded mb-1">
+                          <span className="inline-block bg-surface/20 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded mb-1">
                             {item.badge}
                           </span>
                         )}
@@ -163,7 +163,7 @@ export default async function HomePage() {
               <div>
                 <span className="text-3xl mb-3 block">{cat.emoji}</span>
                 <p className={`font-bold text-base leading-tight ${cat.text}`}>{cat.name}</p>
-                <p className="text-[#888] text-xs mt-1.5 leading-relaxed">{cat.desc}</p>
+                <p className="text-ink-4 text-xs mt-1.5 leading-relaxed">{cat.desc}</p>
               </div>
               <p className={`text-xs font-semibold mt-4 ${cat.text} opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all`}>
                 보러가기 →
@@ -178,11 +178,11 @@ export default async function HomePage() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-2">Best Sellers</p>
-            <h2 className="text-display text-3xl md:text-4xl text-[#111]">인기 도시락</h2>
+            <h2 className="text-display text-3xl md:text-4xl text-ink">인기 도시락</h2>
           </div>
           <Link
             href="/products"
-            className="text-sm font-medium text-[#999] hover:text-[#111] transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+            className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
           >
             전체 보기
           </Link>
@@ -216,18 +216,18 @@ export default async function HomePage() {
       </section>
 
       {/* ── 인스타그램 ────────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-surface">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-2">Instagram</p>
-              <h2 className="text-display text-3xl text-[#111]">@green_eat_food</h2>
+              <h2 className="text-display text-3xl text-ink">@green_eat_food</h2>
             </div>
             <a
               href="https://www.instagram.com/green_eat_food"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-[#999] hover:text-[#111] transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+              className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
             >
               팔로우
             </a>
@@ -242,7 +242,7 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-4">Subscription</p>
-              <h2 className="text-display text-3xl md:text-4xl text-[#111] mb-4">
+              <h2 className="text-display text-3xl md:text-4xl text-ink mb-4">
                 정기구독으로<br />더 건강하게, 더 알뜰하게
               </h2>
               <p className="text-[#666] leading-relaxed mb-8 font-light">
@@ -263,11 +263,11 @@ export default async function HomePage() {
                 { icon: '💸', title: '최대 15% 할인', desc: '플랜 업그레이드 시 추가 혜택' },
                 { icon: '🔄', title: '언제든 변경', desc: '배송일·상품 자유롭게 조정 가능' },
               ].map((item) => (
-                <div key={item.title} className="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm">
+                <div key={item.title} className="flex items-center gap-4 bg-surface rounded-2xl p-4 shadow-sm">
                   <span className="text-2xl w-10 text-center shrink-0">{item.icon}</span>
                   <div>
-                    <p className="font-semibold text-[#111] text-sm">{item.title}</p>
-                    <p className="text-[#999] text-xs mt-0.5">{item.desc}</p>
+                    <p className="font-semibold text-ink text-sm">{item.title}</p>
+                    <p className="text-ink-4 text-xs mt-0.5">{item.desc}</p>
                   </div>
                 </div>
               ))}

@@ -215,7 +215,7 @@ export function ProductFilter() {
       <div className="lg:hidden mb-4">
         <button
           onClick={() => setMobileOpen((v) => !v)}
-          className="flex items-center gap-2 px-4 py-2 border border-line-2 rounded-full text-sm font-medium text-ink bg-white hover:bg-wash transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-line-2 rounded-full text-sm font-medium text-ink bg-surface hover:bg-wash transition-colors"
         >
           <SlidersHorizontal size={14} />
           필터
@@ -227,7 +227,7 @@ export function ProductFilter() {
           <ChevronDown size={14} className={`transition-transform ${mobileOpen ? 'rotate-180' : ''}`} />
         </button>
         {mobileOpen && (
-          <div className="mt-3 p-4 bg-white border border-line-2 rounded-2xl shadow-md">
+          <div className="mt-3 p-4 bg-surface border border-line-2 rounded-2xl shadow-md">
             {filterContent}
           </div>
         )}

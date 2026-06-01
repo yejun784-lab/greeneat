@@ -23,14 +23,14 @@ function ToastItemEl({ t }: { t: ToastItem }) {
           <Link
             href={t.action.href}
             onClick={() => remove(t.id)}
-            className="text-xs font-bold px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 transition-colors whitespace-nowrap shrink-0"
+            className="text-xs font-bold px-2.5 py-1 rounded-lg bg-surface/20 hover:bg-surface/30 transition-colors whitespace-nowrap shrink-0"
           >
             {t.action.label}
           </Link>
         ) : (
           <button
             onClick={() => { t.action?.onClick?.(); remove(t.id) }}
-            className="text-xs font-bold px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 transition-colors whitespace-nowrap shrink-0"
+            className="text-xs font-bold px-2.5 py-1 rounded-lg bg-surface/20 hover:bg-surface/30 transition-colors whitespace-nowrap shrink-0"
           >
             {t.action.label}
           </button>

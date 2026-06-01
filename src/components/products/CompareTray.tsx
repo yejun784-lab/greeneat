@@ -33,7 +33,7 @@ export function CompareTray() {
   const ids = items.map((i) => i.id).join(',')
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-line shadow-2xl px-4 py-3">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-md border-t border-line shadow-2xl px-4 py-3">
       <div className="max-w-4xl mx-auto flex items-center gap-3">
         <div className="flex items-center gap-1.5 shrink-0">
           <GitCompareArrows size={15} className="text-[#2d7a4f]" />

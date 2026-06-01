@@ -91,15 +91,15 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#f0f0ee] overflow-hidden">
+    <div className="bg-surface rounded-2xl border border-line overflow-hidden">
       {/* 헤더 */}
-      <div className="px-5 py-4 border-b border-[#f0f0ee] flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-[#e8f5ee] flex items-center justify-center">
+      <div className="px-5 py-4 border-b border-line flex items-center gap-3">
+        <div className="w-8 h-8 rounded-xl bg-green-tint flex items-center justify-center">
           <Camera size={16} className="text-[#2d7a4f]" />
         </div>
         <div>
-          <p className="font-semibold text-[#111] text-sm">식단 사진 분석</p>
-          <p className="text-xs text-[#999]">사진 한 장으로 칼로리를 자동 계산해요</p>
+          <p className="font-semibold text-ink text-sm">식단 사진 분석</p>
+          <p className="text-xs text-ink-4">사진 한 장으로 칼로리를 자동 계산해요</p>
         </div>
       </div>
 
@@ -110,7 +110,7 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="flex-1 px-3 py-2 text-sm border border-[#e8e8e6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-[#333]"
+            className="flex-1 px-3 py-2 text-sm border border-line-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-ink-2"
           />
           <div className="flex gap-1">
             {(Object.keys(MEAL_TYPE_META) as MealType[]).map((t) => (
@@ -120,7 +120,7 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
                 className={`px-2.5 py-2 text-xs rounded-xl font-medium transition-colors ${
                   mealType === t
                     ? 'bg-[#2d7a4f] text-white'
-                    : 'bg-[#f5f5f3] text-[#666] hover:bg-[#e8f5ee] hover:text-[#2d7a4f]'
+                    : 'bg-tint text-ink-3 hover:bg-green-tint hover:text-[#2d7a4f]'
                 }`}
               >
                 {MEAL_TYPE_META[t].label}
@@ -135,7 +135,7 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
             onClick={() => inputRef.current?.click()}
-            className="border-2 border-dashed border-[#d8f0e4] rounded-2xl p-8 text-center cursor-pointer hover:border-[#2d7a4f] hover:bg-[#f0faf4] transition-all"
+            className="border-2 border-dashed border-line-2 rounded-2xl p-8 text-center cursor-pointer hover:border-[#2d7a4f] hover:bg-green-tint-2 transition-all"
           >
             <Upload size={28} className="text-[#2d7a4f]/50 mx-auto mb-3" />
             <p className="text-sm font-medium text-[#555]">사진을 드래그하거나 클릭해서 업로드</p>
@@ -150,7 +150,7 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
             />
           </div>
         ) : (
-          <div className="relative rounded-2xl overflow-hidden bg-[#f5f5f3]">
+          <div className="relative rounded-2xl overflow-hidden bg-tint">
             <div className="aspect-video relative">
               <Image src={preview} alt="업로드된 식단" fill className="object-contain" />
             </div>
@@ -167,11 +167,11 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
 
         {/* 분석 결과 */}
         {result && (
-          <div className="rounded-2xl bg-[#f8fdf9] border border-[#d0ead8] p-4 space-y-3">
+          <div className="rounded-2xl bg-surface border border-line p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <CheckCircle size={16} className="text-[#2d7a4f] shrink-0 mt-0.5" />
-                <p className="text-sm text-[#333] leading-relaxed">{result.description}</p>
+                <p className="text-sm text-ink-2 leading-relaxed">{result.description}</p>
               </div>
               {result.confidence && (
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONFIDENCE_LABEL[result.confidence]?.color}`}>
@@ -189,9 +189,9 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
               ].map(({ icon: Icon, label, value, unit, color }) => (
                 <div key={label} className={`rounded-xl p-2.5 ${color.split(' ')[1]} text-center`}>
                   <Icon size={14} className={`${color.split(' ')[0]} mx-auto mb-1`} />
-                  <p className="text-[13px] font-bold text-[#111]">{value ?? '–'}</p>
+                  <p className="text-[13px] font-bold text-ink">{value ?? '–'}</p>
                   <p className="text-[9px] text-[#888]">{unit}</p>
-                  <p className="text-[9px] text-[#666] mt-0.5">{label}</p>
+                  <p className="text-[9px] text-ink-3 mt-0.5">{label}</p>
                 </div>
               ))}
             </div>

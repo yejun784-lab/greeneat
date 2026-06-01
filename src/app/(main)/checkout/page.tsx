@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                     </div>
                     {selected && (
                       <div className={`ml-auto w-3.5 h-3.5 rounded-full ${m.border.replace('border-', 'bg-')} flex items-center justify-center shrink-0`}>
-                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-surface" />
                       </div>
                     )}
                   </button>

@@ -76,7 +76,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f5f0e8] px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="w-full max-w-sm bg-surface rounded-2xl shadow-sm border border-gray-100 p-8">
         <Link href="/" className="block text-center text-2xl font-bold text-[#2d7a4f] mb-6">
           GreenEat
         </Link>
@@ -97,7 +97,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium bg-surface border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
           >
             <GoogleIcon />
             {oauthLoading === 'google' ? '연결 중...' : 'Google로 로그인'}

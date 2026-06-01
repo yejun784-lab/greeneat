@@ -130,7 +130,7 @@ export function HealthQuestionnaire() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* 헤더 */}
         <div className="bg-gradient-to-r from-[#2d7a4f] to-[#4caf72] px-6 pt-6 pb-4">
           <div className="flex items-center justify-between mb-3">
@@ -140,9 +140,9 @@ export function HealthQuestionnaire() {
             </button>
           </div>
           {/* 진행 바 */}
-          <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-surface/20 rounded-full overflow-hidden">
             <div
-              className="h-full bg-white rounded-full transition-all duration-300"
+              className="h-full bg-surface rounded-full transition-all duration-300"
               style={{ width: `${(step / TOTAL) * 100}%` }}
             />
           </div>

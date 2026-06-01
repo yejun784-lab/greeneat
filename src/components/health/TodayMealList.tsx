@@ -15,27 +15,27 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
   )
 
   return (
-    <div className="bg-white rounded-2xl border border-[#f0f0ee] overflow-hidden">
+    <div className="bg-surface rounded-2xl border border-line overflow-hidden">
       {/* 헤더 */}
-      <div className="px-5 py-4 border-b border-[#f0f0ee] flex items-center justify-between">
+      <div className="px-5 py-4 border-b border-line flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-[#fff7ed] flex items-center justify-center">
             <UtensilsCrossed size={15} className="text-amber-500" />
           </div>
           <div>
-            <p className="font-semibold text-[#111] text-sm">오늘 먹은 것</p>
-            <p className="text-xs text-[#999]">사진 분석으로 기록된 식단</p>
+            <p className="font-semibold text-ink text-sm">오늘 먹은 것</p>
+            <p className="text-xs text-ink-4">사진 분석으로 기록된 식단</p>
           </div>
         </div>
         {/* 오늘 합산 */}
         <div className="text-right">
-          <p className="text-lg font-bold text-[#111]">{total.cal}<span className="text-xs font-normal text-[#999] ml-1">kcal</span></p>
+          <p className="text-lg font-bold text-ink">{total.cal}<span className="text-xs font-normal text-ink-4 ml-1">kcal</span></p>
           <p className="text-[10px] text-[#aaa]">{logs.length}끼 기록</p>
         </div>
       </div>
 
       {/* 합산 영양 바 */}
-      <div className="px-5 py-3 bg-[#fafaf8] border-b border-[#f0f0ee]">
+      <div className="px-5 py-3 bg-wash border-b border-line">
         <div className="grid grid-cols-4 gap-2">
           {[
             { icon: Flame,    label: '칼로리', value: total.cal,     unit: 'kcal', color: 'text-orange-500' },
@@ -46,9 +46,9 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
             <div key={label} className="text-center">
               <div className="flex items-center justify-center gap-0.5 mb-0.5">
                 <Icon size={10} className={color} />
-                <span className="text-[10px] text-[#999]">{label}</span>
+                <span className="text-[10px] text-ink-4">{label}</span>
               </div>
-              <p className="text-sm font-bold text-[#333]">{value}<span className="text-[10px] font-normal text-[#aaa] ml-0.5">{unit}</span></p>
+              <p className="text-sm font-bold text-ink-2">{value}<span className="text-[10px] font-normal text-[#aaa] ml-0.5">{unit}</span></p>
             </div>
           ))}
         </div>
@@ -62,7 +62,7 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
             <div key={i} className="flex items-center gap-3 px-5 py-3.5">
               {/* 식사 이미지 */}
               {log.image_url ? (
-                <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-[#f5f5f3]">
+                <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-tint">
                   <Image src={log.image_url} alt={log.description ?? '식단'} fill className="object-cover" />
                 </div>
               ) : (
@@ -81,12 +81,12 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
                     {new Date(log.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
-                <p className="text-sm text-[#333] leading-snug line-clamp-1">{log.description ?? '기록된 식단'}</p>
+                <p className="text-sm text-ink-2 leading-snug line-clamp-1">{log.description ?? '기록된 식단'}</p>
               </div>
 
               {/* 칼로리 */}
               <div className="text-right shrink-0">
-                <p className="text-sm font-bold text-[#111]">{log.calories ?? '–'}</p>
+                <p className="text-sm font-bold text-ink">{log.calories ?? '–'}</p>
                 <p className="text-[10px] text-[#aaa]">kcal</p>
               </div>
             </div>

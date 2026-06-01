@@ -18,14 +18,14 @@ export function CalcNutrition({ calories, protein, carbs, fat, product }: Props)
       <div className="flex items-center gap-3 mb-4">
         <span className="text-sm text-ink-3">수량</span>
         <div className="flex items-center gap-2">
-          <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-7 h-7 rounded-full bg-white border border-line-2 flex items-center justify-center text-ink-3 hover:border-[#2d7a4f]">-</button>
+          <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-7 h-7 rounded-full bg-surface border border-line-2 flex items-center justify-center text-ink-3 hover:border-[#2d7a4f]">-</button>
           <span className="text-sm font-semibold w-6 text-center">{qty}</span>
-          <button onClick={() => setQty((q) => q + 1)} className="w-7 h-7 rounded-full bg-white border border-line-2 flex items-center justify-center text-ink-3 hover:border-[#2d7a4f]">+</button>
+          <button onClick={() => setQty((q) => q + 1)} className="w-7 h-7 rounded-full bg-surface border border-line-2 flex items-center justify-center text-ink-3 hover:border-[#2d7a4f]">+</button>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {[['칼로리', calc(calories), 'kcal'], ['단백질', calc(protein), 'g'], ['탄수화물', calc(carbs), 'g'], ['지방', calc(fat), 'g']].map(([label, value, unit]) => (
-          <div key={label as string} className="bg-white rounded-xl p-3 text-center">
+          <div key={label as string} className="bg-surface rounded-xl p-3 text-center">
             <p className="text-xs text-ink-4 mb-1">{label}</p>
             <p className="font-bold text-ink">{value}<span className="text-xs text-ink-4 font-normal ml-0.5">{unit}</span></p>
           </div>

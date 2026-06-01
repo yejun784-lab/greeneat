@@ -39,7 +39,7 @@ export function GoalEditor({ current, userId }: { current: string; userId: strin
         <span>{currentGoal.label}</span>
       </button>
       {open && (
-        <div className="absolute right-0 top-8 bg-white border border-line shadow-lg rounded-xl p-1.5 z-10 min-w-[120px]">
+        <div className="absolute right-0 top-8 bg-surface border border-line shadow-lg rounded-xl p-1.5 z-10 min-w-[120px]">
           {GOALS.map((g) => (
             <button
               key={g.value}

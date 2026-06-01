@@ -67,7 +67,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   }
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden border border-[#f0f0ee] shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="group bg-surface rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow duration-200">
 
       {/* 이미지 */}
       <div className="relative">
@@ -110,7 +110,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
 
             {/* 재주문 배지 — 이미 주문한 적 있는 상품 */}
             {ordered && !outOfStock && (
-              <span className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-0.5 bg-white/90 backdrop-blur-sm text-[#2d7a4f] text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-sm">
+              <span className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-0.5 bg-surface/90 backdrop-blur-sm text-[#2d7a4f] text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-sm">
                 <RotateCcw size={8} />
                 재주문
               </span>
@@ -121,7 +121,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
               <div className="absolute inset-x-3 bottom-3 translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out pointer-events-none group-hover:pointer-events-auto">
                 <button
                   onClick={handleAdd}
-                  className="w-full flex items-center justify-center gap-1.5 bg-white/95 backdrop-blur-sm text-ink font-semibold text-[13px] py-2.5 rounded-xl shadow-md hover:bg-white transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 bg-surface/95 backdrop-blur-sm text-ink font-semibold text-[13px] py-2.5 rounded-xl shadow-md hover:bg-surface transition-colors"
                 >
                   <ShoppingBag size={13} />
                   담기
@@ -137,7 +137,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
           aria-label={wished ? '찜 취소' : '찜하기'}
           className={`absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
             wished
-              ? 'bg-white text-red-500 shadow-sm'
+              ? 'bg-surface text-red-500 shadow-sm'
               : 'bg-black/15 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100'
           }`}
         >

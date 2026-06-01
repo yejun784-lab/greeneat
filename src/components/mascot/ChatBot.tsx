@@ -221,7 +221,7 @@ export function ChatBot() {
                       key={c.key}
                       onClick={() => selectChar(c.key)}
                       className={`flex flex-col items-center py-3 px-2 rounded-2xl transition-all active:scale-95 ${
-                        selected ? 'ring-2 ring-primary bg-white shadow-md' : 'bg-white hover:shadow-md hover:-translate-y-0.5'
+                        selected ? 'ring-2 ring-primary bg-surface shadow-md' : 'bg-surface hover:shadow-md hover:-translate-y-0.5'
                       }`}
                     >
                       <Svg size={58} mood="happy" />

@@ -21,7 +21,7 @@ export function OnboardingTour() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 relative">
+      <div className="bg-surface rounded-2xl shadow-2xl max-w-sm w-full p-6 relative">
         <button onClick={dismiss} className="absolute top-4 right-4 text-ink-5 hover:text-ink-3">
           <X size={18} />
         </button>
