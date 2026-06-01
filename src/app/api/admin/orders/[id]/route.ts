@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendShippingEmail } from '@/lib/email'
+import { sendShippingAlimtalk } from '@/lib/kakao'
 
 export async function PATCH(
   req: NextRequest,
@@ -57,19 +58,18 @@ export async function PATCH(
     return NextResponse.json({ error: '주문 업데이트에 실패했습니다.' }, { status: 500 })
   }
 
-  // 배송 시작 상태로 변경될 때 이메일 발송
+  // 배송 시작 상태로 변경될 때 이메일 + 알림톡 발송
   if (status === 'shipped') {
-    // 주문한 사용자의 이메일 조회
     const { data: authData } = await supabase.auth.admin.getUserById(order.user_id)
+    const customerName = (order as any).profiles?.name ?? ''
     const email = authData?.user?.email
+    const phone = authData?.user?.phone
+
     if (email) {
-      sendShippingEmail({
-        to: email,
-        orderId,
-        customerName: (order as any).profiles?.name ?? '',
-        trackingNumber,
-        carrier,
-      }).catch(console.error)
+      sendShippingEmail({ to: email, orderId, customerName, trackingNumber, carrier }).catch(console.error)
+    }
+    if (phone) {
+      sendShippingAlimtalk({ phone, customerName, orderId, trackingNumber, carrier }).catch(console.error)
     }
   }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendOrderConfirmEmail } from '@/lib/email'
+import { sendOrderAlimtalk } from '@/lib/kakao'
 
 const POINT_RATE = 0.01
 
@@ -156,19 +157,37 @@ export async function POST(req: NextRequest) {
     const { data: orderData } = await supabase
       .from('orders').select('total_price, addresses(address)').eq('id', orderId).single()
 
+    const customerName = profileData?.name ?? ''
+    const items = (fullOrderItems ?? []).map((oi: any) => ({
+      name: oi.products?.name ?? '상품',
+      quantity: oi.quantity,
+      price: oi.price_at_purchase * oi.quantity,
+    }))
+    const totalPrice = orderData?.total_price ?? order.total_price
+    const itemSummary = items.length > 1
+      ? `${items[0].name} 외 ${items.length - 1}건`
+      : (items[0]?.name ?? '상품')
+
     sendOrderConfirmEmail({
       to: user.email,
       orderId,
-      customerName: profileData?.name ?? '',
-      items: (fullOrderItems ?? []).map((oi: any) => ({
-        name: oi.products?.name ?? '상품',
-        quantity: oi.quantity,
-        price: oi.price_at_purchase * oi.quantity,
-      })),
-      totalPrice: orderData?.total_price ?? order.total_price,
+      customerName,
+      items,
+      totalPrice,
       address: (orderData?.addresses as any)?.address ?? '',
       earnedPoints,
     }).catch(console.error)
+
+    // 카카오 알림톡 (전화번호 있을 때만)
+    if (user.phone) {
+      sendOrderAlimtalk({
+        phone: user.phone,
+        customerName,
+        orderId,
+        totalPrice,
+        itemSummary,
+      }).catch(console.error)
+    }
   }
 
   return NextResponse.json({ success: true, orderId, earnedPoints })
