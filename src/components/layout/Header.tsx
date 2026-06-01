@@ -62,24 +62,54 @@ export function Header() {
 
   useEffect(() => { setCartMounted(true) }, [])
 
+  const [notifToast, setNotifToast] = useState<{ title: string; body: string } | null>(null)
+  const notifToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   useEffect(() => {
     const supabase = createClient()
+    let userId: string | null = null
+    let channel: ReturnType<typeof supabase.channel> | null = null
+
     supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user ?? null)
-      if (data.user) {
-        const [{ data: profile }, { count }] = await Promise.all([
-          supabase.from('profiles').select('name').eq('id', data.user.id).maybeSingle(),
-          supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false).eq('user_id', data.user.id),
-        ])
-        setProfileName(profile?.name ?? null)
-        setUnreadCount(count ?? 0)
-      }
+      if (!data.user) return
+
+      userId = data.user.id
+      const [{ data: profile }, { count }] = await Promise.all([
+        supabase.from('profiles').select('name').eq('id', data.user.id).maybeSingle(),
+        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false).eq('user_id', data.user.id),
+      ])
+      setProfileName(profile?.name ?? null)
+      setUnreadCount(count ?? 0)
+
+      // Realtime 구독 — 새 알림 INSERT 시 뱃지 + 토스트
+      channel = supabase
+        .channel(`notifications:${userId}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
+          (payload) => {
+            const n = payload.new as { title?: string; body?: string }
+            setUnreadCount((c) => c + 1)
+            // 토스트 팝업
+            if (notifToastTimer.current) clearTimeout(notifToastTimer.current)
+            setNotifToast({ title: n.title ?? '새 알림', body: n.body ?? '' })
+            notifToastTimer.current = setTimeout(() => setNotifToast(null), 4000)
+          }
+        )
+        .subscribe()
     })
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null)
       if (!session?.user) { setProfileName(null); setUnreadCount(0) }
     })
-    return () => subscription.unsubscribe()
+
+    return () => {
+      subscription.unsubscribe()
+      if (channel) supabase.removeChannel(channel)
+      if (notifToastTimer.current) clearTimeout(notifToastTimer.current)
+    }
   }, [])
 
   // 외부 클릭 시 드롭다운 닫기
@@ -361,14 +391,41 @@ export function Header() {
                 href="/my/notifications"
                 className="relative p-2 text-ink-3 hover:text-[#2d7a4f] transition-colors"
                 aria-label="알림"
+                onClick={() => setUnreadCount(0)}
               >
-                <Bell size={20} />
+                <Bell size={20} className={unreadCount > 0 ? 'text-[#2d7a4f]' : ''} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold animate-pulse">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
               </Link>
+            )}
+
+            {/* 실시간 알림 토스트 */}
+            {notifToast && (
+              <div
+                className="fixed top-16 right-4 z-[200] max-w-xs w-full bg-surface border border-line rounded-2xl shadow-xl p-4 animate-toast-in cursor-pointer"
+                onClick={() => { setNotifToast(null); router.push('/my/notifications') }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-tint flex items-center justify-center shrink-0">
+                    <Bell size={14} className="text-[#2d7a4f]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-ink truncate">{notifToast.title}</p>
+                    {notifToast.body && (
+                      <p className="text-xs text-ink-4 mt-0.5 line-clamp-2">{notifToast.body}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setNotifToast(null) }}
+                    className="text-ink-5 hover:text-ink-3 shrink-0 -mt-0.5"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
             )}
 
             <Link
