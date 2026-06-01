@@ -65,25 +65,29 @@ export function Header() {
   const [notifToast, setNotifToast] = useState<{ title: string; body: string } | null>(null)
   const notifToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // 채널 ref — 얼리 언마운트 시에도 cleanup 보장
+  const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
+
   useEffect(() => {
     const supabase = createClient()
-    let userId: string | null = null
-    let channel: ReturnType<typeof supabase.channel> | null = null
+    let unmounted = false
 
     supabase.auth.getUser().then(async ({ data }) => {
+      if (unmounted) return
       setUser(data.user ?? null)
       if (!data.user) return
 
-      userId = data.user.id
+      const userId = data.user.id
       const [{ data: profile }, { count }] = await Promise.all([
-        supabase.from('profiles').select('name').eq('id', data.user.id).maybeSingle(),
-        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false).eq('user_id', data.user.id),
+        supabase.from('profiles').select('name').eq('id', userId).maybeSingle(),
+        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false).eq('user_id', userId),
       ])
+      if (unmounted) return
       setProfileName(profile?.name ?? null)
       setUnreadCount(count ?? 0)
 
       // Realtime 구독 — 새 알림 INSERT 시 뱃지 + 토스트
-      channel = supabase
+      const ch = supabase
         .channel(`notifications:${userId}`)
         .on(
           'postgres_changes',
@@ -91,13 +95,18 @@ export function Header() {
           (payload) => {
             const n = payload.new as { title?: string; body?: string }
             setUnreadCount((c) => c + 1)
-            // 토스트 팝업
             if (notifToastTimer.current) clearTimeout(notifToastTimer.current)
             setNotifToast({ title: n.title ?? '새 알림', body: n.body ?? '' })
             notifToastTimer.current = setTimeout(() => setNotifToast(null), 4000)
           }
         )
         .subscribe()
+
+      if (unmounted) {
+        supabase.removeChannel(ch)
+      } else {
+        channelRef.current = ch
+      }
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
@@ -106,8 +115,12 @@ export function Header() {
     })
 
     return () => {
+      unmounted = true
       subscription.unsubscribe()
-      if (channel) supabase.removeChannel(channel)
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current)
+        channelRef.current = null
+      }
       if (notifToastTimer.current) clearTimeout(notifToastTimer.current)
     }
   }, [])

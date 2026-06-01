@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdmin } from '@supabase/supabase-js'
 import { sendShippingEmail } from '@/lib/email'
 import { sendShippingAlimtalk } from '@/lib/kakao'
 
@@ -60,7 +61,12 @@ export async function PATCH(
 
   // 배송 시작 상태로 변경될 때 이메일 + 알림톡 발송
   if (status === 'shipped') {
-    const { data: authData } = await supabase.auth.admin.getUserById(order.user_id)
+    // auth.admin API는 service-role 키 필요
+    const adminClient = createAdmin(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    const { data: authData } = await adminClient.auth.admin.getUserById(order.user_id)
     const customerName = (order as any).profiles?.name ?? ''
     const email = authData?.user?.email
     const phone = authData?.user?.phone

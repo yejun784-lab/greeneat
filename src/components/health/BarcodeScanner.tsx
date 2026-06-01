@@ -15,6 +15,7 @@ export function BarcodeScanner({ onResult, onClose }: Props) {
   const [errorMsg, setErrorMsg] = useState('')
   const streamRef = useRef<MediaStream | null>(null)
   const readerRef = useRef<import('@zxing/browser').BrowserMultiFormatReader | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -42,8 +43,11 @@ export function BarcodeScanner({ onResult, onClose }: Props) {
         // 200ms마다 프레임 캡처 후 바코드 디코딩
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')!
-        const interval = setInterval(async () => {
-          if (cancelled || !videoRef.current) { clearInterval(interval); return }
+        let interval: ReturnType<typeof setInterval> | null = setInterval(async () => {
+          if (cancelled || !videoRef.current) {
+            if (interval) { clearInterval(interval); interval = null }
+            return
+          }
           const v = videoRef.current
           if (v.readyState < 2) return
 
@@ -54,16 +58,17 @@ export function BarcodeScanner({ onResult, onClose }: Props) {
           try {
             const result = await reader.decodeFromCanvas(canvas)
             if (result && !cancelled) {
-              clearInterval(interval)
+              if (interval) { clearInterval(interval); interval = null }
               setStatus('found')
-              await lookupBarcode(result.getText(), cancelled)
+              await lookupBarcode(result.getText())
             }
           } catch {
             // 인식 실패 → 계속 시도
           }
         }, 200)
 
-        return () => clearInterval(interval)
+        // interval ref에 저장해 cleanup에서 즉시 정리 가능하게
+        intervalRef.current = interval
       } catch (err) {
         if (!cancelled) {
           setStatus('error')
@@ -80,27 +85,27 @@ export function BarcodeScanner({ onResult, onClose }: Props) {
 
     return () => {
       cancelled = true
+      if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
       streamRef.current?.getTracks().forEach((t) => t.stop())
     }
   }, [])
 
-  async function lookupBarcode(code: string, cancelled: boolean) {
+  async function lookupBarcode(code: string) {
     try {
       const res = await fetch(`/api/barcode?code=${encodeURIComponent(code)}`)
-      if (cancelled) return
+      // 항상 스트림 정리 (취소 여부 무관)
+      streamRef.current?.getTracks().forEach((t) => t.stop())
       if (!res.ok) {
         setStatus('error')
         setErrorMsg(`바코드(${code})를 찾을 수 없어요. 직접 입력해주세요.`)
         return
       }
       const data: BarcodeResult = await res.json()
-      streamRef.current?.getTracks().forEach((t) => t.stop())
       onResult(data)
     } catch {
-      if (!cancelled) {
-        setStatus('error')
-        setErrorMsg('조회 중 오류가 발생했어요. 다시 시도해주세요.')
-      }
+      streamRef.current?.getTracks().forEach((t) => t.stop())
+      setStatus('error')
+      setErrorMsg('조회 중 오류가 발생했어요. 다시 시도해주세요.')
     }
   }
 
