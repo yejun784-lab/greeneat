@@ -148,8 +148,8 @@ export function ChatBot() {
       {/* ── 플로팅 버튼 ─────────────────────────────── */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="fixed right-6 z-50 w-16 h-16 rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
-        style={{ bottom: kbOffset + 24 }}
+        className="fixed right-4 z-50 w-14 h-14 rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
+        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${kbOffset + 16}px)` }}
         aria-label={open ? '챗봇 닫기' : '도우미에게 물어보기'}
       >
         {open ? (
@@ -170,7 +170,7 @@ export function ChatBot() {
 
       {/* ── 채팅창 ──────────────────────────────────── */}
       {open && (
-        <div className="fixed right-6 z-50 w-[360px] sm:w-[420px] bg-surface rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden animate-fade-up" style={{ bottom: kbOffset + 112 }}>
+        <div className="fixed right-2 left-2 sm:left-auto sm:right-6 sm:w-[420px] z-50 bg-surface rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden animate-fade-up" style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${kbOffset + 80}px)` }}>
 
           {/* 헤더 */}
           <div
