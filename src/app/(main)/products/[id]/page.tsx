@@ -59,10 +59,12 @@ export default function ProductDetailPage() {
   }
   function handleTouchEnd(e: React.TouchEvent) {
     if (touchStartX.current === null) return
+    const len = galleryImages.length
+    if (len < 2) { touchStartX.current = null; return }  // 이미지 부족 시 무시
     const dx = e.changedTouches[0].clientX - touchStartX.current
     if (Math.abs(dx) < 40) return          // 미세 터치 무시
-    if (dx < 0) setActiveImage((i) => (i + 1) % galleryImages.length)          // 왼쪽 → 다음
-    else        setActiveImage((i) => (i - 1 + galleryImages.length) % galleryImages.length) // 오른쪽 → 이전
+    if (dx < 0) setActiveImage((i) => (i + 1) % len)          // 왼쪽 → 다음
+    else        setActiveImage((i) => (i - 1 + len) % len)     // 오른쪽 → 이전
     touchStartX.current = null
   }
 

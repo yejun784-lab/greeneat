@@ -164,9 +164,16 @@ export async function POST(req: NextRequest) {
       price: oi.price_at_purchase * oi.quantity,
     }))
     const totalPrice = orderData?.total_price ?? order.total_price
+
+    // items가 비어있을 경우(조인 실패) 알림 발송 스킵
+    if (items.length === 0) {
+      console.error('[payment/confirm] order items empty for orderId:', orderId)
+      return NextResponse.json({ success: true, orderId, earnedPoints })
+    }
+
     const itemSummary = items.length > 1
       ? `${items[0].name} 외 ${items.length - 1}건`
-      : (items[0]?.name ?? '상품')
+      : items[0].name
 
     sendOrderConfirmEmail({
       to: user.email,
