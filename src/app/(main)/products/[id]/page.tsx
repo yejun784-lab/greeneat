@@ -52,6 +52,20 @@ export default function ProductDetailPage() {
   const wishedIds = useWishlistStore((s) => s.ids)
   const isWished = product ? wishedIds.includes(product.id) : false
 
+  // 터치 스와이프
+  const touchStartX = useRef<number | null>(null)
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX
+  }
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    if (Math.abs(dx) < 40) return          // 미세 터치 무시
+    if (dx < 0) setActiveImage((i) => (i + 1) % galleryImages.length)          // 왼쪽 → 다음
+    else        setActiveImage((i) => (i - 1 + galleryImages.length) % galleryImages.length) // 오른쪽 → 이전
+    touchStartX.current = null
+  }
+
   // timer cleanup on unmount
   useEffect(() => {
     return () => { if (addedTimerRef.current) clearTimeout(addedTimerRef.current) }
@@ -172,7 +186,11 @@ export default function ProductDetailPage() {
         {/* 이미지 갤러리 */}
         <div className="space-y-3">
           {/* 메인 이미지 */}
-          <div className="relative aspect-square rounded-2xl overflow-hidden bg-wash group">
+          <div
+            className="relative aspect-square rounded-2xl overflow-hidden bg-wash group"
+            onTouchStart={galleryImages.length > 1 ? handleTouchStart : undefined}
+            onTouchEnd={galleryImages.length > 1 ? handleTouchEnd : undefined}
+          >
             {(galleryImages[activeImage]?.url ?? product.image_url) && (
               <Image
                 src={galleryImages[activeImage]?.url ?? product.image_url!}
