@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Users, Flame, Camera } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { FeedClient } from '@/components/feed/FeedClient'
+import { WithErrorBoundary } from '@/components/ui/ErrorBoundary'
 import type { MealLog, FeedGroup } from '@/types'
 
 export const metadata: Metadata = {
@@ -112,13 +113,15 @@ export default async function FeedPage() {
   const currentStreak = todayLog?.streak_day ?? 0
 
   return (
-    <FeedClient
-      userId={user.id}
-      userName={profile?.name ?? '나'}
-      group={group}
-      initialLogs={logs}
-      members={members}
-      currentStreak={currentStreak}
-    />
+    <WithErrorBoundary label="밥로그">
+      <FeedClient
+        userId={user.id}
+        userName={profile?.name ?? '나'}
+        group={group}
+        initialLogs={logs}
+        members={members}
+        currentStreak={currentStreak}
+      />
+    </WithErrorBoundary>
   )
 }

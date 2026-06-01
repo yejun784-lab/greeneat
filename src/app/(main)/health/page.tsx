@@ -14,6 +14,7 @@ import { MealPhotoLogger } from '@/components/health/MealPhotoLogger'
 import { ManualMealLogger } from '@/components/health/ManualMealLogger'
 import { TodayMealList } from '@/components/health/TodayMealList'
 import { getLastNDays, getDateRange } from '@/lib/utils'
+import { WithErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { GOAL_INFO, GOAL_LABEL, type DayNutrition, type GoalInfo, type MealLogRow } from '@/lib/health-types'
 import { GoalEditor } from '@/components/my/GoalEditor'
 import type { Product } from '@/types'
@@ -206,30 +207,44 @@ export default async function HealthPage() {
           </section>
         )}
 
-        <MealPhotoLogger userId={user?.id ?? null} />
+        <WithErrorBoundary label="식사 사진 분석">
+          <MealPhotoLogger userId={user?.id ?? null} />
+        </WithErrorBoundary>
         <ManualMealLogger userId={user?.id ?? null} />
 
-        {todayMealLogs.length > 0 && <TodayMealList logs={todayMealLogs} />}
+        {todayMealLogs.length > 0 && (
+          <WithErrorBoundary label="오늘의 식단">
+            <TodayMealList logs={todayMealLogs} />
+          </WithErrorBoundary>
+        )}
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">이번 주 칼로리 추이</h2>
-          <WeeklyChart data={weekData} calTarget={goalInfo.calTarget} />
+          <WithErrorBoundary label="주간 차트">
+            <WeeklyChart data={weekData} calTarget={goalInfo.calTarget} />
+          </WithErrorBoundary>
         </section>
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">체중 기록</h2>
-          <WeightTracker initialLogs={weightLogs} userId={user?.id ?? null} heightCm={heightCm} />
+          <WithErrorBoundary label="체중 추적">
+            <WeightTracker initialLogs={weightLogs} userId={user?.id ?? null} heightCm={heightCm} />
+          </WithErrorBoundary>
         </section>
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-1">AI 추천 주간 식단</h2>
           <p className="text-xs text-ink-4 mb-4">건강 목표에 맞게 자동으로 구성된 7일 식단이에요.</p>
-          <AIMealPlan products={products} goal={goal} allergens={allergens} userId={user?.id ?? null} />
+          <WithErrorBoundary label="AI 식단 플랜">
+            <AIMealPlan products={products} goal={goal} allergens={allergens} userId={user?.id ?? null} />
+          </WithErrorBoundary>
         </section>
 
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">이번 주 리포트</h2>
-          <HealthReport weekData={weekData} goal={goalInfo} weightLogs={weightLogs} />
+          <WithErrorBoundary label="건강 리포트">
+            <HealthReport weekData={weekData} goal={goalInfo} weightLogs={weightLogs} />
+          </WithErrorBoundary>
         </section>
       </div>
     </div>

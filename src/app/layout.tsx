@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToastContainer } from "@/components/ui/Toast";
+import { WithErrorBoundary } from "@/components/ui/ErrorBoundary";
 import "./globals.css";
 
 // 초기 번들에서 제외 — 코드 스플리팅으로 lazy 로드
@@ -105,10 +106,10 @@ export default function RootLayout({
           <PWAProvider />
           <CartProvider>{children}</CartProvider>
           <ToastContainer />
-          <CompareTray />
-          <ChatBot />
-          <HealthQuestionnaire />
-          <CartAbandonmentGuard />
+          <WithErrorBoundary fallback={null}><CompareTray /></WithErrorBoundary>
+          <WithErrorBoundary fallback={null}><ChatBot /></WithErrorBoundary>
+          <WithErrorBoundary fallback={null}><HealthQuestionnaire /></WithErrorBoundary>
+          <WithErrorBoundary fallback={null}><CartAbandonmentGuard /></WithErrorBoundary>
         </ThemeProvider>
       </body>
     </html>
