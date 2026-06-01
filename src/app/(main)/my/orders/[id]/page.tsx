@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
-import { formatPrice, formatDate, ORDER_STATUS_LABEL } from '@/lib/utils'
+import { formatPrice, formatDate, ORDER_STATUS_LABEL, getTrackingUrl } from '@/lib/utils'
 import { ChevronLeft, Package, MapPin, CreditCard, Truck, ExternalLink, Gift } from 'lucide-react'
 import type { OrderStatus } from '@/types'
 
@@ -170,14 +170,21 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 <p className="text-xs text-ink-4 mb-0.5">{order.carrier ?? 'CJ대한통운'}</p>
                 <p className="text-sm font-mono font-bold text-ink tracking-wider">{order.tracking_number}</p>
               </div>
-              <a
-                href={`https://trace.cjlogistics.com/next/tracking.html?wblNum=${order.tracking_number}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-2 bg-[#2d7a4f] text-white text-xs font-semibold rounded-lg hover:bg-[#235f3d] transition-colors"
-              >
-                조회하기 <ExternalLink size={11} />
-              </a>
+              {(() => {
+                const url = getTrackingUrl(order.carrier, order.tracking_number)
+                return url ? (
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-[#2d7a4f] text-white text-xs font-semibold rounded-lg hover:bg-[#235f3d] transition-colors"
+                  >
+                    조회하기 <ExternalLink size={11} />
+                  </a>
+                ) : (
+                  <span className="text-xs text-ink-5">추적 링크 없음</span>
+                )
+              })()}
             </div>
           </div>
         )}

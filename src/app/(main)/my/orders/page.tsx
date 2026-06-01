@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { formatPrice, formatDate, ORDER_STATUS_LABEL } from '@/lib/utils'
-import { ChevronLeft, Package, CheckCircle2, Truck, Clock, XCircle, Star } from 'lucide-react'
+import { formatPrice, formatDate, ORDER_STATUS_LABEL, getTrackingUrl } from '@/lib/utils'
+import { ChevronLeft, Package, CheckCircle2, Truck, Clock, XCircle, Star, ExternalLink } from 'lucide-react'
 import { ReorderButton } from '@/components/my/ReorderButton'
 import { CancelOrderButton } from '@/components/my/CancelOrderButton'
 import type { Order, OrderStatus } from '@/types'
@@ -147,6 +147,27 @@ export default async function OrdersPage() {
 
               {/* 배송 추적 타임라인 */}
               <DeliveryTimeline status={order.status} />
+
+              {/* 배송 추적 버튼 */}
+              {(order.status === 'shipped' || order.status === 'delivered') &&
+                (order as { tracking_number?: string | null }).tracking_number && (() => {
+                  const url = getTrackingUrl(
+                    (order as { carrier?: string | null }).carrier,
+                    (order as { tracking_number?: string | null }).tracking_number
+                  )
+                  return url ? (
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 flex items-center justify-center gap-1.5 py-2.5 border border-[#2d7a4f]/30 rounded-xl text-xs font-medium text-[#2d7a4f] hover:bg-green-tint transition-colors"
+                    >
+                      <Truck size={13} />
+                      {(order as { carrier?: string | null }).carrier ?? 'CJ대한통운'} 배송 추적
+                      <ExternalLink size={11} />
+                    </a>
+                  ) : null
+                })()}
 
               <p className="text-xs text-ink-5 mt-3 font-mono">{order.id}</p>
             </div>

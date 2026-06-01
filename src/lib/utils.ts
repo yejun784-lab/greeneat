@@ -105,3 +105,21 @@ export function translateAuthError(message: string): string {
   }
   return '오류가 발생했어요. 잠시 후 다시 시도해주세요.'
 }
+
+// ── 택배사 배송 추적 ──────────────────────────────────────────
+const CARRIER_TRACKING: Record<string, (n: string) => string> = {
+  'CJ대한통운':  (n) => `https://trace.cjlogistics.com/next/tracking.html?wblNum=${n}`,
+  '롯데택배':    (n) => `https://www.lotteglogis.com/open/tracking?invNo=${n}`,
+  '한진택배':    (n) => `https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&schLang=KR&wblnumText2=${n}`,
+  '우체국택배':  (n) => `https://service.epost.go.kr/trace.RetrieveEmsRigiTraceList.comm?POST_CODE=${n}`,
+  'GS Postbox':  (n) => `https://www.cvsnet.co.kr/invoice/tracking.do?invoice_no=${n}`,
+  'KG로지스':    (n) => `https://www.kglogis.co.kr/delivery/delivery_result.jsp?slipno=${n}`,
+  '로젠택배':    (n) => `https://www.ilogen.com/m/personal/trace/${n}`,
+}
+
+/** 택배사명 + 운송장번호 → 추적 URL (없으면 null) */
+export function getTrackingUrl(carrier: string | null | undefined, trackingNumber: string | null | undefined): string | null {
+  if (!carrier || !trackingNumber) return null
+  const fn = CARRIER_TRACKING[carrier]
+  return fn ? fn(trackingNumber.trim()) : null
+}
