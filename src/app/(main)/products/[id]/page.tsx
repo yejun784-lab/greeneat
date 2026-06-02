@@ -180,7 +180,12 @@ export default function ProductDetailPage() {
           >
             <Heart size={18} fill={isWished ? 'currentColor' : 'none'} />
           </button>
-          <ShareButton productName={product?.name ?? ''} productId={params.id as string} />
+          <ShareButton
+            productName={product?.name ?? ''}
+            productId={params.id as string}
+            description={product?.description ?? undefined}
+            imageUrl={product?.image_url ?? null}
+          />
         </div>
       </div>
 
