@@ -26,7 +26,7 @@ export async function GET(
 
 // PATCH /api/orders/[id] — 주문 취소 (사용자)
 export async function PATCH(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
@@ -34,6 +34,13 @@ export async function PATCH(
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
+
+  // 취소 사유 파싱 (선택사항)
+  let cancelReason: string | null = null
+  try {
+    const body = await req.json()
+    cancelReason = body?.reason ?? null
+  } catch { /* body 없으면 무시 */ }
 
   // 본인 주문인지 + 취소 가능한 상태인지 확인
   const { data: order } = await supabase
@@ -48,10 +55,13 @@ export async function PATCH(
     return NextResponse.json({ error: '이미 준비 중인 주문은 취소할 수 없어요.' }, { status: 400 })
   }
 
-  // 상태 변경
+  // 상태 변경 + 취소 사유 저장
+  const updatePayload: Record<string, string | null> = { status: 'cancelled' }
+  if (cancelReason) updatePayload.cancel_reason = cancelReason
+
   const { error } = await supabase
     .from('orders')
-    .update({ status: 'cancelled' })
+    .update(updatePayload)
     .eq('id', id)
     .eq('user_id', user.id)
 
