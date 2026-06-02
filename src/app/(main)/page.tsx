@@ -119,7 +119,7 @@ export default async function HomePage() {
                           alt={item.label}
                           fill
                           className={`transition-transform duration-500 group-hover:scale-105 ${item.contain ? 'object-contain p-3' : 'object-cover'}`}
-                          priority={i < 2}
+                          priority
                           sizes="25vw"
                         />
                       </div>

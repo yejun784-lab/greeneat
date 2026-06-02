@@ -12,8 +12,9 @@ const TYPING_DELAY = 700
 const INITIAL_MESSAGE: Message = { role: 'bot', text: '안녕하세요! 저는 그린잇 도우미예요 🍀\n무엇이든 물어보세요!' }
 
 function loadChar(): CharKey {
-  if (typeof window === 'undefined') return 'tomato'
-  return (localStorage.getItem('greeni-char') as CharKey) ?? 'tomato'
+  // SSR/CSR hydration 일치를 위해 항상 기본값 반환
+  // 실제 localStorage 값은 useEffect에서 읽음
+  return 'tomato'
 }
 function loadHistory(): Message[] {
   if (typeof window === 'undefined') return [INITIAL_MESSAGE]
@@ -38,6 +39,13 @@ export function ChatBot() {
   const happyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const meta = CHAR_META.find(c => c.key === charKey)!
+
+  /* ── 마운트 후 localStorage에서 캐릭터 복원 (hydration 안전) ── */
+  useEffect(() => {
+    const saved = localStorage.getItem('greeni-char') as CharKey | null
+    if (saved && saved !== charKey) setCharKey(saved)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   /* ── mood 자동 전환 ───────────────────────── */
   useEffect(() => {
