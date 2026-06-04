@@ -157,7 +157,7 @@ export default async function HealthPage() {
         <GoalEditor current={goal} userId={user?.id ?? null} />
       </div>
 
-      <HealthTabNav userId={user?.id ?? null} date={todayStr} nutritionContent={<>
+      <HealthTabNav userId={user?.id ?? null} date={todayStr} weightKg={weightKg} nutritionContent={<>
         <div className="flex flex-col gap-6">
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">오늘의 영양 현황</h2>

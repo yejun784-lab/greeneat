@@ -10,6 +10,7 @@ type Tab = 'nutrition' | 'exercise' | 'sleep'
 interface Props {
   userId: string | null
   date: string
+  weightKg?: number | null
   nutritionContent: React.ReactNode
 }
 
@@ -19,7 +20,7 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: 'sleep',     label: '수면·수분', icon: Moon     },
 ]
 
-export function HealthTabNav({ userId, date, nutritionContent }: Props) {
+export function HealthTabNav({ userId, date, weightKg, nutritionContent }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('nutrition')
 
   return (
@@ -51,13 +52,23 @@ export function HealthTabNav({ userId, date, nutritionContent }: Props) {
 
       {activeTab === 'exercise' && (
         <div className="flex flex-col gap-6">
-          <ExerciseLogger userId={userId} date={date} />
+          <ExerciseLogger userId={userId} date={date} weightKg={weightKg} />
+          {!weightKg && (
+            <p className="text-center text-xs text-ink-5">
+              💡 <a href="/my" className="underline hover:text-[#2d7a4f]">마이페이지</a>에서 체중을 입력하면 더 정확한 칼로리가 계산됩니다.
+            </p>
+          )}
         </div>
       )}
 
       {activeTab === 'sleep' && (
         <div className="flex flex-col gap-6">
-          <WaterSleepTracker userId={userId} date={date} />
+          <WaterSleepTracker userId={userId} date={date} weightKg={weightKg} />
+          {!weightKg && (
+            <p className="text-center text-xs text-ink-5">
+              💡 <a href="/my" className="underline hover:text-[#2d7a4f]">마이페이지</a>에서 체중을 입력하면 수분 목표가 맞춤 설정됩니다.
+            </p>
+          )}
         </div>
       )}
     </div>

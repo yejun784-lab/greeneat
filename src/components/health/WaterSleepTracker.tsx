@@ -5,8 +5,13 @@ import { Plus, Minus, Moon, Droplets } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
 
-const WATER_GOAL_ML = 2000
 const WATER_STEP_ML = 200
+
+function getWaterGoal(weightKg?: number | null): number {
+  if (!weightKg) return 2000
+  // 체중 × 33ml (국제 권장 기준)
+  return Math.round(weightKg * 33 / 100) * 100  // 100ml 단위 반올림
+}
 
 type SleepLog = {
   id: string
@@ -17,7 +22,7 @@ type SleepLog = {
 
 const QUALITY_LABELS = ['', '😫 최악', '😔 나쁨', '😐 보통', '😊 좋음', '😴 최고']
 
-export function WaterSleepTracker({ userId, date }: { userId?: string | null; date: string }) {
+export function WaterSleepTracker({ userId, date, weightKg }: { userId?: string | null; date: string; weightKg?: number | null }) {
   const [waterMl, setWaterMl] = useState(0)
   const [sleepLog, setSleepLog] = useState<SleepLog | null>(null)
   const [sleepStart, setSleepStart] = useState('23:00')
@@ -25,6 +30,7 @@ export function WaterSleepTracker({ userId, date }: { userId?: string | null; da
   const [quality, setQuality] = useState(3)
   const [savingSleep, setSavingSleep] = useState(false)
 
+  const WATER_GOAL_ML = getWaterGoal(weightKg)
   const waterPct = Math.min(100, Math.round((waterMl / WATER_GOAL_ML) * 100))
   const cups = Math.floor(waterMl / WATER_STEP_ML)
 

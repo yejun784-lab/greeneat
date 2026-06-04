@@ -26,7 +26,7 @@ type ExerciseLog = {
   memo: string | null
 }
 
-export function ExerciseLogger({ userId, date }: { userId?: string | null; date: string }) {
+export function ExerciseLogger({ userId, date, weightKg }: { userId?: string | null; date: string; weightKg?: number | null }) {
   const [logs, setLogs] = useState<ExerciseLog[]>([])
   const [showForm, setShowForm] = useState(false)
   const [type, setType] = useState(EXERCISE_LIST[0].name)
@@ -46,8 +46,8 @@ export function ExerciseLogger({ userId, date }: { userId?: string | null; date:
 
   function calcCalories(typeName: string, min: number): number {
     const ex = EXERCISE_LIST.find(e => e.name === typeName) ?? EXERCISE_LIST[0]
-    // 체중 70kg 기준 근사값
-    return Math.round(ex.metPerMin * 70 * min)
+    const weight = weightKg ?? 70  // 미입력 시 70kg 기본값
+    return Math.round(ex.metPerMin * weight * min)
   }
 
   async function handleSave() {
