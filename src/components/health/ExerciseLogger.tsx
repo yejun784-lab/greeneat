@@ -5,18 +5,26 @@ import { Plus, Trash2, Flame, Dumbbell } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
 
-const EXERCISE_LIST: { name: string; emoji: string; metPerMin: number }[] = [
-  { name: '걷기',       emoji: '🚶', metPerMin: 0.053 },
-  { name: '달리기',     emoji: '🏃', metPerMin: 0.118 },
-  { name: '자전거',     emoji: '🚴', metPerMin: 0.083 },
-  { name: '수영',       emoji: '🏊', metPerMin: 0.100 },
-  { name: '헬스',       emoji: '🏋️', metPerMin: 0.083 },
-  { name: 'HIIT',      emoji: '🔥', metPerMin: 0.150 },
-  { name: '요가',       emoji: '🧘', metPerMin: 0.040 },
-  { name: '등산',       emoji: '🧗', metPerMin: 0.107 },
-  { name: '줄넘기',     emoji: '⛹️', metPerMin: 0.133 },
-  { name: '기타',       emoji: '💪', metPerMin: 0.067 },
+// MET 값 출처: Compendium of Physical Activities (Ainsworth 2011)
+// 칼로리 공식: kcal = MET × 체중(kg) × 시간(h)
+const EXERCISE_LIST: { name: string; emoji: string; met: number; intensity: '저강도' | '중강도' | '고강도' }[] = [
+  { name: '걷기',   emoji: '🚶', met: 3.5,  intensity: '저강도' },
+  { name: '달리기', emoji: '🏃', met: 8.0,  intensity: '고강도' },
+  { name: '자전거', emoji: '🚴', met: 6.8,  intensity: '중강도' },
+  { name: '수영',   emoji: '🏊', met: 8.0,  intensity: '고강도' },
+  { name: '헬스',   emoji: '🏋️', met: 5.0,  intensity: '중강도' },
+  { name: 'HIIT',  emoji: '🔥', met: 10.0, intensity: '고강도' },
+  { name: '요가',   emoji: '🧘', met: 3.0,  intensity: '저강도' },
+  { name: '등산',   emoji: '🧗', met: 7.8,  intensity: '중강도' },
+  { name: '줄넘기', emoji: '⛹️', met: 10.0, intensity: '고강도' },
+  { name: '기타',   emoji: '💪', met: 5.0,  intensity: '중강도' },
 ]
+
+const INTENSITY_COLOR = {
+  '저강도': 'text-green-600 bg-green-50',
+  '중강도': 'text-orange-600 bg-orange-50',
+  '고강도': 'text-red-600 bg-red-50',
+}
 
 type ExerciseLog = {
   id: string
@@ -47,7 +55,8 @@ export function ExerciseLogger({ userId, date, weightKg }: { userId?: string | n
   function calcCalories(typeName: string, min: number): number {
     const ex = EXERCISE_LIST.find(e => e.name === typeName) ?? EXERCISE_LIST[0]
     const weight = weightKg ?? 70  // 미입력 시 70kg 기본값
-    return Math.round(ex.metPerMin * weight * min)
+    // kcal = MET × 체중(kg) × 시간(h)
+    return Math.round(ex.met * weight * (min / 60))
   }
 
   async function handleSave() {
@@ -136,8 +145,10 @@ export function ExerciseLogger({ userId, date, weightKg }: { userId?: string | n
               <button
                 key={ex.name}
                 onClick={() => setType(ex.name)}
-                className={`flex flex-col items-center gap-0.5 py-2 rounded-xl text-xs transition-colors ${
-                  type === ex.name ? 'bg-[#2d7a4f] text-white' : 'bg-wash text-ink-3 hover:bg-green-tint hover:text-[#2d7a4f]'
+                className={`flex flex-col items-center gap-0.5 py-2 rounded-xl text-xs transition-all ${
+                  type === ex.name
+                    ? 'bg-[#2d7a4f] text-white ring-2 ring-[#2d7a4f]/30 scale-105'
+                    : 'bg-wash text-ink-3 hover:bg-green-tint hover:text-[#2d7a4f]'
                 }`}
               >
                 <span className="text-base">{ex.emoji}</span>
@@ -145,6 +156,17 @@ export function ExerciseLogger({ userId, date, weightKg }: { userId?: string | n
               </button>
             ))}
           </div>
+
+          {/* 선택 운동 정보 */}
+          {(() => {
+            const ex = EXERCISE_LIST.find(e => e.name === type)!
+            return (
+              <div className="flex items-center gap-2 px-3 py-2 bg-wash rounded-xl text-xs">
+                <span className={`px-2 py-0.5 rounded-full font-medium ${INTENSITY_COLOR[ex.intensity]}`}>{ex.intensity}</span>
+                <span className="text-ink-4">MET {ex.met} · 60분 기준 {Math.round(ex.met * (weightKg ?? 70))}kcal 소모</span>
+              </div>
+            )
+          })()}
 
           {/* 시간 + 메모 */}
           <div className="flex gap-2">

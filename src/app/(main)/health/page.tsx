@@ -15,7 +15,7 @@ import { ManualMealLogger } from '@/components/health/ManualMealLogger'
 import { TodayMealList } from '@/components/health/TodayMealList'
 import { getLastNDays, getDateRange } from '@/lib/utils'
 import { WithErrorBoundary } from '@/components/ui/ErrorBoundary'
-import { GOAL_INFO, GOAL_LABEL, type DayNutrition, type GoalInfo, type MealLogRow } from '@/lib/health-types'
+import { getGoalInfo, GOAL_LABEL, type DayNutrition, type GoalInfo, type MealLogRow } from '@/lib/health-types'
 import { GoalEditor } from '@/components/my/GoalEditor'
 import { HealthTabNav } from '@/components/health/HealthTabNav'
 import type { Product } from '@/types'
@@ -41,7 +41,7 @@ export default async function HealthPage() {
 
   if (user) {
     const results = await Promise.all([
-      supabase.from('profiles').select('nutrition_goal, allergen_profile, height_cm, weight_kg').eq('id', user.id).maybeSingle(),
+      supabase.from('profiles').select('nutrition_goal, allergen_profile, height_cm, weight_kg, age, gender').eq('id', user.id).maybeSingle(),
       supabase.from('orders')
         .select('created_at, order_items(quantity, products(calories, protein, carbs, fat))')
         .eq('user_id', user.id).eq('payment_status', 'paid')
@@ -77,7 +77,7 @@ export default async function HealthPage() {
     : bmi < 23   ? { label: '정상',   color: 'text-green-600',  bg: 'bg-green-50',  bar: 'bg-green-500'  }
     : bmi < 25   ? { label: '과체중', color: 'text-orange-500', bg: 'bg-orange-50', bar: 'bg-orange-400' }
     :              { label: '비만',   color: 'text-red-500',    bg: 'bg-red-50',    bar: 'bg-red-400'    }
-  const goalInfo: GoalInfo = GOAL_INFO[goal] ?? GOAL_INFO.balanced
+  const goalInfo: GoalInfo = getGoalInfo(goal, profile)
   const goalMeta = GOAL_LABEL[goal] ?? GOAL_LABEL.balanced
   const allergens: string[] = (profile?.allergen_profile as string[]) ?? []
 
