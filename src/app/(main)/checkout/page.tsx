@@ -80,6 +80,7 @@ export default function CheckoutPage() {
   const [coupon, setCoupon] = useState<Coupon | null>(null)
   const [couponError, setCouponError] = useState<string | null>(null)
   const [couponLoading, setCouponLoading] = useState(false)
+  const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([])
 
   const [pointBalance, setPointBalance] = useState(0)
   const [usePointInput, setUsePointInput] = useState('')
@@ -116,6 +117,17 @@ export default function CheckoutPage() {
         .single()
       setPointBalance(profile?.point_balance ?? 0)
       setUserName(profile?.name ?? '')
+
+      // 사용 가능한 쿠폰 조회 (user_coupons 또는 공개 쿠폰)
+      const { data: userCoupons } = await supabase
+        .from('user_coupons')
+        .select('coupons(*)')
+        .eq('user_id', data.user.id)
+        .eq('is_used', false)
+      const parsed = (userCoupons ?? [])
+        .map((uc: { coupons: Coupon | Coupon[] | null }) => (Array.isArray(uc.coupons) ? uc.coupons[0] : uc.coupons))
+        .filter(Boolean) as Coupon[]
+      setAvailableCoupons(parsed)
     })
   }, [router])
 
@@ -348,17 +360,51 @@ export default function CheckoutPage() {
                 <button type="button" onClick={() => { setCoupon(null); setCouponCode('') }} className="text-xs text-ink-5 hover:text-red-400">취소</button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  placeholder="쿠폰 코드 입력 (예: WELCOME10)"
-                  className="flex-1 px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), applyCoupon())}
-                />
-                <Button type="button" size="sm" variant="secondary" className="w-full sm:w-auto" onClick={applyCoupon} loading={couponLoading}>적용</Button>
-              </div>
+              <>
+                {/* 보유 쿠폰 자동 추천 */}
+                {availableCoupons.length > 0 && (() => {
+                  const eligible = availableCoupons.filter(c => discountedTotal >= c.min_order_amount)
+                  if (eligible.length === 0) return null
+                  const best = eligible.reduce((a, b) => {
+                    const da = a.discount_type === 'percent' ? Math.round(discountedTotal * a.discount_value / 100) : a.discount_value
+                    const db = b.discount_type === 'percent' ? Math.round(discountedTotal * b.discount_value / 100) : b.discount_value
+                    return da >= db ? a : b
+                  })
+                  const bestDiscount = best.discount_type === 'percent'
+                    ? Math.round(discountedTotal * best.discount_value / 100)
+                    : best.discount_value
+                  return (
+                    <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-3">
+                      <div>
+                        <p className="text-xs font-semibold text-amber-700">🎫 최대 할인 쿠폰</p>
+                        <p className="text-sm font-bold text-ink mt-0.5">{best.code}
+                          <span className="ml-2 text-xs font-normal text-ink-4">
+                            {best.discount_type === 'percent' ? `${best.discount_value}%` : formatPrice(best.discount_value)} 할인
+                          </span>
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { setCoupon(best); setCouponCode(best.code); toast.success(`${best.code} 쿠폰이 적용됐어요! ${formatPrice(bestDiscount)} 할인`) }}
+                        className="shrink-0 px-3 py-1.5 bg-amber-500 text-white text-xs font-semibold rounded-lg hover:bg-amber-600 transition-colors"
+                      >
+                        바로 적용
+                      </button>
+                    </div>
+                  )
+                })()}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="쿠폰 코드 입력 (예: WELCOME10)"
+                    className="flex-1 px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), applyCoupon())}
+                  />
+                  <Button type="button" size="sm" variant="secondary" className="w-full sm:w-auto" onClick={applyCoupon} loading={couponLoading}>적용</Button>
+                </div>
+              </>
             )}
             {couponError && <p className="text-xs text-red-500 mt-2">{couponError}</p>}
           </div>
