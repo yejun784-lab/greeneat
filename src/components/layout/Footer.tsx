@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400 mt-auto">
+    <footer className="bg-[#1a1a18] dark:bg-[#1c1a17] text-[#9a9690] mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         {/* 상단 — 고객센터 + 메뉴 + 회사정보 */}
@@ -12,7 +12,7 @@ export function Footer() {
           <div>
             <p className="text-white font-bold text-lg mb-3">고객센터</p>
             <p className="text-white text-3xl font-bold tracking-tight mb-2">1555-5952</p>
-            <p className="text-sm leading-relaxed">
+            <p className="text-sm leading-relaxed text-[#b8b4ae]">
               평일 09:30 – 17:30<br />
               점심 12:00 – 13:00<br />
               토, 일, 공휴일 휴무
@@ -22,7 +22,7 @@ export function Footer() {
           {/* 메뉴 */}
           <div>
             <p className="text-white font-medium mb-3">서비스</p>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-sm text-[#b8b4ae]">
               <li><Link href="/products"      className="hover:text-white transition-colors">도시락 쇼핑</Link></li>
               <li><Link href="/subscription"  className="hover:text-white transition-colors">구독 플랜</Link></li>
               <li><Link href="/my/orders"     className="hover:text-white transition-colors">주문 내역</Link></li>
@@ -35,11 +35,11 @@ export function Footer() {
           {/* 입금안내 */}
           <div>
             <p className="text-white font-medium mb-3">입금안내</p>
-            <p className="text-sm leading-relaxed">
+            <p className="text-sm leading-relaxed text-[#b8b4ae]">
               신한은행 140015394516<br />
               예금주: 그린잇
             </p>
-            <p className="text-xs mt-3 leading-relaxed text-gray-500">
+            <p className="text-xs mt-3 leading-relaxed text-[#8a8680]">
               구매안전서비스: 고객님은 안전거래를 위해 현금 등으로 결제 시
               저희 쇼핑몰이 가입한 PG에스크로 구매안전서비스를 이용하실 수 있습니다.
             </p>
@@ -47,7 +47,7 @@ export function Footer() {
         </div>
 
         {/* 사업자 정보 */}
-        <div className="border-t border-gray-800 pt-6 text-xs text-gray-500 leading-relaxed space-y-1">
+        <div className="border-t border-[#2e2c28] pt-6 text-xs text-[#8a8680] leading-relaxed space-y-1">
           <p>
             법인명: 그린잇&nbsp;&nbsp;|&nbsp;&nbsp;
             대표자: 오안시&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -61,7 +61,7 @@ export function Footer() {
           <p>
             개인정보관리책임: 주식회사 그린잇 (greeneat0419@naver.com)
           </p>
-          <p className="mt-3 text-gray-600">
+          <p className="mt-3 text-[#6e6a64]">
             Copyright © 2026 그린잇. All rights reserved.
           </p>
         </div>

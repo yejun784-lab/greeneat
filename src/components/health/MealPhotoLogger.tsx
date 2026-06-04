@@ -149,8 +149,8 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
             className="border-2 border-dashed border-line-2 rounded-2xl p-8 text-center cursor-pointer hover:border-[#2d7a4f] hover:bg-green-tint-2 transition-all"
           >
             <Upload size={28} className="text-[#2d7a4f]/50 mx-auto mb-3" />
-            <p className="text-sm font-medium text-[#555]">사진을 드래그하거나 클릭해서 업로드</p>
-            <p className="text-xs text-[#aaa] mt-1">JPG, PNG, WebP · 최대 5MB</p>
+            <p className="text-sm font-medium text-ink-3">사진을 드래그하거나 클릭해서 업로드</p>
+            <p className="text-xs text-ink-5 mt-1">JPG, PNG, WebP · 최대 5MB</p>
             <input
               ref={inputRef}
               type="file"
@@ -216,7 +216,7 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
                 <div key={label} className={`rounded-xl p-2.5 ${color.split(' ')[1]} text-center`}>
                   <Icon size={14} className={`${color.split(' ')[0]} mx-auto mb-1`} />
                   <p className="text-[13px] font-bold text-ink">{value ?? '–'}</p>
-                  <p className="text-[9px] text-[#888]">{unit}</p>
+                  <p className="text-[9px] text-ink-4">{unit}</p>
                   <p className="text-[9px] text-ink-3 mt-0.5">{label}</p>
                 </div>
               ))}

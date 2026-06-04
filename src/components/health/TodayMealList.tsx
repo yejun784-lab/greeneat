@@ -30,7 +30,7 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
         {/* 오늘 합산 */}
         <div className="text-right">
           <p className="text-lg font-bold text-ink">{total.cal}<span className="text-xs font-normal text-ink-4 ml-1">kcal</span></p>
-          <p className="text-[10px] text-[#aaa]">{logs.length}끼 기록</p>
+          <p className="text-[10px] text-ink-5">{logs.length}끼 기록</p>
         </div>
       </div>
 
@@ -48,7 +48,7 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
                 <Icon size={10} className={color} />
                 <span className="text-[10px] text-ink-4">{label}</span>
               </div>
-              <p className="text-sm font-bold text-ink-2">{value}<span className="text-[10px] font-normal text-[#aaa] ml-0.5">{unit}</span></p>
+              <p className="text-sm font-bold text-ink-2">{value}<span className="text-[10px] font-normal text-ink-5 ml-0.5">{unit}</span></p>
             </div>
           ))}
         </div>
@@ -77,7 +77,7 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${meta.color}`}>
                     {meta.label}
                   </span>
-                  <span className="text-[10px] text-[#bbb]">
+                  <span className="text-[10px] text-ink-5">
                     {new Date(log.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -87,7 +87,7 @@ export function TodayMealList({ logs }: { logs: MealLogRow[] }) {
               {/* 칼로리 */}
               <div className="text-right shrink-0">
                 <p className="text-sm font-bold text-ink">{log.calories ?? '–'}</p>
-                <p className="text-[10px] text-[#aaa]">kcal</p>
+                <p className="text-[10px] text-ink-5">kcal</p>
               </div>
             </div>
           )

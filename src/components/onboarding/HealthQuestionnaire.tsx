@@ -156,7 +156,7 @@ export function HealthQuestionnaire() {
               <h2 className="text-xl font-bold text-gray-800 mb-5">간단한 정보를 알려주세요 👋</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-gray-500 mb-1.5 block">나이</label>
+                  <label className="text-xs text-ink-3 mb-1.5 block">나이</label>
                   <input
                     type="number"
                     value={form.age}
@@ -167,7 +167,7 @@ export function HealthQuestionnaire() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1.5 block">성별</label>
+                  <label className="text-xs text-ink-3 mb-1.5 block">성별</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[{ id: 'male', label: '남성', emoji: '👨' }, { id: 'female', label: '여성', emoji: '👩' }, { id: 'other', label: '기타', emoji: '🙂' }].map((g) => (
                       <button
@@ -194,7 +194,7 @@ export function HealthQuestionnaire() {
               <h2 className="text-xl font-bold text-gray-800 mb-5">키와 몸무게를 알려주세요 📏</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-gray-500 mb-1.5 block">키 (cm)</label>
+                  <label className="text-xs text-ink-3 mb-1.5 block">키 (cm)</label>
                   <input
                     type="number"
                     value={form.height_cm}
@@ -205,7 +205,7 @@ export function HealthQuestionnaire() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1.5 block">몸무게 (kg)</label>
+                  <label className="text-xs text-ink-3 mb-1.5 block">몸무게 (kg)</label>
                   <input
                     type="number"
                     value={form.weight_kg}
@@ -241,13 +241,13 @@ export function HealthQuestionnaire() {
                     <span className="text-2xl">{g.emoji}</span>
                     <div>
                       <p className={`text-sm font-semibold ${form.health_goal === g.id ? 'text-[#2d7a4f]' : 'text-gray-700'}`}>{g.label}</p>
-                      <p className="text-xs text-gray-400">{g.desc}</p>
+                      <p className="text-xs text-ink-4">{g.desc}</p>
                     </div>
                     {form.health_goal === g.id && <Check size={16} className="ml-auto text-[#2d7a4f] shrink-0" />}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mb-2">평소 활동량</p>
+              <p className="text-xs text-ink-3 mb-2">평소 활동량</p>
               <div className="grid grid-cols-3 gap-2">
                 {ACTIVITY_LEVELS.map((a) => (
                   <button
@@ -285,7 +285,7 @@ export function HealthQuestionnaire() {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mb-2">알레르기 (해당 항목 선택)</p>
+              <p className="text-xs text-ink-3 mb-2">알레르기 (해당 항목 선택)</p>
               <div className="flex flex-wrap gap-2">
                 {ALLERGENS.map((a) => (
                   <button
@@ -293,7 +293,7 @@ export function HealthQuestionnaire() {
                     type="button"
                     onClick={() => toggleAllergen(a)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                      form.allergen_profile.includes(a) ? 'bg-red-50 border-red-300 text-red-600' : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                      form.allergen_profile.includes(a) ? 'bg-red-50 border-red-300 text-red-600' : 'border-gray-200 text-ink-3 hover:border-gray-300'
                     }`}
                   >
                     {form.allergen_profile.includes(a) ? '✕ ' : ''}{a}
@@ -309,7 +309,7 @@ export function HealthQuestionnaire() {
           {step > 1 && (
             <button
               onClick={() => setStep((s) => (s - 1) as Step)}
-              className="flex items-center gap-1 px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-500 hover:border-gray-300 transition-colors"
+              className="flex items-center gap-1 px-4 py-3 border border-gray-200 rounded-xl text-sm text-ink-3 hover:border-gray-300 transition-colors"
             >
               <ChevronLeft size={16} />
               이전
@@ -338,7 +338,7 @@ export function HealthQuestionnaire() {
 
         {/* 건너뛰기 */}
         <div className="text-center pb-4">
-          <button onClick={handleSkip} className="text-xs text-gray-400 hover:text-gray-500 transition-colors">
+          <button onClick={handleSkip} className="text-xs text-ink-4 hover:text-ink-3 transition-colors">
             나중에 작성할게요
           </button>
         </div>

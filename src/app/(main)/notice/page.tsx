@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 const TYPE_META = {
   promotion: { label: '프로모션', color: 'bg-orange-100 text-orange-600', icon: Gift },
   event:     { label: '이벤트',   color: 'bg-green-100 text-green-700',   icon: Megaphone },
-  notice:    { label: '공지',     color: 'bg-gray-100 text-gray-500',     icon: Bell },
+  notice:    { label: '공지',     color: 'bg-tint text-ink-3',     icon: Bell },
 } as const
 
 type NoticeType = keyof typeof TYPE_META
@@ -104,7 +104,7 @@ export default async function NoticePage({
                         {meta.label}
                       </span>
                       {!active && (
-                        <span className="text-[11px] text-ink-4 bg-gray-100 px-1.5 py-0.5 rounded-md">종료</span>
+                        <span className="text-[11px] text-ink-4 bg-tint px-1.5 py-0.5 rounded-md">종료</span>
                       )}
                     </div>
                     <p className={`text-sm font-medium truncate ${active ? 'text-ink' : 'text-ink-4'}`}>
