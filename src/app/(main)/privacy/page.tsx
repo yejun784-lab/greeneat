@@ -23,8 +23,8 @@ export default function PrivacyPage() {
         <span className="inline-block bg-[#e8f5ee] text-[#2d7a4f] text-sm font-semibold px-3 py-1 rounded-full mb-3">
           Legal
         </span>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">개인정보처리방침</h1>
-        <p className="text-gray-500 text-sm">최종 업데이트: 2026년 5월 21일</p>
+        <h1 className="text-3xl font-bold text-ink mb-2">개인정보처리방침</h1>
+        <p className="text-ink-4 text-sm">최종 업데이트: 2026년 5월 21일</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10">
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className="text-sm text-gray-600 hover:text-[#2d7a4f] transition-colors"
+                  className="text-sm text-ink-3 hover:text-[#2d7a4f] transition-colors"
                 >
                   {item.title}
                 </a>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
 
         {/* 본문 */}
         <article className="flex-1 prose prose-gray max-w-none">
-          <p className="text-gray-600 leading-relaxed mb-8">
+          <p className="text-ink-3 leading-relaxed mb-8">
             GreenEat(이하 &quot;회사&quot;)는 이용자의 개인정보를 소중히 여기며, 「개인정보 보호법」,
             「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령을 준수합니다.
             본 방침은 회사가 제공하는 서비스(웹사이트, 앱 등)에 적용됩니다.
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               1. 수집하는 개인정보 항목
             </h2>
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-4 text-ink-2">
               <div>
                 <h3 className="font-semibold mb-1">필수 수집 항목</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               2. 개인정보 수집 목적
             </h2>
-            <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+            <ul className="list-disc pl-5 space-y-2 text-sm text-ink-2">
               <li><strong>회원 관리:</strong> 회원 가입·탈퇴, 본인 확인, 부정 이용 방지</li>
               <li><strong>서비스 제공:</strong> 주문 처리, 결제, 배송 및 배송 현황 안내</li>
               <li><strong>구독 서비스 운영:</strong> 정기 구독 관리, 구독 갱신·해지 처리</li>
@@ -106,7 +106,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               3. 개인정보 보유 및 이용 기간
             </h2>
-            <p className="text-sm text-gray-700 mb-3">
+            <p className="text-sm text-ink-2 mb-3">
               원칙적으로 개인정보 수집 및 이용 목적이 달성된 후 지체 없이 파기합니다.
               단, 아래의 경우 해당 기간 동안 보관합니다.
             </p>
@@ -114,12 +114,12 @@ export default function PrivacyPage() {
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-[#f8faf9]">
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">보유 근거</th>
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">보유 항목</th>
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">기간</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">보유 근거</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">보유 항목</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">기간</th>
                   </tr>
                 </thead>
-                <tbody className="text-gray-600">
+                <tbody className="text-ink-3">
                   <tr>
                     <td className="p-3 border border-[#d0e8da]">전자상거래 등에서의 소비자 보호에 관한 법률</td>
                     <td className="p-3 border border-[#d0e8da]">계약·청약철회 기록</td>
@@ -150,7 +150,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               4. 개인정보 제3자 제공
             </h2>
-            <p className="text-sm text-gray-700 mb-3">
+            <p className="text-sm text-ink-2 mb-3">
               회사는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다.
               단, 서비스 이행을 위해 아래 업체에 최소한의 정보를 제공합니다.
             </p>
@@ -158,13 +158,13 @@ export default function PrivacyPage() {
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-[#f8faf9]">
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">제공 대상</th>
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">제공 항목</th>
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">제공 목적</th>
-                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-gray-700">보유 기간</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">제공 대상</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">제공 항목</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">제공 목적</th>
+                    <th className="text-left p-3 border border-[#d0e8da] font-semibold text-ink-2">보유 기간</th>
                   </tr>
                 </thead>
-                <tbody className="text-gray-600">
+                <tbody className="text-ink-3">
                   <tr>
                     <td className="p-3 border border-[#d0e8da]">토스페이먼츠(주)</td>
                     <td className="p-3 border border-[#d0e8da]">이름, 결제 정보</td>
@@ -187,7 +187,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               5. 이용자 권리 및 행사 방법
             </h2>
-            <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+            <ul className="list-disc pl-5 space-y-2 text-sm text-ink-2">
               <li>이용자는 언제든지 자신의 개인정보를 <strong>조회·수정·삭제</strong>할 수 있습니다.</li>
               <li>회원 탈퇴 시 개인정보는 즉시 파기됩니다(단, 법령에 따라 보존이 필요한 정보 제외).</li>
               <li>개인정보 처리에 대한 동의를 거부할 수 있으며, 이 경우 일부 서비스 이용이 제한될 수 있습니다.</li>
@@ -201,7 +201,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               6. 쿠키(Cookie) 사용
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 회사는 로그인 상태 유지, 장바구니 저장, 서비스 개선을 위해 쿠키를 사용합니다.
               </p>
@@ -222,7 +222,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               7. 개인정보 보호책임자
             </h2>
-            <div className="bg-[#f8faf9] border border-[#d0e8da] rounded-xl p-5 text-sm text-gray-700">
+            <div className="bg-[#f8faf9] border border-[#d0e8da] rounded-xl p-5 text-sm text-ink-2">
               <p className="mb-1"><strong>회사명:</strong> GreenEat</p>
               <p className="mb-1"><strong>담당 부서:</strong> 서비스 운영팀</p>
               <p className="mb-1"><strong>이메일:</strong> support@greeneat.kr</p>

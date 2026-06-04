@@ -22,8 +22,8 @@ export default function TermsPage() {
         <span className="inline-block bg-[#e8f5ee] text-[#2d7a4f] text-sm font-semibold px-3 py-1 rounded-full mb-3">
           Legal
         </span>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">이용약관</h1>
-        <p className="text-gray-500 text-sm">최종 업데이트: 2026년 5월 21일</p>
+        <h1 className="text-3xl font-bold text-ink mb-2">이용약관</h1>
+        <p className="text-ink-4 text-sm">최종 업데이트: 2026년 5월 21일</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10">
@@ -36,7 +36,7 @@ export default function TermsPage() {
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className="text-sm text-gray-600 hover:text-[#2d7a4f] transition-colors"
+                  className="text-sm text-ink-3 hover:text-[#2d7a4f] transition-colors"
                 >
                   {item.title}
                 </a>
@@ -47,7 +47,7 @@ export default function TermsPage() {
 
         {/* 본문 */}
         <article className="flex-1 prose prose-gray max-w-none">
-          <p className="text-gray-600 leading-relaxed mb-8">
+          <p className="text-ink-3 leading-relaxed mb-8">
             본 약관은 GreenEat(이하 &quot;회사&quot;)가 제공하는 밀키트 구독 및 쇼핑 서비스(이하 &quot;서비스&quot;)의
             이용 조건 및 절차, 회사와 이용자 간의 권리·의무 관계를 규정합니다.
             서비스에 가입하거나 이용함으로써 본 약관에 동의한 것으로 간주합니다.
@@ -58,7 +58,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               1. 서비스 이용 조건
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 <strong>제1조 (목적)</strong><br />
                 본 약관은 회사가 운영하는 GreenEat 서비스를 이용함에 있어 회사와 이용자 간의 권리·의무 및
@@ -92,7 +92,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               2. 회원가입 및 탈퇴
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 <strong>제5조 (회원가입)</strong>
               </p>
@@ -126,7 +126,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               3. 주문·결제·취소·환불
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 <strong>제8조 (주문 및 결제)</strong>
               </p>
@@ -168,7 +168,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               4. 구독 서비스 규정
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 <strong>제12조 (구독 플랜)</strong>
               </p>
@@ -210,7 +210,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               5. 면책조항
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 <strong>제16조 (서비스 중단)</strong><br />
                 회사는 다음 경우 서비스 제공을 일시 중단할 수 있으며, 이로 인한 손해에 대해 책임을 지지 않습니다.
@@ -242,7 +242,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#2d7a4f] mb-4 pb-2 border-b border-[#d0e8da]">
               6. 기타
             </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-ink-2">
               <p>
                 <strong>제20조 (분쟁 해결)</strong><br />
                 서비스 이용으로 발생한 분쟁은 상호 협의로 해결하며,
@@ -254,7 +254,7 @@ export default function TermsPage() {
                 본 약관은 대한민국 법령에 따라 해석됩니다.
               </p>
               <div className="bg-[#f8faf9] border border-[#d0e8da] rounded-xl p-5 mt-4">
-                <p className="font-semibold text-gray-700 mb-2">고객센터</p>
+                <p className="font-semibold text-ink-2 mb-2">고객센터</p>
                 <p className="mb-1">이메일: support@greeneat.kr</p>
                 <p>영업시간: 평일 10:00 ~ 18:00 (점심 12:00 ~ 13:00 제외)</p>
               </div>

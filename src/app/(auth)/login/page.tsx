@@ -80,7 +80,7 @@ export default function LoginPage() {
         <Link href="/" className="block text-center text-2xl font-bold text-[#2d7a4f] mb-6">
           GreenEat
         </Link>
-        <h1 className="text-xl font-bold text-gray-900 text-center mb-6">로그인</h1>
+        <h1 className="text-xl font-bold text-ink text-center mb-6">로그인</h1>
 
         {/* 소셜 로그인 */}
         <div className="space-y-2 mb-5">
@@ -97,7 +97,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium bg-surface border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium bg-surface border border-gray-200 text-ink-2 hover:bg-gray-50 transition-colors disabled:opacity-60"
           >
             <GoogleIcon />
             {oauthLoading === 'google' ? '연결 중...' : 'Google로 로그인'}
@@ -106,14 +106,14 @@ export default function LoginPage() {
 
         {/* 구분선 */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-xs text-gray-400">또는</span>
-          <div className="flex-1 h-px bg-gray-200" />
+          <div className="flex-1 h-px bg-line-2" />
+          <span className="text-xs text-ink-5">또는</span>
+          <div className="flex-1 h-px bg-line-2" />
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+            <label className="block text-sm font-medium text-ink-2 mb-1">이메일</label>
             <input
               type="email"
               value={email}
@@ -124,7 +124,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+            <label className="block text-sm font-medium text-ink-2 mb-1">비밀번호</label>
             <input
               type="password"
               value={password}
@@ -145,12 +145,12 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center mt-3">
-          <Link href="/reset-password" className="text-xs text-gray-400 hover:text-gray-600 hover:underline">
+          <Link href="/reset-password" className="text-xs text-ink-5 hover:text-ink-3 hover:underline">
             비밀번호를 잊으셨나요?
           </Link>
         </p>
 
-        <p className="text-center text-sm text-gray-500 mt-3">
+        <p className="text-center text-sm text-ink-4 mt-3">
           아직 회원이 아니신가요?{' '}
           <Link href="/signup" className="text-[#2d7a4f] font-medium hover:underline">
             회원가입

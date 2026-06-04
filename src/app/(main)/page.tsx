@@ -18,10 +18,10 @@ export const metadata: Metadata = {
 }
 
 const CATEGORIES = [
-  { slug: 'lunchbox', name: '간편식',        desc: '한끼 · 만렙 도시락',  emoji: '🍱', color: 'bg-[#e8f5ee]', text: 'text-[#2d7a4f]' },
-  { slug: 'bakery',   name: '베이커리&샐러드', desc: '그래놀라 · 샐러드',   emoji: '🥗', color: 'bg-[#fff7ed]', text: 'text-[#c2762a]' },
-  { slug: 'health',   name: '건강식품',       desc: '수제 만두 · 건강간식', emoji: '🥦', color: 'bg-[#f0f4ff]', text: 'text-[#4a6fa5]' },
-  { slug: 'diet',     name: '맞춤식단',       desc: '닭가슴살 · 저칼로리',  emoji: '💪', color: 'bg-[#fdf0f5]', text: 'text-[#b05d7a]' },
+  { slug: 'lunchbox', name: '간편식',        desc: '한끼 · 만렙 도시락',  emoji: '🍱', color: 'bg-[#e8f5ee] dark:bg-[#1e2b1e]', text: 'text-[#2d7a4f] dark:text-[#6ab87a]' },
+  { slug: 'bakery',   name: '베이커리&샐러드', desc: '그래놀라 · 샐러드',   emoji: '🥗', color: 'bg-[#fff7ed] dark:bg-[#2b2318]', text: 'text-[#c2762a] dark:text-[#d4905a]' },
+  { slug: 'health',   name: '건강식품',       desc: '수제 만두 · 건강간식', emoji: '🥦', color: 'bg-[#f0f4ff] dark:bg-[#1e2230]', text: 'text-[#4a6fa5] dark:text-[#7a9fd4]' },
+  { slug: 'diet',     name: '맞춤식단',       desc: '닭가슴살 · 저칼로리',  emoji: '💪', color: 'bg-[#fdf0f5] dark:bg-[#2a1e24]', text: 'text-[#b05d7a] dark:text-[#d08aa0]' },
 ]
 
 async function getFeaturedProducts(): Promise<Product[]> {
@@ -195,7 +195,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 text-[#aaa]">
+          <div className="text-center py-20 text-ink-5">
             <p>준비 중인 메뉴가 곧 업데이트됩니다.</p>
           </div>
         )}

@@ -197,7 +197,7 @@ export default async function HealthPage() {
               <span className={`text-sm font-semibold px-3 py-1 rounded-full ${bmiMeta.color} ${bmiMeta.bg}`}>{bmiMeta.label}</span>
             </div>
             {/* 바 */}
-            <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="relative h-2 bg-line-2 rounded-full overflow-hidden">
               <div className="absolute inset-0 flex">
                 <div className="flex-none w-[23.5%] bg-blue-200 rounded-l-full" />
                 <div className="flex-none w-[22.5%] bg-green-200" />
