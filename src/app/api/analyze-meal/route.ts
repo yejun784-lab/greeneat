@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
+import { fetchFoodSafetyByName } from '@/lib/food-safety'
 
 const anthropic = new Anthropic({ apiKey: process.env.GREENEAT_ANTHROPIC_KEY })
 
@@ -95,96 +96,117 @@ visible_ratio: 음식이 사진에서 얼마나 잘 보이는지 (0~1, 1=완전�
     identifiedItems = parsed1.items ?? []
   } catch { /* fallback to step2 */ }
 
-  // ── 2단계: 식별된 음식 기반 정밀 영양 계산 ───────────────────
-  const itemsContext = identifiedItems.length > 0
-    ? `식별된 음식 목록:\n${identifiedItems.map(i =>
-        `- ${i.name} (${i.cuisine}, ${i.cooking}): 주재료 [${i.ingredients.join(', ')}], 추정량 ${i.amount_desc}(${i.amount_g}g), 가시율 ${i.visible_ratio}`
-      ).join('\n')}\n\n위 정보를 바탕으로`
-    : '사진을 보고'
+  // ── 1.5단계: 식품안전처 공식 DB 조회 (한국 음식 한정) ──────────
+  type DbResult = { name: string; dbCalPer100g: number | null; dbProtPer100g: number | null; dbCarbsPer100g: number | null; dbFatPer100g: number | null; found: boolean }
+  const dbResults: DbResult[] = await Promise.all(
+    identifiedItems.map(async (item) => {
+      if (item.cuisine !== '한식') return { name: item.name, dbCalPer100g: null, dbProtPer100g: null, dbCarbsPer100g: null, dbFatPer100g: null, found: false }
+      const db = await fetchFoodSafetyByName(item.name)
+      if (!db || !db.calories) return { name: item.name, dbCalPer100g: null, dbProtPer100g: null, dbCarbsPer100g: null, dbFatPer100g: null, found: false }
+      return { name: item.name, dbCalPer100g: db.calories, dbProtPer100g: db.protein, dbCarbsPer100g: db.carbs, dbFatPer100g: db.fat, found: true }
+    })
+  )
 
-  const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5',
-    max_tokens: 1200,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-          {
-            type: 'text',
-            text: `당신은 공인 영양사입니다. ${itemsContext} 각 음식의 영양소를 계산해 주세요.
+  // DB에서 찾은 음식은 공식 데이터로 계산 (100g 기준 × 추정 g)
+  const dbDishes = identifiedItems
+    .map((item, i) => {
+      const db = dbResults[i]
+      if (!db.found || !db.dbCalPer100g) return null
+      const ratio = item.amount_g / 100
+      return {
+        name: item.name,
+        amount: item.amount_desc,
+        calories: Math.round((db.dbCalPer100g ?? 0) * ratio),
+        protein:  Math.round((db.dbProtPer100g  ?? 0) * ratio),
+        carbs:    Math.round((db.dbCarbsPer100g ?? 0) * ratio),
+        fat:      Math.round((db.dbFatPer100g   ?? 0) * ratio),
+        source: '식품안전처DB',
+      }
+    })
+    .filter(Boolean)
+
+  const notInDb = identifiedItems.filter((_, i) => !dbResults[i].found)
+  const dbFoundNames = identifiedItems.filter((_, i) => dbResults[i].found).map(i => i.name)
+
+  // ── 2단계: DB에 없는 음식만 Claude로 추정 ────────────────────
+  const itemsContext = notInDb.length > 0
+    ? `다음 음식들은 국내 DB에 없어 추정이 필요합니다:\n${notInDb.map(i =>
+        `- ${i.name} (${i.cuisine}, ${i.cooking}): 주재료 [${i.ingredients.join(', ')}], 추정량 ${i.amount_desc}(${i.amount_g}g)`
+      ).join('\n')}\n${dbFoundNames.length > 0 ? `\n참고: [${dbFoundNames.join(', ')}]는 공식 DB 데이터로 이미 계산됨 - 이것들은 제외하고` : ''}\n위 음식들만`
+    : dbFoundNames.length > 0
+      ? null  // 모두 DB에서 찾음 → 2단계 불필요
+      : '사진을 보고'
+
+  // 모두 DB에서 찾은 경우 2단계 생략
+  let aiDishes: { name: string; amount: string; calories: number; protein: number; carbs: number; fat: number }[] = []
+  let aiDescription = ''
+  let aiConfidence: string | undefined
+  let aiConfidenceReason: string | undefined
+
+  if (itemsContext !== null) {
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 1200,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            {
+              type: 'text',
+              text: `당신은 공인 영양사입니다. ${itemsContext} 각 음식의 영양소를 계산해 주세요.
 
 계산 기준:
-- 한국 식품성분표 7.1 (2021) 기준
-- 양식/일식/중식은 USDA FoodData Central 기준
-- 조리 손실률 반영 (가열 시 수분 손실 등)
-- 소스/양념 포함한 실제 섭취 영양소
+- 양식/일식/중식: USDA FoodData Central 기준
+- 한식 중 DB 미등록: 한국 식품성분표 7.1 추정값
+- 조리 손실률 반영, 소스/양념 포함
 
 JSON으로만 답해주세요:
 {
-  "dishes": [
-    {
-      "name": "음식명 (한국어)",
-      "amount": "추정량 표기",
-      "calories": 정수,
-      "protein": 정수,
-      "carbs": 정수,
-      "fat": 정수,
-      "fiber": 정수,
-      "sodium_mg": 정수
-    }
-  ],
-  "total": {
-    "description": "전체 식사 한줄 요약 (한국어, 예: 한식 백반 - 밥+된장찌개+반찬 3가지)",
-    "calories": 정수,
-    "protein": 정수,
-    "carbs": 정수,
-    "fat": 정수
-  },
-  "confidence": "high" | "medium" | "low",
+  "dishes": [{"name":"음식명","amount":"추정량","calories":정수,"protein":정수,"carbs":정수,"fat":정수}],
+  "description": "전체 식사 한줄 요약 (한국어)",
+  "confidence": "high"|"medium"|"low",
   "confidence_reason": "신뢰도 이유 (한국어, 1문장)"
 }
+- 음식이 아닌 사진: {"error": "음식 사진을 촬영해 주세요"}`,
+            },
+          ],
+        },
+      ],
+    })
 
-- 음식이 아닌 사진: {"error": "음식 사진을 촬영해 주세요"}
-- high: 음식 명확+성분표 데이터 있음 / medium: 양 추정 불확실 / low: 가려지거나 불분명`,
-          },
-        ],
-      },
-    ],
-  })
-
-  const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
-
-  // JSON 파싱 (새 포맷 + 구 포맷 fallback)
-  let parsed: {
-    dishes?: { name: string; amount: string; calories: number; protein: number; carbs: number; fat: number }[]
-    total?: { description: string; calories: number; protein: number; carbs: number; fat: number }
-    description?: string
-    calories?: number
-    protein?: number
-    carbs?: number
-    fat?: number
-    confidence?: string
-    confidence_reason?: string
-    error?: string
-  }
-  try {
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/)
-    parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : {}
-  } catch {
-    return NextResponse.json({ error: 'AI 분석에 실패했어요. 다시 시도해주세요.' }, { status: 500 })
+    const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
+    try {
+      const m = rawText.match(/\{[\s\S]*\}/)
+      const p = m ? JSON.parse(m[0]) : {}
+      if (p.error) return NextResponse.json({ error: p.error }, { status: 422 })
+      aiDishes = p.dishes ?? []
+      aiDescription = p.description ?? p.total?.description ?? ''
+      aiConfidence = p.confidence
+      aiConfidenceReason = p.confidence_reason
+    } catch {
+      return NextResponse.json({ error: 'AI 분석에 실패했어요. 다시 시도해주세요.' }, { status: 500 })
+    }
   }
 
-  if (parsed.error) {
-    return NextResponse.json({ error: parsed.error }, { status: 422 })
-  }
-
-  // 새 포맷(total) 또는 구 포맷(calories) 통합
-  const finalDescription = parsed.total?.description ?? parsed.description ?? ''
-  const finalCalories = parsed.total?.calories ?? parsed.calories ?? null
-  const finalProtein  = parsed.total?.protein  ?? parsed.protein  ?? null
-  const finalCarbs    = parsed.total?.carbs    ?? parsed.carbs    ?? null
-  const finalFat      = parsed.total?.fat      ?? parsed.fat      ?? null
+  // ── DB + AI 결과 합산 ───────────────────────────────────────
+  const allDishes = [
+    ...(dbDishes as { name: string; amount: string; calories: number; protein: number; carbs: number; fat: number }[]),
+    ...aiDishes,
+  ]
+  const finalCalories = allDishes.reduce((s, d) => s + (d.calories ?? 0), 0) || null
+  const finalProtein  = allDishes.reduce((s, d) => s + (d.protein  ?? 0), 0) || null
+  const finalCarbs    = allDishes.reduce((s, d) => s + (d.carbs    ?? 0), 0) || null
+  const finalFat      = allDishes.reduce((s, d) => s + (d.fat      ?? 0), 0) || null
+  const finalDescription = aiDescription || (allDishes.length > 0 ? allDishes.map(d => d.name).join(', ') : '')
+  const dbCount = dbDishes.length
+  const finalConfidence = dbCount > 0 && notInDb.length === 0 ? 'high'
+    : (aiConfidence ?? (dbCount > 0 ? 'medium' : 'low'))
+  const finalConfidenceReason = dbCount > 0 && notInDb.length === 0
+    ? `${dbCount}개 음식 모두 식품안전처 공식 데이터로 계산됐어요`
+    : dbCount > 0
+      ? `${dbCount}개는 공식 DB, ${notInDb.length}개는 AI 추정`
+      : (aiConfidenceReason ?? '')
 
   // Supabase Storage에 이미지 업로드
   let imageUrl: string | null = null
@@ -215,7 +237,7 @@ JSON으로만 답해주세요:
       protein: finalProtein,
       carbs: finalCarbs,
       fat: finalFat,
-      ai_raw: rawText,
+      ai_raw: step1Text,
     })
     .select()
     .single()
@@ -232,9 +254,9 @@ JSON으로만 답해주세요:
       protein: finalProtein,
       carbs: finalCarbs,
       fat: finalFat,
-      confidence: parsed.confidence,
-      confidence_reason: parsed.confidence_reason,
-      dishes: parsed.dishes ?? [],
+      confidence: finalConfidence,
+      confidence_reason: finalConfidenceReason,
+      dishes: allDishes,
     },
   })
 }
