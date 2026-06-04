@@ -95,7 +95,7 @@ export function AddressPicker({ value, detail, onChange }: Props) {
               readOnly
               onClick={openAddressSearch}
               placeholder="주소 검색 버튼을 눌러주세요"
-              className="flex-1 px-3 py-2.5 border border-line-2 rounded-xl text-sm outline-none bg-gray-50 cursor-pointer"
+              className="flex-1 px-3 py-2.5 border border-line-2 rounded-xl text-sm outline-none bg-wash cursor-pointer"
             />
             <button
               type="button"

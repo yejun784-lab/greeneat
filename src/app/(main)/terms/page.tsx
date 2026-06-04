@@ -261,7 +261,7 @@ export default function TermsPage() {
             </div>
           </section>
 
-          <p className="text-xs text-gray-400 mt-8 pt-4 border-t border-gray-200">
+          <p className="text-xs text-ink-5 mt-8 pt-4 border-t border-line-2">
             본 약관은 2026년 5월 21일부터 시행됩니다.
           </p>
         </article>

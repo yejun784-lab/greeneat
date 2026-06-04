@@ -97,7 +97,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium bg-surface border border-gray-200 text-ink-2 hover:bg-gray-50 transition-colors disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium bg-surface border border-line-2 text-ink-2 hover:bg-wash transition-colors disabled:opacity-60"
           >
             <GoogleIcon />
             {oauthLoading === 'google' ? '연결 중...' : 'Google로 로그인'}
@@ -120,7 +120,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@greeneat.kr"
               required
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
+              className="w-full px-3 py-2.5 border border-line-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
             />
           </div>
           <div>
@@ -131,7 +131,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
+              className="w-full px-3 py-2.5 border border-line-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
             />
           </div>
 

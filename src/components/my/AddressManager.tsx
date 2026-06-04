@@ -260,7 +260,7 @@ export function AddressManager({
                   value={form.address}
                   readOnly
                   placeholder="주소 검색 버튼을 눌러주세요"
-                  className="flex-1 px-3 py-2.5 border border-line-2 rounded-xl text-sm bg-gray-50 text-ink focus:outline-none cursor-pointer"
+                  className="flex-1 px-3 py-2.5 border border-line-2 rounded-xl text-sm bg-wash text-ink focus:outline-none cursor-pointer"
                   onClick={openAddressSearch}
                 />
                 <button

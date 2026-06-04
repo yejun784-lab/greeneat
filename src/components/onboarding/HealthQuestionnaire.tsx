@@ -153,7 +153,7 @@ export function HealthQuestionnaire() {
           {step === 1 && (
             <div>
               <p className="text-xs text-[#2d7a4f] font-semibold mb-1">기본 정보</p>
-              <h2 className="text-xl font-bold text-gray-800 mb-5">간단한 정보를 알려주세요 👋</h2>
+              <h2 className="text-xl font-bold text-ink mb-5">간단한 정보를 알려주세요 👋</h2>
               <div className="space-y-4">
                 <div>
                   <label className="text-xs text-ink-3 mb-1.5 block">나이</label>
@@ -162,7 +162,7 @@ export function HealthQuestionnaire() {
                     value={form.age}
                     onChange={(e) => setForm((f) => ({ ...f, age: e.target.value }))}
                     placeholder="나이를 입력해주세요"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2d7a4f] transition-colors"
+                    className="w-full px-4 py-3 border border-line-2 rounded-xl text-sm focus:outline-none focus:border-[#2d7a4f] transition-colors"
                     min={1} max={120}
                   />
                 </div>
@@ -175,7 +175,7 @@ export function HealthQuestionnaire() {
                         type="button"
                         onClick={() => setForm((f) => ({ ...f, gender: g.id }))}
                         className={`py-3 rounded-xl border text-sm font-medium transition-all ${
-                          form.gender === g.id ? 'border-[#2d7a4f] bg-[#f0faf4] text-[#2d7a4f]' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                          form.gender === g.id ? 'border-[#2d7a4f] bg-[#f0faf4] text-[#2d7a4f]' : 'border-line-2 text-ink-3 hover:border-line'
                         }`}
                       >
                         <div className="text-lg mb-0.5">{g.emoji}</div>
@@ -191,7 +191,7 @@ export function HealthQuestionnaire() {
           {step === 2 && (
             <div>
               <p className="text-xs text-[#2d7a4f] font-semibold mb-1">신체 정보</p>
-              <h2 className="text-xl font-bold text-gray-800 mb-5">키와 몸무게를 알려주세요 📏</h2>
+              <h2 className="text-xl font-bold text-ink mb-5">키와 몸무게를 알려주세요 📏</h2>
               <div className="space-y-4">
                 <div>
                   <label className="text-xs text-ink-3 mb-1.5 block">키 (cm)</label>
@@ -200,7 +200,7 @@ export function HealthQuestionnaire() {
                     value={form.height_cm}
                     onChange={(e) => setForm((f) => ({ ...f, height_cm: e.target.value }))}
                     placeholder="예: 170"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2d7a4f] transition-colors"
+                    className="w-full px-4 py-3 border border-line-2 rounded-xl text-sm focus:outline-none focus:border-[#2d7a4f] transition-colors"
                     min={100} max={250}
                   />
                 </div>
@@ -211,7 +211,7 @@ export function HealthQuestionnaire() {
                     value={form.weight_kg}
                     onChange={(e) => setForm((f) => ({ ...f, weight_kg: e.target.value }))}
                     placeholder="예: 65"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2d7a4f] transition-colors"
+                    className="w-full px-4 py-3 border border-line-2 rounded-xl text-sm focus:outline-none focus:border-[#2d7a4f] transition-colors"
                     min={20} max={300}
                   />
                 </div>
@@ -227,7 +227,7 @@ export function HealthQuestionnaire() {
           {step === 3 && (
             <div>
               <p className="text-xs text-[#2d7a4f] font-semibold mb-1">건강 목표</p>
-              <h2 className="text-xl font-bold text-gray-800 mb-5">어떤 목표가 있으신가요? 🎯</h2>
+              <h2 className="text-xl font-bold text-ink mb-5">어떤 목표가 있으신가요? 🎯</h2>
               <div className="space-y-2 mb-5">
                 {HEALTH_GOALS.map((g) => (
                   <button
@@ -235,12 +235,12 @@ export function HealthQuestionnaire() {
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, health_goal: g.id }))}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
-                      form.health_goal === g.id ? 'border-[#2d7a4f] bg-[#f0faf4]' : 'border-gray-200 hover:border-gray-300'
+                      form.health_goal === g.id ? 'border-[#2d7a4f] bg-[#f0faf4]' : 'border-line-2 hover:border-line'
                     }`}
                   >
                     <span className="text-2xl">{g.emoji}</span>
                     <div>
-                      <p className={`text-sm font-semibold ${form.health_goal === g.id ? 'text-[#2d7a4f]' : 'text-gray-700'}`}>{g.label}</p>
+                      <p className={`text-sm font-semibold ${form.health_goal === g.id ? 'text-[#2d7a4f]' : 'text-ink-2'}`}>{g.label}</p>
                       <p className="text-xs text-ink-4">{g.desc}</p>
                     </div>
                     {form.health_goal === g.id && <Check size={16} className="ml-auto text-[#2d7a4f] shrink-0" />}
@@ -255,7 +255,7 @@ export function HealthQuestionnaire() {
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, activity_level: a.id }))}
                     className={`py-2.5 rounded-xl border text-xs font-medium transition-all ${
-                      form.activity_level === a.id ? 'border-[#2d7a4f] bg-[#f0faf4] text-[#2d7a4f]' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                      form.activity_level === a.id ? 'border-[#2d7a4f] bg-[#f0faf4] text-[#2d7a4f]' : 'border-line-2 text-ink-3 hover:border-line'
                     }`}
                   >
                     <div className="text-base mb-0.5">{a.emoji}</div>
@@ -269,7 +269,7 @@ export function HealthQuestionnaire() {
           {step === 4 && (
             <div>
               <p className="text-xs text-[#2d7a4f] font-semibold mb-1">식단 정보</p>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">식단 유형을 선택해주세요 🥦</h2>
+              <h2 className="text-xl font-bold text-ink mb-4">식단 유형을 선택해주세요 🥦</h2>
               <div className="grid grid-cols-2 gap-2 mb-5">
                 {DIET_TYPES.map((d) => (
                   <button
@@ -277,7 +277,7 @@ export function HealthQuestionnaire() {
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, diet_type: d.id }))}
                     className={`py-3 px-3 rounded-xl border text-xs font-medium text-left transition-all ${
-                      form.diet_type === d.id ? 'border-[#2d7a4f] bg-[#f0faf4] text-[#2d7a4f]' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                      form.diet_type === d.id ? 'border-[#2d7a4f] bg-[#f0faf4] text-[#2d7a4f]' : 'border-line-2 text-ink-3 hover:border-line'
                     }`}
                   >
                     <span className="text-lg block mb-1">{d.emoji}</span>
@@ -293,7 +293,7 @@ export function HealthQuestionnaire() {
                     type="button"
                     onClick={() => toggleAllergen(a)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                      form.allergen_profile.includes(a) ? 'bg-red-50 border-red-300 text-red-600' : 'border-gray-200 text-ink-3 hover:border-gray-300'
+                      form.allergen_profile.includes(a) ? 'bg-red-50 border-red-300 text-red-600' : 'border-line-2 text-ink-3 hover:border-line'
                     }`}
                   >
                     {form.allergen_profile.includes(a) ? '✕ ' : ''}{a}
@@ -309,7 +309,7 @@ export function HealthQuestionnaire() {
           {step > 1 && (
             <button
               onClick={() => setStep((s) => (s - 1) as Step)}
-              className="flex items-center gap-1 px-4 py-3 border border-gray-200 rounded-xl text-sm text-ink-3 hover:border-gray-300 transition-colors"
+              className="flex items-center gap-1 px-4 py-3 border border-line-2 rounded-xl text-sm text-ink-3 hover:border-line transition-colors"
             >
               <ChevronLeft size={16} />
               이전

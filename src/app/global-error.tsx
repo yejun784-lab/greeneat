@@ -19,8 +19,8 @@ export default function GlobalError({
       <body>
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-[#f5faf7]">
           <div className="text-6xl">🍅</div>
-          <h1 className="text-2xl font-bold text-gray-800">예상치 못한 오류가 발생했어요</h1>
-          <p className="text-gray-500 text-sm max-w-sm">
+          <h1 className="text-2xl font-bold text-ink">예상치 못한 오류가 발생했어요</h1>
+          <p className="text-ink-4 text-sm max-w-sm">
             불편을 드려 죄송해요. 오류가 자동으로 보고됐어요.
           </p>
           <button

@@ -230,7 +230,7 @@ export default function PrivacyPage() {
             </div>
           </section>
 
-          <p className="text-xs text-gray-400 mt-8 pt-4 border-t border-gray-200">
+          <p className="text-xs text-ink-5 mt-8 pt-4 border-t border-line-2">
             본 방침은 2026년 5월 21일부터 시행되며, 내용이 변경될 경우 서비스 공지사항을 통해 안내합니다.
           </p>
         </article>
