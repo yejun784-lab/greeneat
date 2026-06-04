@@ -276,8 +276,8 @@ export async function POST(req: NextRequest) {
       } catch {}
     }
 
-    // 한자(CJK) 완전 제거
-    const reply = raw.replace(/[一-鿿㐀-䶿豈-﫿\u{20000}-\u{2A6DF}]/gu, '')
+    // 한자(CJK)만 제거 — 한글(AC00-D7A3) 보호
+    const reply = raw.replace(/[一-鿿㐀-䶿豈-﫿]/g, '')
     return NextResponse.json({ reply, userName })
   } catch (err) {
     console.error('[Chatbot Error]', err)
