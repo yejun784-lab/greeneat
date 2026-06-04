@@ -237,15 +237,15 @@ export default async function HomePage() {
       </section>
 
       {/* ── 구독 배너 ─────────────────────────────────────────────── */}
-      <section className="py-20 bg-[#f0faf4]">
+      <section className="py-20 bg-[#f0faf4] dark:bg-[#1e2b1e]">
         <div className="max-w-5xl mx-auto px-6 sm:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-4">Subscription</p>
+              <p className="text-[11px] font-semibold text-[#2d7a4f] dark:text-[#6ab87a] tracking-[0.15em] uppercase mb-4">Subscription</p>
               <h2 className="text-display text-3xl md:text-4xl text-ink mb-4">
                 정기구독으로<br />더 건강하게, 더 알뜰하게
               </h2>
-              <p className="text-[#666] leading-relaxed mb-8 font-light">
+              <p className="text-ink-3 leading-relaxed mb-8 font-light">
                 주 1회부터 매일까지, 원하는 주기로 설정하세요.<br />
                 구독 회원 전용 할인과 무료 배송 혜택을 드립니다.
               </p>
@@ -263,7 +263,7 @@ export default async function HomePage() {
                 { icon: '💸', title: '최대 15% 할인', desc: '플랜 업그레이드 시 추가 혜택' },
                 { icon: '🔄', title: '언제든 변경', desc: '배송일·상품 자유롭게 조정 가능' },
               ].map((item) => (
-                <div key={item.title} className="flex items-center gap-4 bg-surface rounded-2xl p-4 shadow-sm">
+                <div key={item.title} className="flex items-center gap-4 bg-surface dark:bg-[#2a3d2a] rounded-2xl p-4 shadow-sm">
                   <span className="text-2xl w-10 text-center shrink-0">{item.icon}</span>
                   <div>
                     <p className="font-semibold text-ink text-sm">{item.title}</p>
