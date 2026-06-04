@@ -152,13 +152,13 @@ export default function SubscriptionPage() {
   return (
     <div>
       {/* 히어로 */}
-      <section className="bg-gradient-to-br from-[#1a4a2e] to-[#2d7a4f] py-16 text-center px-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">GreenEat 구독 플랜</h1>
-        <p className="text-green-200 text-lg">정기 구독으로 더 저렴하게, 더 건강하게</p>
+      <section className="bg-gradient-to-br from-[#1a4a2e] to-[#2d7a4f] dark:from-[#1e2b1e] dark:to-[#2a3d2a] py-16 text-center px-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-white dark:text-[#e8f0e8] mb-3">GreenEat 구독 플랜</h1>
+        <p className="text-green-200 dark:text-[#8ab08a] text-lg">정기 구독으로 더 저렴하게, 더 건강하게</p>
       </section>
 
       {/* 혜택 */}
-      <section className="bg-cream py-10 px-4">
+      <section className="bg-cream dark:bg-wash py-10 px-4">
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
             { icon: Truck, title: '무료 배송', desc: '구독 시 배송비 0원' },
