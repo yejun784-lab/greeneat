@@ -17,6 +17,7 @@ import { getLastNDays, getDateRange } from '@/lib/utils'
 import { WithErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { GOAL_INFO, GOAL_LABEL, type DayNutrition, type GoalInfo, type MealLogRow } from '@/lib/health-types'
 import { GoalEditor } from '@/components/my/GoalEditor'
+import { HealthTabNav } from '@/components/health/HealthTabNav'
 import type { Product } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -151,12 +152,13 @@ export default async function HealthPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-ink">건강관리</h1>
         <GoalEditor current={goal} userId={user?.id ?? null} />
       </div>
 
-      <div className="flex flex-col gap-6">
+      <HealthTabNav userId={user?.id ?? null} date={todayStr} nutritionContent={<>
+        <div className="flex flex-col gap-6">
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">오늘의 영양 현황</h2>
           <NutritionRings today={todayData} goal={goalInfo} />
@@ -247,6 +249,7 @@ export default async function HealthPage() {
           </WithErrorBoundary>
         </section>
       </div>
+      </>} />
     </div>
   )
 }
