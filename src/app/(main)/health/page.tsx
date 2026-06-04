@@ -18,6 +18,7 @@ import { WithErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { getGoalInfo, GOAL_LABEL, type DayNutrition, type GoalInfo, type MealLogRow } from '@/lib/health-types'
 import { GoalEditor } from '@/components/my/GoalEditor'
 import { HealthTabNav } from '@/components/health/HealthTabNav'
+import { HealthScore } from '@/components/health/HealthScore'
 import type { Product } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -155,6 +156,17 @@ export default async function HealthPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-ink">건강관리</h1>
         <GoalEditor current={goal} userId={user?.id ?? null} />
+      </div>
+
+      {/* GreenEat Score */}
+      <div className="mb-6">
+        <HealthScore
+          userId={user?.id ?? null}
+          date={todayStr}
+          today={todayData}
+          goal={goalInfo}
+          waterGoalMl={weightKg ? Math.round(weightKg * 33 / 100) * 100 : 2000}
+        />
       </div>
 
       <HealthTabNav userId={user?.id ?? null} date={todayStr} weightKg={weightKg} nutritionContent={<>
