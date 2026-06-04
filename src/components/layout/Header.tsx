@@ -247,13 +247,18 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-[60px]">
           {/* 로고 */}
-          <Link href="/" className="flex items-center">
+          <Link
+            href="/"
+            onClick={() => router.push('/')}
+            className="flex items-center shrink-0 cursor-pointer"
+            aria-label="홈으로 이동"
+          >
             <Image
               src="https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/logo.png"
               alt="GreenEat"
               width={120}
               height={40}
-              className="h-9 w-auto object-contain"
+              className="h-9 w-auto object-contain pointer-events-none"
               priority
             />
           </Link>
