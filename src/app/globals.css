@@ -35,25 +35,25 @@
 
 /* ── 다크 모드 — 따뜻한 갈색-회색 계열 ────────────────────────── */
 .dark {
-  /* 서피스: 냉색 블랙 대신 따뜻한 짙은 갈색-회색 */
-  --c-surface:      #1c1917;  /* warm dark brown-gray */
-  --c-wash:         #242019;  /* slightly lighter warm */
-  --c-cream:        #1e2018;  /* warm dark with subtle olive */
-  --c-tint:         #2c271f;  /* warm tint */
-  --c-green-tint:   #182118;  /* muted green dark */
-  --c-green-tint-2: #1c2b1f;  /* slightly lighter muted green */
+  /* 서피스: 냉색 블랙 대신 따뜻한 갈색-회색 (눈에 띄게) */
+  --c-surface:      #242019;  /* warm dark, noticeably warmer */
+  --c-wash:         #2e291f;  /* slightly lighter warm */
+  --c-cream:        #262820;  /* warm dark with subtle olive */
+  --c-tint:         #353024;  /* warm tint */
+  --c-green-tint:   #1e2b1e;  /* muted green dark */
+  --c-green-tint-2: #223225;  /* slightly lighter muted green */
 
-  /* 텍스트: 차가운 흰색 대신 크림빛 따뜻한 톤 */
+  /* 텍스트: 크림빛 따뜻한 톤 */
   --c-ink:   #f0ece5;  /* warm cream white */
   --c-ink-2: #d8d2c8;  /* warm light gray */
   --c-ink-3: #afa99e;  /* warm mid gray */
   --c-ink-4: #7a746b;  /* warm gray */
-  --c-ink-5: #4e4940;  /* warm dark gray */
+  --c-ink-5: #504944;  /* warm dark gray */
 
   /* 보더: 따뜻한 구분선 */
-  --c-line:   #2c2820;  /* warm dark border */
-  --c-line-2: #3a342a;  /* warm medium border */
-  --c-line-3: #4c4538;  /* warm light border */
+  --c-line:   #37312a;  /* warm dark border */
+  --c-line-2: #453e33;  /* warm medium border */
+  --c-line-3: #564e41;  /* warm light border */
 }
 
 /* ── Tailwind v4 @theme 매핑 ───────────────────────────────────── */
