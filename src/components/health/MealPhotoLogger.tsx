@@ -7,6 +7,15 @@ import { Camera, Upload, X, Flame, Dumbbell, Wheat, Droplets, CheckCircle, Alert
 import { toast } from '@/lib/toast-store'
 import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 
+type Dish = {
+  name: string
+  amount: string
+  calories: number
+  protein: number
+  carbs: number
+  fat: number
+}
+
 type AnalysisResult = {
   description: string
   calories: number
@@ -14,6 +23,8 @@ type AnalysisResult = {
   carbs: number
   fat: number
   confidence: 'high' | 'medium' | 'low'
+  confidence_reason?: string
+  dishes?: Dish[]
 }
 
 const CONFIDENCE_LABEL = {
@@ -168,6 +179,7 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
         {/* 분석 결과 */}
         {result && (
           <div className="rounded-2xl bg-surface border border-line p-4 space-y-3">
+            {/* 헤더: 설명 + 신뢰도 */}
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <CheckCircle size={16} className="text-[#2d7a4f] shrink-0 mt-0.5" />
@@ -180,6 +192,20 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
               )}
             </div>
 
+            {/* 음식별 분리 목록 */}
+            {result.dishes && result.dishes.length > 1 && (
+              <div className="space-y-1.5">
+                {result.dishes.map((dish, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs bg-wash rounded-lg px-3 py-2">
+                    <span className="text-ink-2 font-medium">{dish.name}</span>
+                    <span className="text-ink-5">{dish.amount}</span>
+                    <span className="text-orange-500 font-semibold">{dish.calories}kcal</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 영양소 합계 */}
             <div className="grid grid-cols-4 gap-2">
               {[
                 { icon: Flame,    label: '칼로리', value: result.calories,  unit: 'kcal', color: 'text-orange-500 bg-orange-50' },
@@ -196,10 +222,11 @@ export function MealPhotoLogger({ onLogged, userId }: { onLogged?: () => void; u
               ))}
             </div>
 
-            {result.confidence === 'low' && (
-              <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2">
-                <AlertCircle size={12} />
-                <span>사진이 불분명해 수치가 부정확할 수 있어요. 더 선명한 사진으로 다시 시도해보세요.</span>
+            {/* 신뢰도 이유 */}
+            {(result.confidence === 'low' || result.confidence === 'medium') && (
+              <div className="flex items-start gap-2 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2">
+                <AlertCircle size={12} className="shrink-0 mt-0.5" />
+                <span>{result.confidence_reason ?? (result.confidence === 'low' ? '사진이 불분명해 수치가 부정확할 수 있어요. 더 선명한 사진으로 다시 시도해보세요.' : '양 추정에 불확실성이 있어요. 직접 조정하실 수 있어요.')}</span>
               </div>
             )}
 

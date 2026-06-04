@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
   const base64 = Buffer.from(arrayBuffer).toString('base64')
   const mediaType = file.type as AllowedMime
 
-  // Claude vision으로 분석
+  // Claude vision으로 분석 (개선된 프롬프트)
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-5',
-    max_tokens: 512,
+    max_tokens: 1024,
     messages: [
       {
         role: 'user',
@@ -61,21 +61,40 @@ export async function POST(req: NextRequest) {
           },
           {
             type: 'text',
-            text: `이 음식 사진을 분석해서 영양 정보를 JSON으로만 답해줘. 다른 설명 없이 JSON만.
+            text: `당신은 한국 음식 전문 영양사입니다. 이 식사 사진을 정밀 분석해 주세요.
 
-형식:
+분석 지침:
+1. 사진에 보이는 각 음식/반찬을 개별 식별하세요
+2. 그릇 크기, 담긴 양, 재료 구성을 추정하세요 (일반 가정 기준)
+3. 한국 음식 표준 레시피와 식품성분표를 기반으로 영양소를 계산하세요
+4. 조리법(볶음/구이/찜/국)에 따른 칼로리 차이를 반영하세요
+
+JSON 형식으로만 답해주세요 (다른 텍스트 없이):
 {
-  "description": "음식 이름과 간단한 설명 (한국어, 1~2문장)",
-  "calories": 숫자 (kcal),
-  "protein": 숫자 (g),
-  "carbs": 숫자 (g),
-  "fat": 숫자 (g),
-  "confidence": "high" | "medium" | "low"
+  "dishes": [
+    {
+      "name": "음식명 (한국어)",
+      "amount": "추정 양 (예: 1공기, 100g, 1접시)",
+      "calories": 숫자,
+      "protein": 숫자,
+      "carbs": 숫자,
+      "fat": 숫자
+    }
+  ],
+  "total": {
+    "description": "전체 식사 한줄 요약 (한국어)",
+    "calories": 숫자,
+    "protein": 숫자,
+    "carbs": 숫자,
+    "fat": 숫자
+  },
+  "confidence": "high" | "medium" | "low",
+  "confidence_reason": "신뢰도 이유 (한국어, 1문장)"
 }
 
-- 음식이 여러 개면 합산해서 줘
-- 음식이 아닌 사진이면 {"error": "음식 사진이 아닙니다"} 로만 답해줘
-- 숫자는 반올림된 정수 또는 소수점 1자리까지`,
+- 음식이 아닌 사진이면: {"error": "음식 사진을 촬영해 주세요"}
+- 숫자는 정수 (소수점 반올림)
+- 신뢰도 기준: high=음식 명확+양 추정 가능 / medium=음식 식별되나 양 불확실 / low=흐릿하거나 가려짐`,
           },
         ],
       },
@@ -84,14 +103,17 @@ export async function POST(req: NextRequest) {
 
   const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
 
-  // JSON 파싱
+  // JSON 파싱 (새 포맷 + 구 포맷 fallback)
   let parsed: {
+    dishes?: { name: string; amount: string; calories: number; protein: number; carbs: number; fat: number }[]
+    total?: { description: string; calories: number; protein: number; carbs: number; fat: number }
     description?: string
     calories?: number
     protein?: number
     carbs?: number
     fat?: number
     confidence?: string
+    confidence_reason?: string
     error?: string
   }
   try {
@@ -104,6 +126,13 @@ export async function POST(req: NextRequest) {
   if (parsed.error) {
     return NextResponse.json({ error: parsed.error }, { status: 422 })
   }
+
+  // 새 포맷(total) 또는 구 포맷(calories) 통합
+  const finalDescription = parsed.total?.description ?? parsed.description ?? ''
+  const finalCalories = parsed.total?.calories ?? parsed.calories ?? null
+  const finalProtein  = parsed.total?.protein  ?? parsed.protein  ?? null
+  const finalCarbs    = parsed.total?.carbs    ?? parsed.carbs    ?? null
+  const finalFat      = parsed.total?.fat      ?? parsed.fat      ?? null
 
   // Supabase Storage에 이미지 업로드
   let imageUrl: string | null = null
@@ -128,12 +157,12 @@ export async function POST(req: NextRequest) {
       user_id: user.id,
       date,
       meal_type: mealType,
-      description: parsed.description ?? '',
+      description: finalDescription,
       image_url: imageUrl,
-      calories: parsed.calories ?? null,
-      protein: parsed.protein ?? null,
-      carbs: parsed.carbs ?? null,
-      fat: parsed.fat ?? null,
+      calories: finalCalories,
+      protein: finalProtein,
+      carbs: finalCarbs,
+      fat: finalFat,
       ai_raw: rawText,
     })
     .select()
@@ -146,12 +175,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     log,
     analysis: {
-      description: parsed.description,
-      calories: parsed.calories,
-      protein: parsed.protein,
-      carbs: parsed.carbs,
-      fat: parsed.fat,
+      description: finalDescription,
+      calories: finalCalories,
+      protein: finalProtein,
+      carbs: finalCarbs,
+      fat: finalFat,
       confidence: parsed.confidence,
+      confidence_reason: parsed.confidence_reason,
+      dishes: parsed.dishes ?? [],
     },
   })
 }

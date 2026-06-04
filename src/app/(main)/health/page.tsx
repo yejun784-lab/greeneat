@@ -169,7 +169,14 @@ export default async function HealthPage() {
         />
       </div>
 
-      <HealthTabNav userId={user?.id ?? null} date={todayStr} weightKg={weightKg} nutritionContent={<>
+      <HealthTabNav
+        userId={user?.id ?? null}
+        date={todayStr}
+        weightKg={weightKg}
+        today={todayData}
+        goal={goalInfo}
+        products={products}
+        nutritionContent={<>
         <div className="flex flex-col gap-6">
         <section className="bg-surface rounded-2xl border border-line p-5">
           <h2 className="text-base font-semibold text-ink mb-4">오늘의 영양 현황</h2>

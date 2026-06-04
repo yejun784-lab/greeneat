@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { Salad, Dumbbell, Moon } from 'lucide-react'
 import { ExerciseLogger } from './ExerciseLogger'
 import { WaterSleepTracker } from './WaterSleepTracker'
+import { NutritionRecommend } from './NutritionRecommend'
+import type { DayNutrition, GoalInfo } from '@/lib/health-types'
+import type { Product } from '@/types'
 
 type Tab = 'nutrition' | 'exercise' | 'sleep'
 
@@ -11,6 +14,9 @@ interface Props {
   userId: string | null
   date: string
   weightKg?: number | null
+  today?: DayNutrition
+  goal?: GoalInfo
+  products?: Product[]
   nutritionContent: React.ReactNode
 }
 
@@ -20,7 +26,7 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: 'sleep',     label: '수면·수분', icon: Moon     },
 ]
 
-export function HealthTabNav({ userId, date, weightKg, nutritionContent }: Props) {
+export function HealthTabNav({ userId, date, weightKg, today, goal, products, nutritionContent }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('nutrition')
 
   return (
@@ -47,6 +53,9 @@ export function HealthTabNav({ userId, date, weightKg, nutritionContent }: Props
       {activeTab === 'nutrition' && (
         <div className="flex flex-col gap-6">
           {nutritionContent}
+          {today && goal && products && (
+            <NutritionRecommend today={today} goal={goal} products={products} />
+          )}
         </div>
       )}
 
