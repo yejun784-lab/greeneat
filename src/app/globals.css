@@ -154,6 +154,11 @@ body {
   animation: skeleton 1.4s ease-in-out infinite;
 }
 
+/* ── 다크모드 개별 오버라이드 ──────────────────────────────────── */
+.dark .hero-desc {
+  color: #ddd8d0 !important;
+}
+
 /* ── 토스트 ────────────────────────────────────────────────────── */
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(10px) scale(0.96); }
