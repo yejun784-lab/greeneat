@@ -57,7 +57,7 @@ export default async function HomePage() {
                 바쁜 일상 속<br />
                 <span className="text-[#2d7a4f]">건강한 한 끼</span>
               </h1>
-              <p className="text-[#666] dark:text-[#e8e4dc] text-[17px] leading-relaxed mb-8 font-light">
+              <p className="text-[#666] dark:text-ink-2 text-[17px] leading-relaxed mb-8 font-light">
                 직접 만든 정직한 재료로 완성한<br />
                 냉동 도시락을 매일 즐겨보세요.
               </p>
