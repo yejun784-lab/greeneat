@@ -310,12 +310,12 @@ export default function ProductDetailPage() {
               <>
                 <Button
                   size="lg"
-                  className="flex-1"
+                  className={`flex-1 transition-all duration-200 ${added ? 'scale-95 bg-[#235f3d]' : ''}`}
                   onClick={() => handleAddToCart(false)}
                   loading={added}
                 >
-                  <ShoppingCart size={18} />
-                  {added ? '담았습니다!' : '장바구니 담기'}
+                  <ShoppingCart size={18} className={added ? 'animate-bounce' : ''} />
+                  {added ? '✓ 담았습니다!' : '장바구니 담기'}
                 </Button>
                 {product.is_subscription && (
                   <Button

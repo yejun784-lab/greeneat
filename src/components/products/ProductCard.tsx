@@ -67,7 +67,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   }
 
   return (
-    <div className="group bg-surface rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="group bg-surface rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out">
 
       {/* 이미지 */}
       <div className="relative">

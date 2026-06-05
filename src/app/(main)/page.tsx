@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 import { ProductCard } from '@/components/products/ProductCard'
 import { RecentlyViewed } from '@/components/products/RecentlyViewed'
 import { InstagramGrid } from '@/components/home/InstagramGrid'
+import { AnimateIn } from '@/components/ui/AnimateIn'
+import { CountUp } from '@/components/ui/CountUp'
 import type { Product } from '@/types'
 
 export const metadata: Metadata = {
@@ -76,12 +78,18 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              {/* 스탯 */}
+              {/* 스탯 — 카운트업 */}
               <div className="flex gap-5 sm:gap-8 pt-8 border-t border-line">
-                {[['20+', '다양한 메뉴'], ['4,900원~', '한끼 가격'], ['100%', '건강 재료']].map(([num, label]) => (
-                  <div key={label}>
-                    <p className="text-ink font-bold text-xl tracking-tight">{num}</p>
-                    <p className="text-ink-4 text-xs mt-0.5">{label}</p>
+                {([
+                  { end: 20, suffix: '+', label: '다양한 메뉴' },
+                  { end: 4900, prefix: '', suffix: '원~', label: '한끼 가격' },
+                  { end: 100, suffix: '%', label: '건강 재료' },
+                ] as { end: number; prefix?: string; suffix: string; label: string }[]).map((stat) => (
+                  <div key={stat.label}>
+                    <p className="text-ink font-bold text-xl tracking-tight">
+                      <CountUp end={stat.end} prefix={stat.prefix} suffix={stat.suffix} duration={1600} />
+                    </p>
+                    <p className="text-ink-4 text-xs mt-0.5">{stat.label}</p>
                   </div>
                 ))}
               </div>
@@ -154,11 +162,10 @@ export default async function HomePage() {
       <section className="py-14 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {CATEGORIES.map((cat, i) => (
+            <AnimateIn key={cat.slug} direction="up" delay={i * 80} duration={500}>
             <Link
-              key={cat.slug}
               href={`/products?category=${cat.slug}`}
-              className={`group ${cat.color} rounded-2xl p-5 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 animate-fade-up flex flex-col justify-between min-h-[130px]`}
-              style={{ animationDelay: `${i * 0.07}s` }}
+              className={`group ${cat.color} rounded-2xl p-5 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between min-h-[130px]`}
             >
               <div>
                 <span className="text-3xl mb-3 block">{cat.emoji}</span>
@@ -169,12 +176,14 @@ export default async function HomePage() {
                 보러가기 →
               </p>
             </Link>
+            </AnimateIn>
           ))}
         </div>
       </section>
 
       {/* ── 인기 상품 ─────────────────────────────────────────────── */}
       <section className="py-4 pb-20 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+        <AnimateIn direction="up" duration={600}>
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-2">Best Sellers</p>
@@ -188,10 +197,14 @@ export default async function HomePage() {
           </Link>
         </div>
 
+        </AnimateIn>
+
         {products.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {products.map((product, i) => (
-              <ProductCard key={product.id} product={product} priority={i < 4} />
+              <AnimateIn key={product.id} direction="up" delay={i * 60} duration={500}>
+                <ProductCard product={product} priority={i < 4} />
+              </AnimateIn>
             ))}
           </div>
         ) : (
