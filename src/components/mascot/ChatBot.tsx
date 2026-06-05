@@ -178,7 +178,7 @@ export function ChatBot() {
 
       {/* ── 채팅창 ──────────────────────────────────── */}
       {open && (
-        <div className="fixed right-2 left-2 sm:left-auto sm:right-6 sm:w-[420px] z-50 bg-surface dark:bg-[#3a342c] rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden animate-fade-up" style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${kbOffset + 80}px)` }}>
+        <div className="fixed right-2 left-2 sm:left-auto sm:right-6 sm:w-[420px] z-50 bg-surface dark:bg-[#3d302a] rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden animate-fade-up" style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${kbOffset + 80}px)` }}>
 
           {/* 헤더 */}
           <div
@@ -245,7 +245,7 @@ export function ChatBot() {
           ) : (
             <>
               {/* ── 메시지 영역 ──────────────────────── */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96 bg-wash dark:bg-[#332d26]">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96 bg-wash dark:bg-[#352820]">
                 {messages.map((m, i) => (
                   <div key={i} className={`flex items-end gap-2.5 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     {m.role === 'bot' && (
@@ -260,7 +260,7 @@ export function ChatBot() {
                       className={`px-4 py-3 rounded-2xl text-base max-w-[80%] whitespace-pre-line leading-relaxed ${
                         m.role === 'user'
                           ? 'text-white rounded-br-sm'
-                          : 'bg-surface dark:bg-[#443c34] text-ink border border-line rounded-bl-sm shadow-sm'
+                          : 'bg-surface dark:bg-[#4a3c34] text-ink border border-line rounded-bl-sm shadow-sm'
                       }`}
                       style={m.role === 'user' ? { backgroundColor: meta.headerColor } : undefined}
                     >
@@ -285,7 +285,7 @@ export function ChatBot() {
 
               {/* ── 빠른 답변 ────────────────────────── */}
               {messages.length <= 1 && (
-                <div className="px-4 pt-3 pb-2 flex flex-wrap gap-2 bg-wash dark:bg-[#3a342c] border-t border-line">
+                <div className="px-4 pt-3 pb-2 flex flex-wrap gap-2 bg-wash dark:bg-[#3d302a] border-t border-line">
                   {QUICK_REPLIES.map(q => (
                     <button
                       key={q}
@@ -300,7 +300,7 @@ export function ChatBot() {
               )}
 
               {/* ── 입력창 ───────────────────────────── */}
-              <div className="p-3 border-t border-line flex gap-2 bg-surface dark:bg-[#3a342c] items-center">
+              <div className="p-3 border-t border-line flex gap-2 bg-surface dark:bg-[#3d302a] items-center">
                 {/* 🎰 메뉴 뽑기 버튼 */}
                 <button
                   onClick={rollMenu}

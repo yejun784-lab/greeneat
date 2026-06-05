@@ -33,27 +33,27 @@
   --c-line-3: #d4d4d0;
 }
 
-/* ── 다크 모드 — 따뜻한 갈색-회색 계열 ────────────────────────── */
+/* ── 다크 모드 — 부쉬멘브레드 (딥 에스프레소 브라운) ─────────────── */
 .dark {
-  /* 서피스: 충분히 밝아서 블랙과 명확히 구분 */
-  --c-surface:      #2c2820;  /* warm medium dark */
-  --c-wash:         #363028;  /* lighter warm */
-  --c-cream:        #2e3028;  /* warm olive dark */
-  --c-tint:         #3e3830;  /* warm tint */
-  --c-green-tint:   #253525;  /* muted green dark */
-  --c-green-tint-2: #2c3f2c;  /* lighter muted green */
+  /* 서피스: 흑맥주빵처럼 깊고 진한 다크 브라운 */
+  --c-surface:      #312620;  /* soft warm walnut */
+  --c-wash:         #3d302a;  /* lighter warm wood */
+  --c-cream:        #352a24;  /* muted warm brown */
+  --c-tint:         #4a3c34;  /* soft caramel */
+  --c-green-tint:   #283022;  /* muted olive */
+  --c-green-tint-2: #2e3828;  /* lighter muted olive */
 
-  /* 텍스트: 크림빛 따뜻한 톤 */
-  --c-ink:   #f2eee8;  /* warm cream white */
-  --c-ink-2: #ddd8d0;  /* warm light gray */
-  --c-ink-3: #b5afa6;  /* warm mid gray */
-  --c-ink-4: #857f78;  /* warm gray */
-  --c-ink-5: #56504a;  /* warm dark gray */
+  /* 텍스트: 부드러운 따뜻한 크림 */
+  --c-ink:   #f0ece4;  /* soft cream */
+  --c-ink-2: #d8d0c4;  /* warm light */
+  --c-ink-3: #aea498;  /* warm mid */
+  --c-ink-4: #7e7470;  /* warm gray */
+  --c-ink-5: #544c48;  /* soft dark */
 
-  /* 보더: 따뜻한 구분선 */
-  --c-line:   #3e3830;  /* warm dark border */
-  --c-line-2: #4e4840;  /* warm medium border */
-  --c-line-3: #605a50;  /* warm light border */
+  /* 보더: 부드러운 브라운 */
+  --c-line:   #403428;  /* soft border */
+  --c-line-2: #504030;  /* medium border */
+  --c-line-3: #625040;  /* light border */
 }
 
 /* ── Tailwind v4 @theme 매핑 ───────────────────────────────────── */
