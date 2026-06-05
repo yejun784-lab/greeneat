@@ -234,7 +234,7 @@ function SignupForm() {
           </div>
 
           {error && (
-            <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-lg">{error}</p>
           )}
 
           <Button type="submit" size="lg" className="w-full" loading={loading}>

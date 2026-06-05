@@ -74,10 +74,10 @@ export default async function HealthPage() {
   const weightKg = profile?.weight_kg ? Number(profile.weight_kg) : null
   const bmi = heightCm && weightKg ? weightKg / Math.pow(heightCm / 100, 2) : null
   const bmiMeta = bmi === null ? null
-    : bmi < 18.5 ? { label: '저체중', color: 'text-blue-500',   bg: 'bg-blue-50',   bar: 'bg-blue-400'   }
-    : bmi < 23   ? { label: '정상',   color: 'text-green-600',  bg: 'bg-green-50',  bar: 'bg-green-500'  }
-    : bmi < 25   ? { label: '과체중', color: 'text-orange-500', bg: 'bg-orange-50', bar: 'bg-orange-400' }
-    :              { label: '비만',   color: 'text-red-500',    bg: 'bg-red-50',    bar: 'bg-red-400'    }
+    : bmi < 18.5 ? { label: '저체중', color: 'text-blue-500',   bg: 'bg-blue-50 dark:bg-blue-900/30',   bar: 'bg-blue-400'   }
+    : bmi < 23   ? { label: '정상',   color: 'text-green-600',  bg: 'bg-green-50 dark:bg-green-900/30',  bar: 'bg-green-500'  }
+    : bmi < 25   ? { label: '과체중', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/30', bar: 'bg-orange-400' }
+    :              { label: '비만',   color: 'text-red-500',    bg: 'bg-red-50 dark:bg-red-900/30',    bar: 'bg-red-400'    }
   const goalInfo: GoalInfo = getGoalInfo(goal, profile)
   const goalMeta = GOAL_LABEL[goal] ?? GOAL_LABEL.balanced
   const allergens: string[] = (profile?.allergen_profile as string[]) ?? []

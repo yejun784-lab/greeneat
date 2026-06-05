@@ -75,7 +75,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f5f0e8] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#f5f0e8] dark:bg-surface px-4">
       <div className="w-full max-w-sm bg-surface rounded-2xl shadow-sm border border-gray-100 p-8">
         <Link href="/" className="block text-center text-2xl font-bold text-[#2d7a4f] mb-6">
           GreenEat
@@ -136,7 +136,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-lg">{error}</p>
           )}
 
           <Button type="submit" size="lg" className="w-full" loading={loading}>

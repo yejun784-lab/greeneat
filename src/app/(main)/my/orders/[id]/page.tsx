@@ -7,11 +7,11 @@ import { ChevronLeft, Package, MapPin, CreditCard, Truck, ExternalLink, Gift } f
 import type { OrderStatus } from '@/types'
 
 const STATUS_COLOR: Record<string, string> = {
-  pending:   'bg-yellow-50 text-yellow-600 border-yellow-200',
-  confirmed: 'bg-blue-50 text-blue-600 border-blue-200',
-  preparing: 'bg-purple-50 text-purple-600 border-purple-200',
-  shipped:   'bg-indigo-50 text-indigo-600 border-indigo-200',
-  delivered: 'bg-green-50 text-[#2d7a4f] border-green-200',
+  pending:   'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
+  confirmed: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+  preparing: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800',
+  shipped:   'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800',
+  delivered: 'bg-green-50 dark:bg-green-900/30 text-[#2d7a4f] dark:text-green-400 border-green-200 dark:border-green-800',
   cancelled: 'bg-tint text-ink-4 border-line-2',
 }
 

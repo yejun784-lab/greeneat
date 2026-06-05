@@ -64,7 +64,7 @@ function RequestForm() {
             className="w-full px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
           />
         </div>
-        {error && <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+        {error && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-lg">{error}</p>}
         <Button type="submit" size="lg" className="w-full" loading={loading}>
           재설정 링크 받기
         </Button>
@@ -147,7 +147,7 @@ function UpdateForm() {
             className="w-full px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
           />
         </div>
-        {error && <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+        {error && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-lg">{error}</p>}
         <Button type="submit" size="lg" className="w-full" loading={loading}>
           비밀번호 변경하기
         </Button>
