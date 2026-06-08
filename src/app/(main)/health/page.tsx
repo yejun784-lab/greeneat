@@ -175,6 +175,8 @@ export default async function HealthPage() {
         weightKg={weightKg}
         today={todayData}
         goal={goalInfo}
+        goalType={goal}
+        weekData={weekData}
         products={products}
         nutritionContent={<>
         <div className="flex flex-col gap-6">

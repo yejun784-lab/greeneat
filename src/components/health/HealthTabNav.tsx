@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { Salad, Dumbbell, Moon } from 'lucide-react'
 import { ExerciseLogger } from './ExerciseLogger'
+import { ExercisePlan } from './ExercisePlan'
 import { WaterSleepTracker } from './WaterSleepTracker'
 import { NutritionRecommend } from './NutritionRecommend'
+import { NutritionInsight } from './NutritionInsight'
 import type { DayNutrition, GoalInfo } from '@/lib/health-types'
 import type { Product } from '@/types'
 
@@ -16,6 +18,8 @@ interface Props {
   weightKg?: number | null
   today?: DayNutrition
   goal?: GoalInfo
+  goalType?: string          // 'diet' | 'muscle' | 'maintain' | 'health' | 'balanced'
+  weekData?: DayNutrition[]  // 맞춤 영양 분석용 7일 데이터
   products?: Product[]
   nutritionContent: React.ReactNode
 }
@@ -26,7 +30,10 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: 'sleep',     label: '수면·수분', icon: Moon     },
 ]
 
-export function HealthTabNav({ userId, date, weightKg, today, goal, products, nutritionContent }: Props) {
+export function HealthTabNav({
+  userId, date, weightKg, today, goal, goalType = 'balanced',
+  weekData, products, nutritionContent,
+}: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('nutrition')
 
   return (
@@ -49,33 +56,52 @@ export function HealthTabNav({ userId, date, weightKg, today, goal, products, nu
         ))}
       </div>
 
-      {/* 탭 콘텐츠 */}
+      {/* ── 영양 탭 ── */}
       {activeTab === 'nutrition' && (
         <div className="flex flex-col gap-6">
+          {/* 기존 영양 콘텐츠 (링·BMI·사진·로그 등) */}
           {nutritionContent}
+
+          {/* 맞춤 영양소 추천 (부족 상품 추천) */}
           {today && goal && products && (
             <NutritionRecommend today={today} goal={goal} products={products} />
+          )}
+
+          {/* 7일 맞춤 영양 인사이트 */}
+          {weekData && goal && (
+            <NutritionInsight weekData={weekData} goal={goal} goalType={goalType} />
           )}
         </div>
       )}
 
+      {/* ── 운동 탭 ── */}
       {activeTab === 'exercise' && (
         <div className="flex flex-col gap-6">
+          {/* 주간 운동 플랜 */}
+          <ExercisePlan goal={goalType} userId={userId} date={date} />
+
+          {/* 오늘의 운동 기록 */}
           <ExerciseLogger userId={userId} date={date} weightKg={weightKg} />
+
           {!weightKg && (
             <p className="text-center text-xs text-ink-5">
-              💡 <a href="/my" className="underline hover:text-[#2d7a4f]">마이페이지</a>에서 체중을 입력하면 더 정확한 칼로리가 계산됩니다.
+              💡{' '}
+              <a href="/my" className="underline hover:text-[#2d7a4f]">마이페이지</a>
+              에서 체중을 입력하면 더 정확한 칼로리 소모가 계산돼요.
             </p>
           )}
         </div>
       )}
 
+      {/* ── 수면·수분 탭 ── */}
       {activeTab === 'sleep' && (
         <div className="flex flex-col gap-6">
           <WaterSleepTracker userId={userId} date={date} weightKg={weightKg} />
           {!weightKg && (
             <p className="text-center text-xs text-ink-5">
-              💡 <a href="/my" className="underline hover:text-[#2d7a4f]">마이페이지</a>에서 체중을 입력하면 수분 목표가 맞춤 설정됩니다.
+              💡{' '}
+              <a href="/my" className="underline hover:text-[#2d7a4f]">마이페이지</a>
+              에서 체중을 입력하면 맞춤 수분 목표가 설정돼요.
             </p>
           )}
         </div>
