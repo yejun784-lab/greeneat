@@ -1,16 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Salad, Dumbbell, Moon } from 'lucide-react'
+import { Salad, Dumbbell, Moon, Trophy } from 'lucide-react'
 import { ExerciseLogger } from './ExerciseLogger'
 import { ExercisePlan } from './ExercisePlan'
 import { WaterSleepTracker } from './WaterSleepTracker'
 import { NutritionRecommend } from './NutritionRecommend'
 import { NutritionInsight } from './NutritionInsight'
+import { WeatherRecommend } from './WeatherRecommend'
+import { HealthChallenge } from './HealthChallenge'
 import type { DayNutrition, GoalInfo } from '@/lib/health-types'
 import type { Product } from '@/types'
 
-type Tab = 'nutrition' | 'exercise' | 'sleep'
+type Tab = 'nutrition' | 'exercise' | 'sleep' | 'challenge'
 
 interface Props {
   userId: string | null
@@ -25,9 +27,10 @@ interface Props {
 }
 
 const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
-  { key: 'nutrition', label: '영양',     icon: Salad    },
-  { key: 'exercise',  label: '운동',     icon: Dumbbell },
-  { key: 'sleep',     label: '수면·수분', icon: Moon     },
+  { key: 'nutrition',  label: '영양',    icon: Salad    },
+  { key: 'exercise',   label: '운동',    icon: Dumbbell },
+  { key: 'sleep',      label: '수면·수분', icon: Moon   },
+  { key: 'challenge',  label: '챌린지',  icon: Trophy   },
 ]
 
 export function HealthTabNav({
@@ -39,18 +42,18 @@ export function HealthTabNav({
   return (
     <div>
       {/* 탭 바 */}
-      <div className="flex gap-1 bg-tint p-1 rounded-2xl mb-6">
+      <div className="flex gap-1 bg-tint p-1 rounded-2xl mb-6 overflow-x-auto">
         {TABS.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 min-w-[72px] flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
               activeTab === key
                 ? 'bg-surface text-[#2d7a4f] shadow-sm'
                 : 'text-ink-4 hover:text-ink-2'
             }`}
           >
-            <Icon size={15} />
+            <Icon size={14} />
             {label}
           </button>
         ))}
@@ -59,6 +62,9 @@ export function HealthTabNav({
       {/* ── 영양 탭 ── */}
       {activeTab === 'nutrition' && (
         <div className="flex flex-col gap-6">
+          {/* 날씨 맞춤 추천 */}
+          <WeatherRecommend products={products ?? []} />
+
           {/* 기존 영양 콘텐츠 (링·BMI·사진·로그 등) */}
           {nutritionContent}
 
@@ -104,6 +110,13 @@ export function HealthTabNav({
               에서 체중을 입력하면 맞춤 수분 목표가 설정돼요.
             </p>
           )}
+        </div>
+      )}
+
+      {/* ── 챌린지 탭 ── */}
+      {activeTab === 'challenge' && (
+        <div className="flex flex-col gap-6">
+          <HealthChallenge userId={userId} weekData={weekData} goal={goal} />
         </div>
       )}
     </div>

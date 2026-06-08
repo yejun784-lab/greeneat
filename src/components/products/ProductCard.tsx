@@ -39,6 +39,13 @@ function isNewProduct(createdAt?: string | null): boolean {
   return new Date(createdAt).getTime() >= sevenDaysAgo
 }
 
+/* 탄소발자국 추정 — 상품명/카테고리 키워드 기반 */
+function isEcoFriendly(product: Product): boolean {
+  const text = `${product.name} ${product.description ?? ''} ${(product as any).product_categories?.name ?? ''}`.toLowerCase()
+  const ecoKeywords = ['샐러드', '채소', '그래놀라', '비건', '두부', '콩', '견과', '현미', '통곡물', '귀리', '퀴노아', '렌틸']
+  return ecoKeywords.some(k => text.includes(k))
+}
+
 export function ProductCard({ product, compact = false, priority = false }: ProductCardProps) {
   const addItem      = useCartStore((s) => s.addItem)
   const { toggle }   = useWishlist()
@@ -49,6 +56,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   const outOfStock   = product.stock <= 0
   const highlight    = compact ? null : getHighlight(product)
   const isNew        = isNewProduct((product as any).created_at)
+  const isEco        = !compact && isEcoFriendly(product)
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
@@ -168,11 +176,17 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
 
         {/* 뱃지 슬롯 — 없어도 동일한 높이 유지 */}
         {!compact && (
-          <div className="mt-1.5 h-[20px] flex items-center">
+          <div className="mt-1.5 h-[20px] flex items-center gap-1.5">
             {highlight && (
               <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold ${highlight.className}`}>
                 <highlight.Icon size={9} />
                 {highlight.label}
+              </div>
+            )}
+            {isEco && (
+              <div className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-green-50 text-green-600"
+                title="친환경 저탄소 식품">
+                🌿 에코
               </div>
             )}
           </div>
