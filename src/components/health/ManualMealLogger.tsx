@@ -8,6 +8,7 @@ import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 import type { BarcodeResult } from '@/app/api/barcode/route'
 import type { FoodSearchItem } from '@/app/api/food-search/route'
+import { searchBuiltinFoods } from '@/lib/food-db'
 
 export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const router = useRouter()
@@ -45,21 +46,44 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
     toast.success(`"${result.name || '상품'}" 영양 정보를 불러왔어요 🔍`)
   }
 
-  // 검색어 변경 → 디바운스 후 API 호출
+  // 검색어 변경 → 내장 DB 즉시 + GreenEat 상품 200ms 디바운스
   function handleSearchChange(value: string) {
     setSearchQuery(value)
     setShowDropdown(true)
     if (searchTimer.current) clearTimeout(searchTimer.current)
-    if (!value.trim()) { setSearchResults([]); setSearching(false); return }
+
+    if (!value.trim()) {
+      setSearchResults([])
+      setSearching(false)
+      return
+    }
+
+    // ① 내장 DB: 즉시 결과 표시 (0ms, 네트워크 없음)
+    const builtin: FoodSearchItem[] = searchBuiltinFoods(value.trim(), 8).map(f => ({
+      id: f.id,
+      name: f.name,
+      calories: f.calories,
+      protein: f.protein,
+      carbs: f.carbs,
+      fat: f.fat,
+      servingSize: f.servingSize,
+      source: 'foodsafety' as const,
+    }))
+    setSearchResults(builtin)
+
+    // ② GreenEat 상품: 200ms 디바운스 후 서버 요청
     setSearching(true)
     searchTimer.current = setTimeout(async () => {
       try {
         const res = await fetch(`/api/food-search?q=${encodeURIComponent(value.trim())}`)
-        const data: FoodSearchItem[] = await res.json()
-        setSearchResults(data)
-      } catch { setSearchResults([]) }
+        const greeneat: FoodSearchItem[] = await res.json()
+        // GreenEat 상품 앞에, 중복 제거한 내장 결과 뒤에 합산
+        const seenNames = new Set(greeneat.map(i => i.name))
+        const deduped = builtin.filter(b => !seenNames.has(b.name))
+        setSearchResults([...greeneat, ...deduped].slice(0, 10))
+      } catch { /* 서버 실패 시 내장 결과 유지 */ }
       setSearching(false)
-    }, 400)
+    }, 200)
   }
 
   // 결과 선택 → 모든 필드 자동 채우기
