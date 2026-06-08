@@ -7,6 +7,7 @@ import { RecentlyViewed } from '@/components/products/RecentlyViewed'
 import { InstagramGrid } from '@/components/home/InstagramGrid'
 import { AnimateIn } from '@/components/ui/AnimateIn'
 import { CountUp } from '@/components/ui/CountUp'
+import { formatPrice } from '@/lib/utils'
 import type { Product } from '@/types'
 
 export const metadata: Metadata = {
@@ -39,6 +40,43 @@ async function getFeaturedProducts(): Promise<Product[]> {
   return (data as Product[]) ?? []
 }
 
+async function getTrendingProducts(): Promise<(Product & { order_count: number })[]> {
+  const supabase = await createClient()
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+  // 최근 7일 order_items에서 product_id 빈도 집계
+  const { data: items } = await supabase
+    .from('order_items')
+    .select('product_id')
+    .gte('created_at', since)
+    .limit(1000)
+
+  if (!items || items.length === 0) return []
+
+  const freq: Record<string, number> = {}
+  for (const r of items) {
+    const pid = String(r.product_id)
+    freq[pid] = (freq[pid] ?? 0) + 1
+  }
+
+  const topIds = Object.entries(freq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([id]) => id)
+
+  if (topIds.length === 0) return []
+
+  const { data } = await supabase
+    .from('products')
+    .select('*, product_categories(id, name, slug, description)')
+    .in('id', topIds)
+    .eq('is_active', true)
+
+  return ((data ?? []) as Product[])
+    .map(p => ({ ...p, order_count: freq[p.id] ?? 0 }))
+    .sort((a, b) => b.order_count - a.order_count) as (Product & { order_count: number })[]
+}
+
 async function getNewProducts(): Promise<Product[]> {
   const supabase = await createClient()
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -53,7 +91,11 @@ async function getNewProducts(): Promise<Product[]> {
 }
 
 export default async function HomePage() {
-  const [products, newProducts] = await Promise.all([getFeaturedProducts(), getNewProducts()])
+  const [products, newProducts, trendingProducts] = await Promise.all([
+    getFeaturedProducts(),
+    getNewProducts(),
+    getTrendingProducts(),
+  ])
 
   return (
     <div className="bg-wash">
@@ -193,6 +235,69 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ── 인기 급상승 ──────────────────────────────────────────── */}
+      {trendingProducts.length > 0 && (
+        <section className="py-10 pb-4 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+          <AnimateIn direction="up" duration={500}>
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="text-[11px] font-semibold text-[#e8734a] tracking-[0.15em] uppercase mb-2">Trending Now</p>
+              <h2 className="text-display text-2xl md:text-3xl text-ink">인기 급상승 🔥</h2>
+            </div>
+            <Link
+              href="/products?sort=popular"
+              className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+            >
+              전체 보기
+            </Link>
+          </div>
+          </AnimateIn>
+
+          {/* 가로 스크롤 랭킹 리스트 */}
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-none">
+            {trendingProducts.map((product, i) => (
+              <AnimateIn key={product.id} direction="up" delay={i * 50} duration={400}>
+                <Link
+                  href={`/products/${product.id}`}
+                  className="group flex items-center gap-3 bg-surface border border-line rounded-2xl px-4 py-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 shrink-0 w-[260px]"
+                >
+                  {/* 순위 */}
+                  <span className={`text-xl font-black shrink-0 w-8 text-center ${
+                    i === 0 ? 'text-[#e8734a]' : i === 1 ? 'text-ink-3' : 'text-ink-4'
+                  }`}>
+                    {i + 1}
+                  </span>
+
+                  {/* 이미지 */}
+                  <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-tint shrink-0">
+                    {product.image_url ? (
+                      <Image
+                        src={product.image_url}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="48px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-lg">🍱</div>
+                    )}
+                  </div>
+
+                  {/* 텍스트 */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold text-ink line-clamp-1">{product.name}</p>
+                    <p className="text-xs font-bold text-[#2d7a4f] mt-0.5">{formatPrice(product.price)}</p>
+                    <p className="text-[10px] text-ink-5 mt-0.5">
+                      🔥 이번 주 {product.order_count}건
+                    </p>
+                  </div>
+                </Link>
+              </AnimateIn>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── 이번 주 신상품 ────────────────────────────────────────── */}
       {newProducts.length > 0 && (

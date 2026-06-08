@@ -12,6 +12,7 @@ import { toast } from '@/lib/toast-store'
 import { NutritionBadge } from '@/components/products/NutritionBadge'
 import { ReviewSection } from '@/components/products/ReviewSection'
 import { RelatedProducts } from '@/components/products/RelatedProducts'
+import { FrequentlyBoughtTogether } from '@/components/products/FrequentlyBoughtTogether'
 import { CalcNutrition } from '@/components/products/CalcNutrition'
 import { RestockAlert } from '@/components/products/RestockAlert'
 import { ShareButton } from '@/components/products/ShareButton'
@@ -424,6 +425,9 @@ export default function ProductDetailPage() {
           <ReviewSection productId={product.id} />
         )}
       </div>
+
+      {/* 함께 자주 구매 */}
+      <FrequentlyBoughtTogether productId={product.id} currentProduct={product} />
 
       {/* 관련 상품 */}
       <RelatedProducts productId={product.id} categoryId={product.category_id} />
