@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { searchBuiltinFoods } from '@/lib/food-db'
 
 export type FoodSearchItem = {
   id: string
@@ -87,6 +88,22 @@ export async function GET(req: NextRequest) {
         }
       }
     } catch { /* API 실패 시 무시 */ }
+  }
+
+  /* ── 3. 내장 한국 식품 영양 DB ──────────────────── */
+  const seenNames = new Set(results.map(r => r.name))
+  for (const f of searchBuiltinFoods(q, 6)) {
+    if (seenNames.has(f.name)) continue          // GreenEat 상품과 중복 제거
+    results.push({
+      id: f.id,
+      name: f.name,
+      calories: f.calories,
+      protein: f.protein,
+      carbs: f.carbs,
+      fat: f.fat,
+      servingSize: f.servingSize,
+      source: 'foodsafety',
+    })
   }
 
   return NextResponse.json(results.slice(0, 10))
