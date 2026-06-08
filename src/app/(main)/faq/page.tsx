@@ -165,12 +165,12 @@ export default function FAQPage() {
               주문·배송·건강 식단 등 모든 질문에<br/>AI가 즉시 답변해 드립니다.
             </p>
           </div>
-          <Link
-            href="/chat"
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('greeni:open-chat'))}
             className="shrink-0 flex items-center gap-1.5 bg-white text-[#2d7a4f] font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-[#f0faf4] transition-colors shadow-sm"
           >
             상담 시작 <ChevronRight size={14} />
-          </Link>
+          </button>
         </div>
         {/* 장식 원 */}
         <div className="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-white/5" />
@@ -253,9 +253,12 @@ export default function FAQPage() {
             <div className="bg-surface rounded-2xl border border-line px-5 py-10 text-center">
               <p className="text-sm text-ink-4 mb-2">검색 결과가 없어요.</p>
               <p className="text-xs text-ink-5">다른 키워드로 검색하거나, AI 챗봇에 직접 물어보세요.</p>
-              <Link href="/chat" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#2d7a4f] hover:underline">
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('greeni:open-chat'))}
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#2d7a4f] hover:underline"
+              >
                 <Bot size={13} /> AI 챗봇 바로가기
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -303,12 +306,12 @@ export default function FAQPage() {
           <p className="text-xs text-ink-4 mt-0.5">AI 챗봇이 24시간 실시간으로 도와드립니다.</p>
         </div>
         <div className="flex gap-2">
-          <Link
-            href="/chat"
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('greeni:open-chat'))}
             className="flex items-center gap-1.5 px-4 py-2 bg-[#2d7a4f] text-white text-sm font-semibold rounded-xl hover:bg-[#235f3d] transition-colors"
           >
             <Bot size={13} /> AI 상담
-          </Link>
+          </button>
           <a
             href="mailto:support@greeneat.kr"
             className="flex items-center gap-1.5 px-4 py-2 bg-surface border border-line text-ink-3 text-sm font-semibold rounded-xl hover:border-[#2d7a4f]/50 hover:text-[#2d7a4f] transition-colors"

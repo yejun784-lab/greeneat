@@ -59,6 +59,13 @@ export function ChatBot() {
     return () => { if (happyTimer.current) clearTimeout(happyTimer.current) }
   }, [typing])
 
+  /* ── 외부에서 챗봇 열기 이벤트 수신 ────── */
+  useEffect(() => {
+    const handler = () => setOpen(true)
+    window.addEventListener('greeni:open-chat', handler)
+    return () => window.removeEventListener('greeni:open-chat', handler)
+  }, [])
+
   /* ── 기타 사이드이펙트 ──────────────────── */
   useEffect(() => {
     if (open) {
