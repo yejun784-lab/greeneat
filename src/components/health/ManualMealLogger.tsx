@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { PenLine, Plus, Loader2, ScanBarcode, CheckCircle2 } from 'lucide-react'
+import { PenLine, Plus, Loader2, ScanBarcode, CheckCircle2, Search, Leaf, Store } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 import type { BarcodeResult } from '@/app/api/barcode/route'
+import type { FoodSearchItem } from '@/app/api/food-search/route'
 
 export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const router = useRouter()
@@ -24,6 +25,14 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const [scannedName, setScannedName] = useState('')
   const [scannedSource, setScannedSource] = useState<'openfoodfacts' | 'foodsafety' | null>(null)
 
+  // 음식 검색
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<FoodSearchItem[]>([])
+  const [searching, setSearching] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   function handleScanResult(result: BarcodeResult) {
     setShowScanner(false)
     setScannedName(result.name)
@@ -35,6 +44,49 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
     if (result.fat)      setFat(String(Math.round(result.fat * 10) / 10))
     toast.success(`"${result.name || '상품'}" 영양 정보를 불러왔어요 🔍`)
   }
+
+  // 검색어 변경 → 디바운스 후 API 호출
+  function handleSearchChange(value: string) {
+    setSearchQuery(value)
+    setShowDropdown(true)
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    if (!value.trim()) { setSearchResults([]); setSearching(false); return }
+    setSearching(true)
+    searchTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/food-search?q=${encodeURIComponent(value.trim())}`)
+        const data: FoodSearchItem[] = await res.json()
+        setSearchResults(data)
+      } catch { setSearchResults([]) }
+      setSearching(false)
+    }, 400)
+  }
+
+  // 결과 선택 → 모든 필드 자동 채우기
+  function selectFood(item: FoodSearchItem) {
+    setDescription(item.name)
+    if (item.calories != null) setCalories(String(Math.round(item.calories)))
+    if (item.protein  != null) setProtein(String(Math.round(item.protein * 10) / 10))
+    if (item.carbs    != null) setCarbs(String(Math.round(item.carbs * 10) / 10))
+    if (item.fat      != null) setFat(String(Math.round(item.fat * 10) / 10))
+    setScannedName(item.name)
+    setScannedSource(item.source === 'greeneat' ? 'foodsafety' : 'foodsafety')
+    setSearchQuery('')
+    setSearchResults([])
+    setShowDropdown(false)
+    toast.success(`"${item.name}" 영양 정보를 불러왔어요 🍽️`)
+  }
+
+  // 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -135,6 +187,76 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
               <ScanBarcode size={16} />
               바코드 스캔으로 자동 입력
             </button>
+
+            {/* ── 음식 검색 ── */}
+            <div ref={searchRef} className="relative">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-4 pointer-events-none" />
+                {searching && (
+                  <Loader2 size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-4 animate-spin pointer-events-none" />
+                )}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onFocus={() => searchQuery && setShowDropdown(true)}
+                  placeholder="음식 검색 (예: 김치찌개, 닭가슴살)"
+                  className="w-full pl-8 pr-8 py-2.5 text-sm border border-line-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] text-ink-2 placeholder:text-ink-5"
+                />
+              </div>
+
+              {/* 드롭다운 결과 */}
+              {showDropdown && (searchResults.length > 0 || searching) && (
+                <div className="absolute z-30 top-full mt-1 w-full bg-surface border border-line rounded-2xl shadow-xl overflow-hidden">
+                  {searching && searchResults.length === 0 ? (
+                    <div className="px-4 py-3 text-xs text-ink-4 flex items-center gap-2">
+                      <Loader2 size={12} className="animate-spin" /> 검색 중...
+                    </div>
+                  ) : (
+                    <ul>
+                      {searchResults.map((item) => (
+                        <li key={item.id}>
+                          <button
+                            type="button"
+                            onClick={() => selectFood(item)}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-tint transition-colors text-left"
+                          >
+                            {/* 아이콘 */}
+                            {item.source === 'greeneat' ? (
+                              item.imageUrl ? (
+                                <img src={item.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+                                  <Store size={13} className="text-[#2d7a4f]" />
+                                </div>
+                              )
+                            ) : (
+                              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                                <Leaf size={13} className="text-blue-500" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-ink truncate">{item.name}</p>
+                              <p className="text-[10px] text-ink-4">
+                                {item.calories != null ? `${Math.round(item.calories)} kcal` : '칼로리 정보 없음'}
+                                {item.servingSize ? ` · ${item.servingSize}` : ''}
+                              </p>
+                            </div>
+                            <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+                              item.source === 'greeneat'
+                                ? 'bg-[#2d7a4f]/10 text-[#2d7a4f]'
+                                : 'bg-blue-50 text-blue-500'
+                            }`}>
+                              {item.source === 'greeneat' ? 'GreenEat' : '식품DB'}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* 스캔 성공 배지 */}
             {scannedName && (
