@@ -39,8 +39,21 @@ async function getFeaturedProducts(): Promise<Product[]> {
   return (data as Product[]) ?? []
 }
 
+async function getNewProducts(): Promise<Product[]> {
+  const supabase = await createClient()
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const { data } = await supabase
+    .from('products')
+    .select('*, product_categories(id, name, slug, description)')
+    .eq('is_active', true)
+    .gte('created_at', sevenDaysAgo)
+    .order('created_at', { ascending: false })
+    .limit(6)
+  return (data as Product[]) ?? []
+}
+
 export default async function HomePage() {
-  const products = await getFeaturedProducts()
+  const [products, newProducts] = await Promise.all([getFeaturedProducts(), getNewProducts()])
 
   return (
     <div className="bg-wash">
@@ -180,6 +193,33 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ── 이번 주 신상품 ────────────────────────────────────────── */}
+      {newProducts.length > 0 && (
+        <section className="py-10 pb-4 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+          <AnimateIn direction="up" duration={500}>
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="text-[11px] font-semibold text-[#2d7a4f] tracking-[0.15em] uppercase mb-2">New Arrivals</p>
+              <h2 className="text-display text-2xl md:text-3xl text-ink">이번 주 신상품 🆕</h2>
+            </div>
+            <Link
+              href="/products?sort=newest"
+              className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+            >
+              전체 보기
+            </Link>
+          </div>
+          </AnimateIn>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {newProducts.map((product, i) => (
+              <AnimateIn key={product.id} direction="up" delay={i * 60} duration={500}>
+                <ProductCard product={product} priority={false} />
+              </AnimateIn>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── 인기 상품 ─────────────────────────────────────────────── */}
       <section className="py-4 pb-20 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">

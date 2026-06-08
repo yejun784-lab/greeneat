@@ -259,7 +259,7 @@ export default async function HealthPage() {
           <h2 className="text-base font-semibold text-ink mb-1">AI 추천 주간 식단</h2>
           <p className="text-xs text-ink-4 mb-4">건강 목표에 맞게 자동으로 구성된 7일 식단이에요.</p>
           <WithErrorBoundary label="AI 식단 플랜">
-            <AIMealPlan products={products} goal={goal} allergens={allergens} userId={user?.id ?? null} />
+            <AIMealPlan products={products} goal={goal} goalInfo={goalInfo ?? undefined} allergens={allergens} userId={user?.id ?? null} />
           </WithErrorBoundary>
         </section>
 

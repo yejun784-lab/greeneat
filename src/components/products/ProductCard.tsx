@@ -33,6 +33,12 @@ function getHighlight(p: Product): Highlight | null {
   return null
 }
 
+function isNewProduct(createdAt?: string | null): boolean {
+  if (!createdAt) return false
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+  return new Date(createdAt).getTime() >= sevenDaysAgo
+}
+
 export function ProductCard({ product, compact = false, priority = false }: ProductCardProps) {
   const addItem      = useCartStore((s) => s.addItem)
   const { toggle }   = useWishlist()
@@ -42,6 +48,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   const compared     = inCompare(product.id)
   const outOfStock   = product.stock <= 0
   const highlight    = compact ? null : getHighlight(product)
+  const isNew        = isNewProduct((product as any).created_at)
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
@@ -96,13 +103,20 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
               </div>
             )}
 
+            {/* NEW 뱃지 — 7일 이내 신상품 */}
+            {isNew && !outOfStock && (
+              <span className="absolute top-2.5 left-2.5 z-10 bg-[#2d7a4f] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide shadow-sm">
+                NEW
+              </span>
+            )}
+
             {/* 구독 / 잔여 뱃지 */}
             {!outOfStock && product.stock < 10 && (
-              <span className="absolute top-2.5 left-2.5 bg-[#e8734a] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+              <span className={`absolute text-white text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#e8734a] ${isNew ? 'top-2.5 left-[52px]' : 'top-2.5 left-2.5'}`}>
                 잔여 {product.stock}개
               </span>
             )}
-            {product.is_subscription && !outOfStock && product.stock >= 10 && (
+            {product.is_subscription && !outOfStock && product.stock >= 10 && !isNew && (
               <span className="absolute top-2.5 left-2.5 bg-[#2d7a4f]/85 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 구독
               </span>
