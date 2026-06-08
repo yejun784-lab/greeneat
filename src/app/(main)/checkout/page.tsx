@@ -272,6 +272,11 @@ export default function CheckoutPage() {
     }
   }, [address, detail, deliverySchedule, finalTotal, usedPoints, items, tossReady, userName, userEmail])
 
+  if (!_hasHydrated) return (
+    <div className="flex justify-center items-center h-64">
+      <Loader2 size={24} className="animate-spin text-[#2d7a4f]" />
+    </div>
+  )
   if (items.length === 0) return null
 
   return (
