@@ -168,5 +168,58 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
+  // ── 배송 시간대 변경 ──────────────────────────────────────────────────────
+  if (action === 'update_time_slot') {
+    const { subscription_id, time_slot } = body as { subscription_id: string; time_slot: string }
+    if (!subscription_id || !time_slot) {
+      return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
+    }
+    const VALID_SLOTS = ['morning', 'afternoon', 'evening']
+    if (!VALID_SLOTS.includes(time_slot)) {
+      return NextResponse.json({ error: '유효하지 않은 시간대입니다.' }, { status: 400 })
+    }
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ delivery_time_slot: time_slot } as Record<string, unknown>)
+      .eq('id', subscription_id)
+      .eq('user_id', user.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── 자동 결제 ON/OFF ──────────────────────────────────────────────────────
+  if (action === 'update_auto_renew') {
+    const { subscription_id, auto_renew } = body as { subscription_id: string; auto_renew: boolean }
+    if (!subscription_id || auto_renew == null) {
+      return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
+    }
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ auto_renew } as Record<string, unknown>)
+      .eq('id', subscription_id)
+      .eq('user_id', user.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── 기간 지정 일시정지 ────────────────────────────────────────────────────
+  if (action === 'pause_until') {
+    const { subscription_id, pause_until } = body as { subscription_id: string; pause_until: string }
+    if (!subscription_id || !pause_until) {
+      return NextResponse.json({ error: '필수 파라미터 누락' }, { status: 400 })
+    }
+    const untilDate = new Date(pause_until)
+    if (isNaN(untilDate.getTime()) || untilDate <= new Date()) {
+      return NextResponse.json({ error: '유효하지 않은 날짜입니다.' }, { status: 400 })
+    }
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ status: 'paused', paused_until: untilDate.toISOString() } as Record<string, unknown>)
+      .eq('id', subscription_id)
+      .eq('user_id', user.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   return NextResponse.json({ error: '알 수 없는 action' }, { status: 400 })
 }

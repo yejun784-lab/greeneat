@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Tag, Coins, CreditCard, Loader2, Wallet } from 'lucide-react'
 import { toast } from '@/lib/toast-store'
 import { AddressPicker } from '@/components/checkout/AddressPicker'
+import { DeliverySchedulePicker, type DeliverySchedule } from '@/components/checkout/DeliverySchedulePicker'
 import type {} from '@/types/toss'
 
 const SHIPPING_FEE = 3000
@@ -71,7 +72,11 @@ export default function CheckoutPage() {
   const { items, totalPrice, _hasHydrated } = useCartStore()
   const [address, setAddress] = useState('')
   const [detail, setDetail] = useState('')
-  const [deliveryDate, setDeliveryDate] = useState('')
+  const [deliverySchedule, setDeliverySchedule] = useState<DeliverySchedule>({
+    date: '',
+    timeSlot: 'morning',
+    memo: '',
+  })
   const [loading, setLoading] = useState(false)
   const [tossReady, setTossReady] = useState(false)
   const [payMethod, setPayMethod] = useState<PayMethod>('CARD')
@@ -175,7 +180,7 @@ export default function CheckoutPage() {
   const handlePayment = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     if (!address) { toast.error('배송지를 입력해주세요.'); return }
-    if (!deliveryDate) { toast.error('배송 일정을 선택해주세요.'); return }
+    if (!deliverySchedule.date) { toast.error('배송 날짜를 선택해주세요.'); return }
     // 0원 결제는 PG사에서 오류 반환 — 포인트/쿠폰으로 전액 차감된 경우
     if (finalTotal === 0) {
       toast.error('결제 금액이 0원입니다. 포인트·쿠폰 사용량을 조정해주세요.')
@@ -204,7 +209,9 @@ export default function CheckoutPage() {
           usedPoints,
           couponId: coupon?.id ?? null,
           pending: true,
-          deliveryDate: deliveryDate || null,
+          deliveryDate:     deliverySchedule.date     || null,
+          deliveryTimeSlot: deliverySchedule.timeSlot || null,
+          deliveryMemo:     deliverySchedule.memo     || null,
         }),
       })
 
@@ -263,7 +270,7 @@ export default function CheckoutPage() {
       }
       setLoading(false)
     }
-  }, [address, detail, finalTotal, usedPoints, items, tossReady, userName, userEmail])
+  }, [address, detail, deliverySchedule, finalTotal, usedPoints, items, tossReady, userName, userEmail])
 
   if (items.length === 0) return null
 
@@ -286,15 +293,12 @@ export default function CheckoutPage() {
 
           {/* 배송 일정 */}
           <div className="bg-surface rounded-2xl border border-line p-5">
-            <h2 className="font-semibold text-ink mb-4">배송 일정</h2>
-            <input
-              type="date"
-              value={deliveryDate}
-              onChange={(e) => setDeliveryDate(e.target.value)}
-              min={new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]}
-              className="w-full px-3 py-2.5 border border-line-2 rounded-lg text-sm bg-surface text-ink focus:outline-none focus:ring-2 focus:ring-[#2d7a4f] focus:border-transparent"
+            <h2 className="font-semibold text-ink mb-5">배송 일정</h2>
+            <DeliverySchedulePicker
+              minDaysAhead={2}
+              value={deliverySchedule}
+              onChange={setDeliverySchedule}
             />
-            <p className="text-xs text-ink-5 mt-2">오늘로부터 2일 이후 날짜를 선택하세요.</p>
           </div>
 
           {/* 포인트 사용 */}
