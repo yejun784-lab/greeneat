@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { PenLine, Plus, Loader2, ScanBarcode, CheckCircle2, Search, Leaf, Store } from 'lucide-react'
+import { PenLine, Plus, Loader2, ScanBarcode, CheckCircle2, Search, Leaf, Store, Minus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
@@ -26,6 +26,16 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const [scannedName, setScannedName] = useState('')
   const [scannedSource, setScannedSource] = useState<'openfoodfacts' | 'foodsafety' | null>(null)
 
+  // 수량 & 기준 영양소 (음식 선택 시 저장)
+  const [quantity, setQuantity] = useState(1)
+  const [baseNutrition, setBaseNutrition] = useState<{
+    calories: number | null
+    protein: number | null
+    carbs: number | null
+    fat: number | null
+    servingSize: string | null
+  } | null>(null)
+
   // 음식 검색
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<FoodSearchItem[]>([])
@@ -38,12 +48,32 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
     setShowScanner(false)
     setScannedName(result.name)
     setScannedSource(result.source)
+    setQuantity(1)
+    setBaseNutrition({
+      calories: result.calories ?? null,
+      protein:  result.protein  ?? null,
+      carbs:    result.carbs    ?? null,
+      fat:      result.fat      ?? null,
+      servingSize: null,
+    })
     if (result.name)     setDescription(result.name)
     if (result.calories) setCalories(String(Math.round(result.calories)))
     if (result.protein)  setProtein(String(Math.round(result.protein * 10) / 10))
     if (result.carbs)    setCarbs(String(Math.round(result.carbs * 10) / 10))
     if (result.fat)      setFat(String(Math.round(result.fat * 10) / 10))
     toast.success(`"${result.name || '상품'}" 영양 정보를 불러왔어요 🔍`)
+  }
+
+  // 수량 변경 → 영양소 비례 재계산
+  function handleQuantityChange(q: number) {
+    const next = Math.max(0.5, Math.round(q * 2) / 2) // 0.5 단위
+    setQuantity(next)
+    if (!baseNutrition) return
+    const { calories: bc, protein: bp, carbs: bca, fat: bf } = baseNutrition
+    if (bc  != null) setCalories(String(Math.round(bc  * next)))
+    if (bp  != null) setProtein(String(Math.round(bp  * next * 10) / 10))
+    if (bca != null) setCarbs(String(Math.round(bca * next * 10) / 10))
+    if (bf  != null) setFat(String(Math.round(bf  * next * 10) / 10))
   }
 
   // 검색어 변경 → 내장 DB 즉시 + GreenEat 상품 200ms 디바운스
@@ -86,15 +116,23 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
     }, 200)
   }
 
-  // 결과 선택 → 모든 필드 자동 채우기
+  // 결과 선택 → 모든 필드 자동 채우기 + 기준 영양소 저장
   function selectFood(item: FoodSearchItem) {
     setDescription(item.name)
+    setQuantity(1)
+    setBaseNutrition({
+      calories: item.calories,
+      protein:  item.protein,
+      carbs:    item.carbs,
+      fat:      item.fat,
+      servingSize: item.servingSize,
+    })
     if (item.calories != null) setCalories(String(Math.round(item.calories)))
     if (item.protein  != null) setProtein(String(Math.round(item.protein * 10) / 10))
     if (item.carbs    != null) setCarbs(String(Math.round(item.carbs * 10) / 10))
     if (item.fat      != null) setFat(String(Math.round(item.fat * 10) / 10))
     setScannedName(item.name)
-    setScannedSource(item.source === 'greeneat' ? 'foodsafety' : 'foodsafety')
+    setScannedSource('foodsafety')
     setSearchQuery('')
     setSearchResults([])
     setShowDropdown(false)
@@ -145,6 +183,8 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
     setCarbs('')
     setFat('')
     setScannedName('')
+    setQuantity(1)
+    setBaseNutrition(null)
     router.refresh()
   }
 
@@ -282,14 +322,57 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
               )}
             </div>
 
-            {/* 스캔 성공 배지 */}
+            {/* 스캔/선택 성공 배지 + 수량 조절 */}
             {scannedName && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-xs text-green-700">
-                <CheckCircle2 size={13} className="shrink-0" />
-                <span className="truncate flex-1">"{scannedName}" 영양 정보 자동 입력됨</span>
-                <span className="text-[10px] text-green-500 shrink-0">
-                  {scannedSource === 'foodsafety' ? '식품안전처' : 'OFF'}
-                </span>
+              <div className="space-y-2">
+                {/* 배지 */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-xs text-green-700">
+                  <CheckCircle2 size={13} className="shrink-0" />
+                  <span className="truncate flex-1">"{scannedName}" 영양 정보 자동 입력됨</span>
+                  <span className="text-[10px] text-green-500 shrink-0">
+                    {scannedSource === 'foodsafety' ? '식품안전처' : 'OFF'}
+                  </span>
+                </div>
+
+                {/* 수량 조절 */}
+                {baseNutrition && (
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-tint border border-line rounded-xl">
+                    <span className="text-xs text-ink-4 shrink-0">수량</span>
+                    <div className="flex items-center gap-1.5 ml-auto">
+                      <button
+                        type="button"
+                        onClick={() => handleQuantityChange(quantity - 0.5)}
+                        disabled={quantity <= 0.5}
+                        className="w-7 h-7 rounded-lg bg-surface border border-line-2 flex items-center justify-center text-ink-3 hover:border-[#2d7a4f] hover:text-[#2d7a4f] disabled:opacity-30 transition-colors"
+                      >
+                        <Minus size={12} />
+                      </button>
+                      <input
+                        type="number"
+                        min="0.5"
+                        step="0.5"
+                        value={quantity}
+                        onChange={(e) => handleQuantityChange(parseFloat(e.target.value) || 0.5)}
+                        className="w-12 text-center text-sm font-semibold text-ink border border-line-2 rounded-lg py-1 bg-surface focus:outline-none focus:ring-2 focus:ring-[#2d7a4f]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleQuantityChange(quantity + 0.5)}
+                        className="w-7 h-7 rounded-lg bg-surface border border-line-2 flex items-center justify-center text-ink-3 hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors"
+                      >
+                        <Plus size={12} />
+                      </button>
+                      {baseNutrition.servingSize && (
+                        <span className="text-xs text-ink-4 ml-1">× {baseNutrition.servingSize}</span>
+                      )}
+                    </div>
+                    {baseNutrition.calories != null && (
+                      <span className="text-xs font-semibold text-[#2d7a4f] shrink-0 ml-2">
+                        = {Math.round(baseNutrition.calories * quantity)} kcal
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
