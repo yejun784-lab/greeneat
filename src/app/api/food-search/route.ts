@@ -9,14 +9,15 @@ export type FoodSearchItem = {
   carbs: number | null
   fat: number | null
   servingSize: string | null
-  source: 'greeneat' | 'foodsafety'
+  source: 'greeneat' | 'foodsafety' | 'openfoodfacts'
   imageUrl?: string | null
 }
 
 /**
  * GET /api/food-search?q=김치찌개
  * 1) GreenEat 상품 DB (Supabase)
- * 2) 공공데이터포털 — 식품안전처 식품영양성분 DB
+ * 2) 공공데이터포털 — 식품안전처 식품영양성분 DB (FOOD_SAFETY_API_KEY 필요)
+ * 3) Open Food Facts — 글로벌 오픈 식품 DB (키 불필요, fallback)
  */
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q')?.trim() ?? ''
@@ -87,6 +88,43 @@ export async function GET(req: NextRequest) {
         }
       }
     } catch { /* API 실패 시 무시 */ }
+  }
+
+  /* ── 3. Open Food Facts (키 불필요, fallback) ──────── */
+  if (results.length < 6) {
+    try {
+      const offUrl =
+        `https://world.openfoodfacts.org/api/v2/search` +
+        `?search_terms=${encodeURIComponent(q)}` +
+        `&fields=product_name,nutriments,serving_size` +
+        `&page_size=${6 - results.length}` +
+        `&countries_tags=en%3Asouth-korea`
+
+      const offRes = await fetch(offUrl, {
+        next: { revalidate: 3600 },
+        headers: { 'User-Agent': 'GreenEat/1.0 (contact@greeneat.kr)' },
+      })
+      if (offRes.ok) {
+        const offJson = await offRes.json()
+        const products: any[] = offJson?.products ?? []
+
+        for (const p of products) {
+          const name = p.product_name?.trim()
+          if (!name) continue
+          const n = p.nutriments ?? {}
+          results.push({
+            id: `off-${encodeURIComponent(name).slice(0, 24)}-${Math.random().toString(36).slice(2, 6)}`,
+            name,
+            calories: toNum(n['energy-kcal_100g'] ?? n['energy-kcal']),
+            protein:  toNum(n['proteins_100g']    ?? n['proteins']),
+            carbs:    toNum(n['carbohydrates_100g'] ?? n['carbohydrates']),
+            fat:      toNum(n['fat_100g']          ?? n['fat']),
+            servingSize: p.serving_size ?? '100g당',
+            source: 'openfoodfacts',
+          })
+        }
+      }
+    } catch { /* OFF 실패 시 무시 */ }
   }
 
   return NextResponse.json(results.slice(0, 6))
