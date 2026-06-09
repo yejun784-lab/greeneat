@@ -8,7 +8,7 @@ import { type MealType, MEAL_TYPE_META } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 import type { BarcodeResult } from '@/app/api/barcode/route'
 import type { FoodSearchItem } from '@/app/api/food-search/route'
-import { searchBuiltinFoods } from '@/lib/food-db'
+import { searchBuiltinFoods, normalizeFoodName } from '@/lib/food-db'
 
 export function ManualMealLogger({ userId }: { userId?: string | null }) {
   const router = useRouter()
@@ -108,8 +108,13 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
         const res = await fetch(`/api/food-search?q=${encodeURIComponent(value.trim())}`)
         const greeneat: FoodSearchItem[] = await res.json()
         // GreenEat 상품 앞에, 중복 제거한 내장 결과 뒤에 합산
-        const seenNames = new Set(greeneat.map(i => i.name))
-        const deduped = builtin.filter(b => !seenNames.has(b.name))
+        // 정규화 비교: "김치찌개(돼지고기류)" ↔ "김치찌개" 동일 처리
+        const seenNorm = new Set(greeneat.map(i => normalizeFoodName(i.name)))
+        const deduped = builtin.filter(b => {
+          const norm = normalizeFoodName(b.name)
+          return !seenNorm.has(norm) &&
+            !Array.from(seenNorm).some(s => s.includes(norm) || norm.includes(s))
+        })
         setSearchResults([...greeneat, ...deduped].slice(0, 10))
       } catch { /* 서버 실패 시 내장 결과 유지 */ }
       setSearching(false)

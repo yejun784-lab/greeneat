@@ -1002,10 +1002,60 @@ export const BUILTIN_FOODS: BuiltinFood[] = [
   { id: 'f-274', name: '바르다 김선생 참치마요 (1줄)', calories: 520, protein: 18, carbs: 82, fat: 14, servingSize: '1줄 340g' },
 ]
 
-/** 쿼리 문자열로 식품 검색 (이름 포함 여부) */
+/* ─────────────────────────────────────────
+ * 초성 검색 유틸
+ * ───────────────────────────────────────── */
+const CHOSUNG = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'] as const
+
+/** 경음(된소리)을 평음으로 정규화: ㄲ→ㄱ ㄸ→ㄷ ㅃ→ㅂ ㅆ→ㅅ ㅉ→ㅈ */
+const TENSE_MAP: Record<string, string> = { ㄲ:'ㄱ', ㄸ:'ㄷ', ㅃ:'ㅂ', ㅆ:'ㅅ', ㅉ:'ㅈ' }
+function normalizeConsonants(s: string): string {
+  return s.split('').map(c => TENSE_MAP[c] ?? c).join('')
+}
+
+/** 한글 문자열에서 초성만 추출 (비한글 문자는 그대로) */
+function extractChosung(str: string): string {
+  return Array.from(str).map(ch => {
+    const code = ch.charCodeAt(0)
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      return CHOSUNG[Math.floor((code - 0xAC00) / (21 * 28))]
+    }
+    return ch
+  }).join('')
+}
+
+/** 입력이 초성만으로 이루어져 있는지 확인 */
+function isChosungOnly(str: string): boolean {
+  return str.length > 0 && /^[ㄱ-ㅎ]+$/.test(str)
+}
+
+/** 이름을 정규화 (괄호·공백 제거, 소문자) — dedup용 */
+export function normalizeFoodName(name: string): string {
+  return name
+    .replace(/[（(【\[〔][^）)】\]〕]*[）)】\]〕]/g, '')
+    .replace(/\s+/g, '')
+    .toLowerCase()
+    .trim()
+}
+
+/** 쿼리 문자열로 식품 검색
+ *  - 일반 검색: 이름에 쿼리 포함 여부
+ *  - 초성 검색: ㅂㅁ → 빅맥, ㄱㅊㅈ → 김치찌개
+ */
 export function searchBuiltinFoods(q: string, limit = 6): BuiltinFood[] {
   const query = q.trim().toLowerCase()
   if (!query) return []
+
+  if (isChosungOnly(query)) {
+    // 초성 모드: 경음 정규화 후 초성 포함 여부 확인
+    // 예) ㄱㅊㅈ → 김치찌개 (ㅉ→ㅈ 정규화로 매칭)
+    const normQuery = normalizeConsonants(query)
+    return BUILTIN_FOODS
+      .filter(f => normalizeConsonants(extractChosung(f.name)).includes(normQuery))
+      .slice(0, limit)
+  }
+
+  // 일반 모드: 이름에 쿼리 포함 여부 (부분 일치)
   return BUILTIN_FOODS
     .filter(f => f.name.toLowerCase().includes(query))
     .slice(0, limit)
