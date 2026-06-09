@@ -827,6 +827,179 @@ export const BUILTIN_FOODS: BuiltinFood[] = [
   { id: 'b-775', name: '핫도그빵 (번)', calories: 250, protein: 8, carbs: 46, fat: 4, servingSize: '1개 90g' },
   { id: 'b-776', name: '베이글', calories: 270, protein: 11, carbs: 52, fat: 2, servingSize: '1개 105g' },
   { id: 'b-777', name: '잉글리쉬머핀', calories: 210, protein: 7.5, carbs: 40, fat: 2.5, servingSize: '1개 85g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 맥도날드
+   * ══════════════════════════════════════════ */
+  { id: 'f-100', name: '맥도날드 빅맥', calories: 550, protein: 26, carbs: 46, fat: 30, servingSize: '1개 209g' },
+  { id: 'f-101', name: '맥도날드 맥스파이시 상하이버거', calories: 560, protein: 27, carbs: 52, fat: 27, servingSize: '1개 220g' },
+  { id: 'f-102', name: '맥도날드 더블 쿼터파운더 치즈', calories: 740, protein: 47, carbs: 44, fat: 43, servingSize: '1개 280g' },
+  { id: 'f-103', name: '맥도날드 불고기버거', calories: 400, protein: 17, carbs: 50, fat: 14, servingSize: '1개 163g' },
+  { id: 'f-104', name: '맥도날드 에그맥머핀', calories: 310, protein: 18, carbs: 31, fat: 13, servingSize: '1개 140g' },
+  { id: 'f-105', name: '맥도날드 맥너겟 6조각', calories: 280, protein: 16, carbs: 17, fat: 17, servingSize: '6개 103g' },
+  { id: 'f-106', name: '맥도날드 감자튀김 (중)', calories: 340, protein: 4, carbs: 44, fat: 16, servingSize: '117g' },
+  { id: 'f-107', name: '맥도날드 감자튀김 (대)', calories: 470, protein: 6, carbs: 61, fat: 22, servingSize: '154g' },
+  { id: 'f-108', name: '맥도날드 맥플러리 (오레오)', calories: 350, protein: 8, carbs: 56, fat: 10, servingSize: '1개 175g' },
+  { id: 'f-109', name: '맥도날드 코카콜라 (중)', calories: 210, protein: 0, carbs: 56, fat: 0, servingSize: '500ml' },
+  { id: 'f-110', name: '맥도날드 아이스아메리카노', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '350ml' },
+  { id: 'f-111', name: '맥도날드 맥모닝 소시지에그머핀', calories: 420, protein: 21, carbs: 34, fat: 22, servingSize: '1개 165g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 롯데리아
+   * ══════════════════════════════════════════ */
+  { id: 'f-120', name: '롯데리아 새우버거', calories: 470, protein: 16, carbs: 55, fat: 21, servingSize: '1개 183g' },
+  { id: 'f-121', name: '롯데리아 불고기버거', calories: 415, protein: 17, carbs: 52, fat: 16, servingSize: '1개 165g' },
+  { id: 'f-122', name: '롯데리아 한우불고기버거', calories: 480, protein: 22, carbs: 50, fat: 21, servingSize: '1개 190g' },
+  { id: 'f-123', name: '롯데리아 치킨버거', calories: 490, protein: 19, carbs: 53, fat: 22, servingSize: '1개 185g' },
+  { id: 'f-124', name: '롯데리아 모짜렐라인더버거', calories: 590, protein: 25, carbs: 54, fat: 30, servingSize: '1개 220g' },
+  { id: 'f-125', name: '롯데리아 감자튀김 (중)', calories: 320, protein: 4, carbs: 43, fat: 15, servingSize: '110g' },
+  { id: 'f-126', name: '롯데리아 오징어버거', calories: 440, protein: 15, carbs: 55, fat: 19, servingSize: '1개 175g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 버거킹
+   * ══════════════════════════════════════════ */
+  { id: 'f-130', name: '버거킹 와퍼', calories: 660, protein: 32, carbs: 50, fat: 38, servingSize: '1개 270g' },
+  { id: 'f-131', name: '버거킹 더블와퍼', calories: 890, protein: 55, carbs: 50, fat: 56, servingSize: '1개 370g' },
+  { id: 'f-132', name: '버거킹 통새우와퍼', calories: 620, protein: 24, carbs: 60, fat: 32, servingSize: '1개 255g' },
+  { id: 'f-133', name: '버거킹 치킨킹', calories: 590, protein: 28, carbs: 58, fat: 27, servingSize: '1개 235g' },
+  { id: 'f-134', name: '버거킹 갈릭너겟 (8개)', calories: 380, protein: 20, carbs: 28, fat: 21, servingSize: '8개 145g' },
+  { id: 'f-135', name: '버거킹 어니언링 (중)', calories: 320, protein: 4, carbs: 42, fat: 15, servingSize: '중 120g' },
+  { id: 'f-136', name: '버거킹 감자튀김 (중)', calories: 340, protein: 4.5, carbs: 46, fat: 15, servingSize: '중 120g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — KFC
+   * ══════════════════════════════════════════ */
+  { id: 'f-140', name: 'KFC 오리지널 치킨 (1조각)', calories: 320, protein: 23, carbs: 14, fat: 19, servingSize: '1조각 130g' },
+  { id: 'f-141', name: 'KFC 핫크리스피 치킨 (1조각)', calories: 350, protein: 23, carbs: 17, fat: 21, servingSize: '1조각 135g' },
+  { id: 'f-142', name: 'KFC 징거버거', calories: 570, protein: 28, carbs: 57, fat: 26, servingSize: '1개 225g' },
+  { id: 'f-143', name: 'KFC 타워버거', calories: 640, protein: 32, carbs: 62, fat: 30, servingSize: '1개 255g' },
+  { id: 'f-144', name: 'KFC 코울슬로', calories: 155, protein: 1.5, carbs: 19, fat: 8, servingSize: '1컵 120g' },
+  { id: 'f-145', name: 'KFC 감자튀김 (중)', calories: 330, protein: 4, carbs: 44, fat: 15, servingSize: '중 115g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 맘스터치
+   * ══════════════════════════════════════════ */
+  { id: 'f-150', name: '맘스터치 싸이버거', calories: 640, protein: 31, carbs: 62, fat: 30, servingSize: '1개 255g' },
+  { id: 'f-151', name: '맘스터치 불싸이버거', calories: 670, protein: 31, carbs: 66, fat: 30, servingSize: '1개 260g' },
+  { id: 'f-152', name: '맘스터치 통새우버거', calories: 590, protein: 22, carbs: 65, fat: 27, servingSize: '1개 240g' },
+  { id: 'f-153', name: '맘스터치 베이컨치즈버거', calories: 700, protein: 35, carbs: 60, fat: 35, servingSize: '1개 270g' },
+  { id: 'f-154', name: '맘스터치 치킨너겟 (5개)', calories: 310, protein: 17, carbs: 22, fat: 17, servingSize: '5개 125g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 서브웨이
+   * ══════════════════════════════════════════ */
+  { id: 'f-160', name: '서브웨이 이탈리안 BMT (15cm)', calories: 430, protein: 22, carbs: 46, fat: 17, servingSize: '1개 235g' },
+  { id: 'f-161', name: '서브웨이 터키 (15cm)', calories: 320, protein: 20, carbs: 44, fat: 7, servingSize: '1개 215g' },
+  { id: 'f-162', name: '서브웨이 풀드포크 (15cm)', calories: 440, protein: 24, carbs: 50, fat: 16, servingSize: '1개 250g' },
+  { id: 'f-163', name: '서브웨이 에그마요 (15cm)', calories: 420, protein: 19, carbs: 44, fat: 19, servingSize: '1개 230g' },
+  { id: 'f-164', name: '서브웨이 쉬림프 (15cm)', calories: 370, protein: 20, carbs: 46, fat: 11, servingSize: '1개 220g' },
+  { id: 'f-165', name: '서브웨이 베지 딜라이트 (15cm)', calories: 240, protein: 9, carbs: 42, fat: 4.5, servingSize: '1개 180g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 피자헛 / 도미노
+   * ══════════════════════════════════════════ */
+  { id: 'f-170', name: '피자헛 슈퍼슈프림 (1조각)', calories: 290, protein: 14, carbs: 34, fat: 11, servingSize: '1조각 130g' },
+  { id: 'f-171', name: '피자헛 페퍼로니 (1조각)', calories: 280, protein: 13, carbs: 32, fat: 12, servingSize: '1조각 125g' },
+  { id: 'f-172', name: '피자헛 치즈크러스트 (1조각)', calories: 320, protein: 15, carbs: 36, fat: 13, servingSize: '1조각 140g' },
+  { id: 'f-173', name: '도미노 포테이토 피자 (1조각)', calories: 270, protein: 11, carbs: 35, fat: 10, servingSize: '1조각 120g' },
+  { id: 'f-174', name: '도미노 고구마 피자 (1조각)', calories: 280, protein: 10, carbs: 38, fat: 10, servingSize: '1조각 125g' },
+  { id: 'f-175', name: '도미노 불고기 피자 (1조각)', calories: 295, protein: 14, carbs: 36, fat: 11, servingSize: '1조각 130g' },
+  { id: 'f-176', name: '피자나라치킨공주 콤보 (1조각)', calories: 260, protein: 12, carbs: 32, fat: 10, servingSize: '1조각 115g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 치킨 (교촌 / BBQ / BHC)
+   * ══════════════════════════════════════════ */
+  { id: 'f-180', name: '교촌 허니오리지날 (1조각)', calories: 190, protein: 14, carbs: 10, fat: 10, servingSize: '1조각 90g' },
+  { id: 'f-181', name: '교촌 레드오리지날 (1조각)', calories: 185, protein: 14, carbs: 9, fat: 10, servingSize: '1조각 88g' },
+  { id: 'f-182', name: 'BBQ 황금올리브치킨 (1조각)', calories: 200, protein: 15, carbs: 9, fat: 11, servingSize: '1조각 95g' },
+  { id: 'f-183', name: 'BBQ 마늘치킨 (1조각)', calories: 210, protein: 15, carbs: 11, fat: 11, servingSize: '1조각 95g' },
+  { id: 'f-184', name: 'BHC 맛초킹 (1조각)', calories: 215, protein: 15, carbs: 12, fat: 11, servingSize: '1조각 95g' },
+  { id: 'f-185', name: 'BHC 뿌링클 (1조각)', calories: 205, protein: 14, carbs: 11, fat: 11, servingSize: '1조각 93g' },
+  { id: 'f-186', name: '굽네 고추바사삭 (1조각)', calories: 170, protein: 15, carbs: 7, fat: 9, servingSize: '1조각 90g' },
+  { id: 'f-187', name: '네네치킨 살살치킨 (1조각)', calories: 195, protein: 14, carbs: 10, fat: 11, servingSize: '1조각 90g' },
+  { id: 'f-188', name: '호식이두마리치킨 (1조각)', calories: 180, protein: 14, carbs: 8, fat: 10, servingSize: '1조각 85g' },
+  { id: 'f-189', name: '치킨 윙 (반마리 8조각)', calories: 780, protein: 60, carbs: 36, fat: 44, servingSize: '8조각 380g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 스타벅스
+   * ══════════════════════════════════════════ */
+  { id: 'f-200', name: '스타벅스 아메리카노 (톨)', calories: 10, protein: 0.5, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'f-201', name: '스타벅스 카페라떼 (톨)', calories: 150, protein: 8, carbs: 16, fat: 6, servingSize: '355ml' },
+  { id: 'f-202', name: '스타벅스 카라멜 마키아토 (톨)', calories: 250, protein: 8, carbs: 37, fat: 7, servingSize: '355ml' },
+  { id: 'f-203', name: '스타벅스 자바칩 프라푸치노 (톨)', calories: 430, protein: 7, carbs: 64, fat: 17, servingSize: '355ml' },
+  { id: 'f-204', name: '스타벅스 그린티 프라푸치노 (톨)', calories: 360, protein: 6, carbs: 56, fat: 13, servingSize: '355ml' },
+  { id: 'f-205', name: '스타벅스 딸기라떼 (톨)', calories: 290, protein: 8, carbs: 47, fat: 7.5, servingSize: '355ml' },
+  { id: 'f-206', name: '스타벅스 초콜릿크림콜드브루 (톨)', calories: 290, protein: 5, carbs: 39, fat: 13, servingSize: '355ml' },
+  { id: 'f-207', name: '스타벅스 바닐라크림콜드브루 (톨)', calories: 200, protein: 3, carbs: 27, fat: 9, servingSize: '355ml' },
+  { id: 'f-208', name: '스타벅스 핑크드링크 (톨)', calories: 140, protein: 2, carbs: 27, fat: 2.5, servingSize: '355ml' },
+  { id: 'f-209', name: '스타벅스 버터크루아상', calories: 310, protein: 7, carbs: 36, fat: 15, servingSize: '1개 90g' },
+  { id: 'f-210', name: '스타벅스 치즈케이크 (1조각)', calories: 420, protein: 8, carbs: 42, fat: 24, servingSize: '1조각 130g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 이디야 / 메가커피 / 빽다방
+   * ══════════════════════════════════════════ */
+  { id: 'f-220', name: '이디야 아메리카노 (레귤러)', calories: 10, protein: 0.3, carbs: 2, fat: 0, servingSize: '350ml' },
+  { id: 'f-221', name: '이디야 카페라떼 (레귤러)', calories: 135, protein: 7, carbs: 15, fat: 5.5, servingSize: '350ml' },
+  { id: 'f-222', name: '이디야 블루베리요거트스무디', calories: 290, protein: 5, carbs: 56, fat: 4, servingSize: '450ml' },
+  { id: 'f-223', name: '메가커피 아메리카노 (레귤러)', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'f-224', name: '메가커피 메가라떼 (레귤러)', calories: 160, protein: 8, carbs: 18, fat: 6, servingSize: '355ml' },
+  { id: 'f-225', name: '빽다방 빽스아메리카노 (레귤러)', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '350ml' },
+  { id: 'f-226', name: '빽다방 달달크림라떼', calories: 310, protein: 6, carbs: 48, fat: 10, servingSize: '450ml' },
+  { id: 'f-227', name: '투썸플레이스 아메리카노 (레귤러)', calories: 10, protein: 0.3, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'f-228', name: '투썸플레이스 스트로베리초콜릿케이크', calories: 490, protein: 7, carbs: 62, fat: 24, servingSize: '1조각 150g' },
+  { id: 'f-229', name: '할리스 아메리카노 (레귤러)', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '355ml' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 공차 / 커피빈
+   * ══════════════════════════════════════════ */
+  { id: 'f-230', name: '공차 타피오카밀크티 (레귤러)', calories: 330, protein: 3, carbs: 65, fat: 5, servingSize: '500ml' },
+  { id: 'f-231', name: '공차 복숭아아이스티 (레귤러)', calories: 200, protein: 0, carbs: 52, fat: 0, servingSize: '500ml' },
+  { id: 'f-232', name: '공차 딸기밀크티 (레귤러)', calories: 310, protein: 3, carbs: 60, fat: 5, servingSize: '500ml' },
+  { id: 'f-233', name: '커피빈 바닐라라떼 (레귤러)', calories: 280, protein: 9, carbs: 42, fat: 8.5, servingSize: '355ml' },
+  { id: 'f-234', name: '커피빈 아이스블렌디드 (모카)', calories: 450, protein: 7, carbs: 68, fat: 17, servingSize: '355ml' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 던킨 / 파리바게뜨 / 뚜레쥬르
+   * ══════════════════════════════════════════ */
+  { id: 'f-240', name: '던킨 글레이즈드 도넛', calories: 260, protein: 4, carbs: 33, fat: 13, servingSize: '1개 75g' },
+  { id: 'f-241', name: '던킨 초코링 도넛', calories: 290, protein: 4, carbs: 38, fat: 14, servingSize: '1개 80g' },
+  { id: 'f-242', name: '던킨 스트로베리크림 도넛', calories: 310, protein: 4.5, carbs: 40, fat: 15, servingSize: '1개 90g' },
+  { id: 'f-243', name: '파리바게뜨 단팥크림빵', calories: 285, protein: 7, carbs: 46, fat: 8.5, servingSize: '1개 110g' },
+  { id: 'f-244', name: '파리바게뜨 소시지빵', calories: 320, protein: 11, carbs: 42, fat: 12, servingSize: '1개 120g' },
+  { id: 'f-245', name: '파리바게뜨 크루아상 (버터)', calories: 370, protein: 7, carbs: 38, fat: 22, servingSize: '1개 85g' },
+  { id: 'f-246', name: '뚜레쥬르 촉촉한 초코케이크 (1조각)', calories: 380, protein: 5.5, carbs: 52, fat: 17, servingSize: '1조각 120g' },
+  { id: 'f-247', name: '뚜레쥬르 버터스콘', calories: 390, protein: 6, carbs: 50, fat: 19, servingSize: '1개 110g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 한식 (본죽 / 한솥 / 김가네)
+   * ══════════════════════════════════════════ */
+  { id: 'f-250', name: '본죽 전복죽 (1인분)', calories: 320, protein: 14, carbs: 54, fat: 6, servingSize: '1인분 400g' },
+  { id: 'f-251', name: '본죽 채소죽 (1인분)', calories: 260, protein: 6, carbs: 52, fat: 3, servingSize: '1인분 380g' },
+  { id: 'f-252', name: '본죽 닭죽 (1인분)', calories: 310, protein: 18, carbs: 50, fat: 5, servingSize: '1인분 400g' },
+  { id: 'f-253', name: '한솥 제육볶음 도시락', calories: 680, protein: 28, carbs: 88, fat: 22, servingSize: '1개 400g' },
+  { id: 'f-254', name: '한솥 돈가스 도시락', calories: 720, protein: 26, carbs: 90, fat: 26, servingSize: '1개 410g' },
+  { id: 'f-255', name: '한솥 김치찌개 도시락', calories: 620, protein: 22, carbs: 85, fat: 18, servingSize: '1개 390g' },
+  { id: 'f-256', name: '김가네 김밥 (1줄)', calories: 480, protein: 14, carbs: 82, fat: 11, servingSize: '1줄 330g' },
+  { id: 'f-257', name: '김가네 참치김밥 (1줄)', calories: 540, protein: 20, carbs: 82, fat: 15, servingSize: '1줄 350g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 쌀국수 / 일식 (베트남·일식 체인)
+   * ══════════════════════════════════════════ */
+  { id: 'f-260', name: '호아빈 쌀국수 (소)', calories: 420, protein: 20, carbs: 68, fat: 7, servingSize: '1인분 500g' },
+  { id: 'f-261', name: '호아빈 분짜 (1인분)', calories: 480, protein: 25, carbs: 60, fat: 14, servingSize: '1인분 450g' },
+  { id: 'f-262', name: '미가 쌀국수 (1인분)', calories: 440, protein: 22, carbs: 66, fat: 8, servingSize: '1인분 500g' },
+  { id: 'f-263', name: '요시노야 규동 (보통)', calories: 630, protein: 24, carbs: 82, fat: 22, servingSize: '1인분 380g' },
+  { id: 'f-264', name: '스시로 연어초밥 (2개)', calories: 150, protein: 10, carbs: 20, fat: 3.5, servingSize: '2개 90g' },
+  { id: 'f-265', name: '스시로 참치초밥 (2개)', calories: 140, protein: 11, carbs: 20, fat: 2, servingSize: '2개 85g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 — 샐러드 / 건강식 체인
+   * ══════════════════════════════════════════ */
+  { id: 'f-270', name: '써브웨이 참치 샐러드', calories: 230, protein: 14, carbs: 12, fat: 14, servingSize: '1개 250g' },
+  { id: 'f-271', name: '샐러디 닭가슴살 샐러드', calories: 280, protein: 28, carbs: 20, fat: 10, servingSize: '1개 300g' },
+  { id: 'f-272', name: '이삭토스트 에그치즈 (1개)', calories: 410, protein: 16, carbs: 52, fat: 16, servingSize: '1개 185g' },
+  { id: 'f-273', name: '이삭토스트 스테이크 (1개)', calories: 480, protein: 22, carbs: 54, fat: 20, servingSize: '1개 215g' },
+  { id: 'f-274', name: '바르다 김선생 참치마요 (1줄)', calories: 520, protein: 18, carbs: 82, fat: 14, servingSize: '1줄 340g' },
 ]
 
 /** 쿼리 문자열로 식품 검색 (이름 포함 여부) */
