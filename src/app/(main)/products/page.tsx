@@ -134,6 +134,80 @@ const SORT_OPTIONS = [
   { value: 'cal_asc',    label: '낮은 칼로리' },
 ]
 
+const ALLERGEN_LABEL: Record<string, string> = {
+  gluten: '글루텐', dairy: '유제품', egg: '달걀',
+  soy: '대두', pork: '돼지고기', sesame: '참깨',
+}
+
+async function AllergenBanner({ params }: { params: Awaited<SearchParams> }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data: prof } = await supabase
+    .from('profiles')
+    .select('allergen_profile')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  const userAllergens: string[] = Array.isArray(prof?.allergen_profile) ? prof.allergen_profile : []
+  if (userAllergens.length === 0) return null
+
+  // 현재 URL에 이미 적용된 알레르기 목록
+  const currentExclude: string[] = Array.isArray(params.exclude)
+    ? params.exclude
+    : params.exclude ? [params.exclude] : []
+
+  const allApplied = userAllergens.every(a => currentExclude.includes(a))
+
+  // 적용 URL: 현재 파라미터 + 유저 알레르기 추가
+  const applyParams = new URLSearchParams(params as Record<string, string>)
+  applyParams.delete('exclude')
+  const merged = Array.from(new Set([...currentExclude, ...userAllergens]))
+  merged.forEach(v => applyParams.append('exclude', v))
+  applyParams.delete('page')
+
+  // 해제 URL: exclude 파라미터 제거
+  const clearParams = new URLSearchParams(params as Record<string, string>)
+  clearParams.delete('exclude')
+  clearParams.delete('page')
+
+  const labels = userAllergens.map(a => ALLERGEN_LABEL[a] ?? a).join(', ')
+
+  return (
+    <div className={`flex items-center justify-between gap-3 mb-5 px-4 py-3 rounded-2xl border text-sm ${
+      allApplied
+        ? 'bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-800'
+        : 'bg-tint border-line-2'
+    }`}>
+      <div className="flex items-center gap-2">
+        <span className="text-base">⚠️</span>
+        <div>
+          <span className="font-medium text-ink-2">내 알레르기: </span>
+          <span className={allApplied ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-ink-3'}>
+            {labels}
+          </span>
+        </div>
+      </div>
+      {allApplied ? (
+        <a
+          href={`/products?${clearParams.toString()}`}
+          className="shrink-0 text-xs font-medium text-red-500 hover:text-red-700 transition-colors whitespace-nowrap"
+        >
+          해제
+        </a>
+      ) : (
+        <a
+          href={`/products?${applyParams.toString()}`}
+          className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors whitespace-nowrap"
+        >
+          필터 적용
+        </a>
+      )}
+    </div>
+  )
+}
+
 export default async function ProductsPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams
   const currentSort = params.sort ?? 'newest'
@@ -144,6 +218,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
         <h1 className="text-2xl font-bold text-ink">도시락</h1>
         <p className="text-ink-4 mt-1">진정성 있는 건강한 한 끼를 간편하게</p>
       </div>
+
+      {/* 내 알레르기 자동 적용 배너 */}
+      <Suspense fallback={null}>
+        <AllergenBanner params={params} />
+      </Suspense>
 
       {/* 검색 바 */}
       <form method="GET" className="mb-6">

@@ -27,6 +27,7 @@ export type Product = {
   product_categories?: ProductCategory
   avg_rating?: number | null
   review_count?: number | null
+  allergens?: string[] | null
 }
 
 export type Profile = {

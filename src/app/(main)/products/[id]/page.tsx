@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, RefreshCw, Gift, Heart } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, RefreshCw, Gift, Heart, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCartStore } from '@/lib/cart-store'
 import { formatPrice, DIFFICULTY_LABEL } from '@/lib/utils'
@@ -52,6 +52,8 @@ export default function ProductDetailPage() {
   const { toggle: toggleWishlist } = useWishlist()
   const wishedIds = useWishlistStore((s) => s.ids)
   const isWished = product ? wishedIds.includes(product.id) : false
+
+  const [userAllergens, setUserAllergens] = useState<string[]>([])
 
   // 터치 스와이프
   const touchStartX = useRef<number | null>(null)
@@ -117,6 +119,19 @@ export default function ProductDetailPage() {
         setRecipeSteps((stepsData ?? []) as RecipeStep[])
         setGalleryImages((imagesData ?? []) as GalleryImage[])
         if (p) addRecentlyViewed(p)
+
+        // 로그인 유저의 알레르기 프로필 로드
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data: prof } = await supabase
+            .from('profiles')
+            .select('allergen_profile')
+            .eq('id', user.id)
+            .maybeSingle()
+          if (Array.isArray(prof?.allergen_profile)) {
+            setUserAllergens(prof.allergen_profile as string[])
+          }
+        }
       } catch {
         setProduct(null)
       } finally {
@@ -276,6 +291,29 @@ export default function ProductDetailPage() {
           )}
 
           <NutritionBadge product={product} />
+
+          {/* 알레르기 경고 배너 */}
+          {(() => {
+            const productAllergens = (product as any).allergens as string[] | null
+            if (!productAllergens || userAllergens.length === 0) return null
+            const LABEL: Record<string, string> = {
+              gluten: '글루텐', dairy: '유제품', egg: '달걀',
+              soy: '대두', pork: '돼지고기', sesame: '참깨',
+            }
+            const matched = userAllergens.filter(a => productAllergens.includes(a))
+            if (matched.length === 0) return null
+            return (
+              <div className="flex items-start gap-2.5 mt-3 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-800 rounded-xl px-3 py-2.5">
+                <AlertTriangle size={14} className="text-red-500 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-red-600 dark:text-red-400">알레르기 주의</p>
+                  <p className="text-xs text-red-500 dark:text-red-400 mt-0.5">
+                    내 알레르기 성분 포함: {matched.map(a => LABEL[a] ?? a).join(', ')}
+                  </p>
+                </div>
+              </div>
+            )
+          })()}
 
           <div className="mt-4 py-4 border-y border-line">
             <span className="text-3xl font-bold text-ink">{formatPrice(product.price)}</span>
