@@ -1700,6 +1700,171 @@ export const BUILTIN_FOODS: BuiltinFood[] = [
   { id: 'd-883', name: '프로틴파우더 1스쿱', calories: 120, protein: 24, carbs: 3, fat: 2, servingSize: '1스쿱 30g' },
   { id: 'd-884', name: 'BCAA 1스쿱', calories: 20, protein: 5, carbs: 0, fat: 0, servingSize: '1스쿱 5g' },
   { id: 'd-885', name: '크레아틴 1스쿱', calories: 16, protein: 0, carbs: 4, fat: 0, servingSize: '1스쿱 4g' },
+
+  /* ══════════════════════════════════════════
+   * 에너지음료 / 스포츠음료 / 건강음료
+   * ══════════════════════════════════════════ */
+  { id: 'e-001', name: '레드불 (250ml)', calories: 113, protein: 0.9, carbs: 28, fat: 0, servingSize: '250ml' },
+  { id: 'e-002', name: '몬스터에너지 (355ml)', calories: 160, protein: 0, carbs: 38, fat: 0, servingSize: '355ml' },
+  { id: 'e-003', name: '핫식스 (250ml)', calories: 120, protein: 0, carbs: 30, fat: 0, servingSize: '250ml' },
+  { id: 'e-004', name: '포카리스웨트 (500ml)', calories: 130, protein: 0, carbs: 31, fat: 0, servingSize: '500ml' },
+  { id: 'e-005', name: '게토레이 (600ml)', calories: 150, protein: 0, carbs: 38, fat: 0, servingSize: '600ml' },
+  { id: 'e-006', name: '파워에이드 (600ml)', calories: 168, protein: 0, carbs: 42, fat: 0, servingSize: '600ml' },
+  { id: 'e-007', name: '비타500 (100ml)', calories: 30, protein: 0, carbs: 7.5, fat: 0, servingSize: '100ml' },
+  { id: 'e-008', name: '박카스 (120ml)', calories: 50, protein: 0, carbs: 12, fat: 0, servingSize: '120ml' },
+  { id: 'e-009', name: '컨디션 (100ml)', calories: 60, protein: 0, carbs: 14, fat: 0, servingSize: '100ml' },
+  { id: 'e-010', name: '이온음료 (500ml)', calories: 100, protein: 0, carbs: 25, fat: 0, servingSize: '500ml' },
+  { id: 'e-011', name: '코카콜라 (355ml)', calories: 140, protein: 0, carbs: 39, fat: 0, servingSize: '355ml' },
+  { id: 'e-012', name: '코카콜라 제로 (500ml)', calories: 0, protein: 0, carbs: 0, fat: 0, servingSize: '500ml' },
+  { id: 'e-013', name: '펩시 (355ml)', calories: 150, protein: 0, carbs: 41, fat: 0, servingSize: '355ml' },
+  { id: 'e-014', name: '칠성사이다 (355ml)', calories: 142, protein: 0, carbs: 35, fat: 0, servingSize: '355ml' },
+  { id: 'e-015', name: '환타 오렌지 (355ml)', calories: 170, protein: 0, carbs: 46, fat: 0, servingSize: '355ml' },
+  { id: 'e-016', name: '스프라이트 (355ml)', calories: 146, protein: 0, carbs: 38, fat: 0, servingSize: '355ml' },
+  { id: 'e-017', name: '밀키스 (250ml)', calories: 130, protein: 1.5, carbs: 29, fat: 1.5, servingSize: '250ml' },
+  { id: 'e-018', name: '오렌지주스 (200ml)', calories: 88, protein: 1.2, carbs: 21, fat: 0.2, servingSize: '200ml' },
+  { id: 'e-019', name: '사과주스 (200ml)', calories: 96, protein: 0.2, carbs: 24, fat: 0.1, servingSize: '200ml' },
+  { id: 'e-020', name: '포도주스 (200ml)', calories: 130, protein: 0.5, carbs: 33, fat: 0.1, servingSize: '200ml' },
+  { id: 'e-021', name: '토마토주스 (200ml)', calories: 40, protein: 1.8, carbs: 8, fat: 0.2, servingSize: '200ml' },
+  { id: 'e-022', name: '제주 감귤주스 (200ml)', calories: 90, protein: 0.8, carbs: 22, fat: 0.2, servingSize: '200ml' },
+  { id: 'e-023', name: '두유 (190ml)', calories: 90, protein: 5, carbs: 10, fat: 3, servingSize: '190ml' },
+  { id: 'e-024', name: '아몬드브리즈 (190ml)', calories: 40, protein: 1.5, carbs: 3.5, fat: 2.5, servingSize: '190ml' },
+  { id: 'e-025', name: '오트밀크 (200ml)', calories: 60, protein: 1.5, carbs: 9, fat: 1.5, servingSize: '200ml' },
+  { id: 'e-026', name: '코코넛워터 (330ml)', calories: 60, protein: 0.5, carbs: 15, fat: 0.5, servingSize: '330ml' },
+  { id: 'e-027', name: '생수 (500ml)', calories: 0, protein: 0, carbs: 0, fat: 0, servingSize: '500ml' },
+  { id: 'e-028', name: '탄산수 (350ml)', calories: 0, protein: 0, carbs: 0, fat: 0, servingSize: '350ml' },
+
+  /* ══════════════════════════════════════════
+   * 한식 면류 추가
+   * ══════════════════════════════════════════ */
+  { id: 'e-050', name: '물냉면', calories: 490, protein: 16, carbs: 90, fat: 6, servingSize: '1인분 500g' },
+  { id: 'e-051', name: '비빔냉면', calories: 530, protein: 16, carbs: 96, fat: 8, servingSize: '1인분 500g' },
+  { id: 'e-052', name: '쟁반냉면', calories: 560, protein: 18, carbs: 100, fat: 8, servingSize: '1인분 550g' },
+  { id: 'e-053', name: '막국수', calories: 460, protein: 14, carbs: 84, fat: 6, servingSize: '1인분 450g' },
+  { id: 'e-054', name: '비빔막국수', calories: 490, protein: 14, carbs: 90, fat: 8, servingSize: '1인분 450g' },
+  { id: 'e-055', name: '콩국수', calories: 470, protein: 20, carbs: 74, fat: 10, servingSize: '1인분 500g' },
+  { id: 'e-056', name: '잔치국수', calories: 420, protein: 13, carbs: 76, fat: 6, servingSize: '1인분 450g' },
+  { id: 'e-057', name: '비빔국수', calories: 460, protein: 12, carbs: 86, fat: 8, servingSize: '1인분 430g' },
+  { id: 'e-058', name: '칼국수', calories: 520, protein: 16, carbs: 84, fat: 10, servingSize: '1인분 500g' },
+  { id: 'e-059', name: '수제비', calories: 490, protein: 14, carbs: 80, fat: 10, servingSize: '1인분 500g' },
+  { id: 'e-060', name: '닭칼국수', calories: 560, protein: 26, carbs: 74, fat: 16, servingSize: '1인분 550g' },
+  { id: 'e-061', name: '해물칼국수', calories: 540, protein: 22, carbs: 80, fat: 12, servingSize: '1인분 550g' },
+
+  /* ══════════════════════════════════════════
+   * 한식 찜 / 구이 추가
+   * ══════════════════════════════════════════ */
+  { id: 'e-070', name: '찜닭', calories: 560, protein: 40, carbs: 46, fat: 22, servingSize: '1인분 400g' },
+  { id: 'e-071', name: '안동찜닭', calories: 580, protein: 40, carbs: 50, fat: 22, servingSize: '1인분 400g' },
+  { id: 'e-072', name: '해물탕', calories: 460, protein: 34, carbs: 24, fat: 22, servingSize: '1인분 500g' },
+  { id: 'e-073', name: '갈비찜', calories: 580, protein: 42, carbs: 28, fat: 34, servingSize: '1인분 380g' },
+  { id: 'e-074', name: '보쌈', calories: 480, protein: 38, carbs: 8, fat: 32, servingSize: '1인분 250g' },
+  { id: 'e-075', name: '족발 (앞다리)', calories: 420, protein: 36, carbs: 6, fat: 28, servingSize: '1인분 250g' },
+  { id: 'e-076', name: '족발 (뒷다리)', calories: 450, protein: 38, carbs: 4, fat: 30, servingSize: '1인분 250g' },
+  { id: 'e-077', name: '수육', calories: 360, protein: 32, carbs: 2, fat: 24, servingSize: '1인분 200g' },
+  { id: 'e-078', name: '제육볶음', calories: 440, protein: 28, carbs: 16, fat: 28, servingSize: '1인분 250g' },
+  { id: 'e-079', name: '잡채', calories: 320, protein: 10, carbs: 50, fat: 9, servingSize: '1인분 200g' },
+  { id: 'e-080', name: '떡갈비', calories: 380, protein: 24, carbs: 22, fat: 22, servingSize: '1인분 200g' },
+  { id: 'e-081', name: '해물파전', calories: 380, protein: 16, carbs: 42, fat: 16, servingSize: '1인분 250g' },
+  { id: 'e-082', name: '김치전', calories: 360, protein: 10, carbs: 46, fat: 16, servingSize: '1인분 200g' },
+  { id: 'e-083', name: '계란말이', calories: 200, protein: 12, carbs: 4, fat: 15, servingSize: '1인분 100g' },
+  { id: 'e-084', name: '계란찜', calories: 120, protein: 10, carbs: 2, fat: 8, servingSize: '1인분 150g' },
+  { id: 'e-085', name: '참치김치찌개', calories: 260, protein: 18, carbs: 14, fat: 14, servingSize: '1인분 350g' },
+  { id: 'e-086', name: '불고기전골', calories: 460, protein: 30, carbs: 26, fat: 28, servingSize: '1인분 400g' },
+
+  /* ══════════════════════════════════════════
+   * 죽류 추가
+   * ══════════════════════════════════════════ */
+  { id: 'e-100', name: '전복죽', calories: 280, protein: 14, carbs: 46, fat: 5, servingSize: '1인분 400g' },
+  { id: 'e-101', name: '닭죽', calories: 260, protein: 16, carbs: 42, fat: 4, servingSize: '1인분 400g' },
+  { id: 'e-102', name: '야채죽', calories: 200, protein: 5, carbs: 40, fat: 2, servingSize: '1인분 400g' },
+  { id: 'e-103', name: '버섯죽', calories: 220, protein: 6, carbs: 42, fat: 2.5, servingSize: '1인분 400g' },
+  { id: 'e-104', name: '단팥죽', calories: 320, protein: 8, carbs: 66, fat: 2, servingSize: '1인분 350g' },
+  { id: 'e-105', name: '호박죽', calories: 180, protein: 3, carbs: 40, fat: 1, servingSize: '1인분 350g' },
+  { id: 'e-106', name: '새우죽', calories: 250, protein: 14, carbs: 40, fat: 4, servingSize: '1인분 400g' },
+  { id: 'e-107', name: '소고기죽', calories: 270, protein: 16, carbs: 42, fat: 5, servingSize: '1인분 400g' },
+  { id: 'e-108', name: '녹두죽', calories: 230, protein: 10, carbs: 44, fat: 2, servingSize: '1인분 400g' },
+
+  /* ══════════════════════════════════════════
+   * 덮밥 추가
+   * ══════════════════════════════════════════ */
+  { id: 'e-120', name: '제육덮밥', calories: 640, protein: 26, carbs: 88, fat: 20, servingSize: '1인분 460g' },
+  { id: 'e-121', name: '오징어덮밥', calories: 580, protein: 24, carbs: 88, fat: 12, servingSize: '1인분 440g' },
+  { id: 'e-122', name: '참치마요덮밥', calories: 600, protein: 22, carbs: 84, fat: 20, servingSize: '1인분 420g' },
+  { id: 'e-123', name: '스팸마요덮밥', calories: 660, protein: 20, carbs: 86, fat: 26, servingSize: '1인분 430g' },
+  { id: 'e-124', name: '카레덮밥', calories: 560, protein: 14, carbs: 92, fat: 14, servingSize: '1인분 450g' },
+  { id: 'e-125', name: '스테이크덮밥', calories: 720, protein: 38, carbs: 80, fat: 28, servingSize: '1인분 450g' },
+  { id: 'e-126', name: '두부김치덮밥', calories: 520, protein: 18, carbs: 76, fat: 16, servingSize: '1인분 400g' },
+
+  /* ══════════════════════════════════════════
+   * 치킨 브랜드 상세
+   * ══════════════════════════════════════════ */
+  { id: 'e-140', name: '교촌 허니오리지날 (반마리)', calories: 760, protein: 42, carbs: 38, fat: 48, servingSize: '반마리 450g' },
+  { id: 'e-141', name: '교촌 레드 (반마리)', calories: 800, protein: 44, carbs: 36, fat: 52, servingSize: '반마리 450g' },
+  { id: 'e-142', name: 'BBQ 황금올리브치킨 (반마리)', calories: 820, protein: 46, carbs: 32, fat: 54, servingSize: '반마리 480g' },
+  { id: 'e-143', name: 'BHC 뿌링클 (반마리)', calories: 830, protein: 44, carbs: 42, fat: 50, servingSize: '반마리 480g' },
+  { id: 'e-144', name: 'BHC 맛초킹 (반마리)', calories: 850, protein: 46, carbs: 40, fat: 54, servingSize: '반마리 490g' },
+  { id: 'e-145', name: '굽네 고추바사삭 (반마리)', calories: 680, protein: 44, carbs: 24, fat: 46, servingSize: '반마리 420g' },
+  { id: 'e-146', name: '치킨무 (소)', calories: 40, protein: 0.5, carbs: 9, fat: 0.1, servingSize: '100g' },
+  { id: 'e-147', name: '치킨봉 (순살)', calories: 240, protein: 18, carbs: 14, fat: 12, servingSize: '100g' },
+
+  /* ══════════════════════════════════════════
+   * 카페 추가 (브랜드별)
+   * ══════════════════════════════════════════ */
+  { id: 'e-160', name: '스타벅스 돌체라떼 (톨)', calories: 280, protein: 10, carbs: 38, fat: 10, servingSize: '355ml' },
+  { id: 'e-161', name: '스타벅스 그린티라떼 (톨)', calories: 240, protein: 10, carbs: 36, fat: 6, servingSize: '355ml' },
+  { id: 'e-162', name: '스타벅스 딸기라떼 (톨)', calories: 310, protein: 9, carbs: 46, fat: 9, servingSize: '355ml' },
+  { id: 'e-163', name: '스타벅스 망고패션티 (그란데)', calories: 200, protein: 0, carbs: 50, fat: 0, servingSize: '473ml' },
+  { id: 'e-164', name: '이디야 블루베리라떼', calories: 260, protein: 7, carbs: 40, fat: 7, servingSize: '355ml' },
+  { id: 'e-165', name: '메가MGC 아이스아메리카노', calories: 10, protein: 0.5, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'e-166', name: '빽다방 빽아이스아메리카노 (500ml)', calories: 15, protein: 0.5, carbs: 3, fat: 0, servingSize: '500ml' },
+  { id: 'e-167', name: '컴포즈 달고나라떼', calories: 220, protein: 6, carbs: 34, fat: 6, servingSize: '355ml' },
+  { id: 'e-168', name: '투썸 딸기생크림케이크 (1조각)', calories: 480, protein: 6, carbs: 58, fat: 24, servingSize: '1조각 120g' },
+  { id: 'e-169', name: '폴바셋 아이스커피', calories: 20, protein: 1, carbs: 3, fat: 0.5, servingSize: '355ml' },
+
+  /* ══════════════════════════════════════════
+   * 편의점 아이스크림 / 디저트
+   * ══════════════════════════════════════════ */
+  { id: 'e-180', name: '빠삐코', calories: 90, protein: 1, carbs: 17, fat: 2.5, servingSize: '1개 55ml' },
+  { id: 'e-181', name: '메로나', calories: 110, protein: 1, carbs: 22, fat: 2, servingSize: '1개 70ml' },
+  { id: 'e-182', name: '월드콘', calories: 250, protein: 3, carbs: 34, fat: 12, servingSize: '1개 140ml' },
+  { id: 'e-183', name: '하겐다즈 바닐라 (1컵)', calories: 280, protein: 4, carbs: 26, fat: 18, servingSize: '100ml' },
+  { id: 'e-184', name: '베스킨라빈스 싱글컵', calories: 220, protein: 3.5, carbs: 28, fat: 11, servingSize: '1컵 113g' },
+  { id: 'e-185', name: '설레임', calories: 120, protein: 1.5, carbs: 20, fat: 4, servingSize: '1개 130ml' },
+  { id: 'e-186', name: '포켓몬빵', calories: 310, protein: 5, carbs: 50, fat: 10, servingSize: '1개 100g' },
+  { id: 'e-187', name: '삼각김밥 (스팸)', calories: 230, protein: 7, carbs: 40, fat: 5, servingSize: '1개 105g' },
+  { id: 'e-188', name: '편의점 핫바 (오리지널)', calories: 180, protein: 8, carbs: 20, fat: 8, servingSize: '1개 75g' },
+
+  /* ══════════════════════════════════════════
+   * 건강식 추가
+   * ══════════════════════════════════════════ */
+  { id: 'e-200', name: '현미밥+닭가슴살+야채', calories: 420, protein: 36, carbs: 52, fat: 8, servingSize: '1인분 300g' },
+  { id: 'e-201', name: '고구마+닭가슴살', calories: 300, protein: 28, carbs: 38, fat: 3, servingSize: '1인분 250g' },
+  { id: 'e-202', name: '단백질 도시락 (헬스)', calories: 480, protein: 42, carbs: 40, fat: 14, servingSize: '1개 380g' },
+  { id: 'e-203', name: '곤약젤리', calories: 15, protein: 0, carbs: 3.5, fat: 0, servingSize: '1봉 130g' },
+  { id: 'e-204', name: '저칼로리 요거트', calories: 60, protein: 5, carbs: 8, fat: 0.5, servingSize: '100g' },
+  { id: 'e-205', name: '두부면 비빔국수', calories: 180, protein: 12, carbs: 24, fat: 4, servingSize: '1인분 250g' },
+  { id: 'e-206', name: '닭가슴살 스테이크 (100g)', calories: 160, protein: 28, carbs: 2, fat: 5, servingSize: '100g' },
+  { id: 'e-207', name: '아보카도 에그볼', calories: 240, protein: 10, carbs: 8, fat: 20, servingSize: '1인분 150g' },
+
+  /* ══════════════════════════════════════════
+   * 전 / 부침개 추가
+   * ══════════════════════════════════════════ */
+  { id: 'e-220', name: '고기전', calories: 280, protein: 16, carbs: 18, fat: 16, servingSize: '1인분 150g' },
+  { id: 'e-221', name: '동태전', calories: 240, protein: 18, carbs: 16, fat: 10, servingSize: '1인분 150g' },
+  { id: 'e-222', name: '두부전', calories: 200, protein: 12, carbs: 14, fat: 10, servingSize: '1인분 150g' },
+  { id: 'e-223', name: '감자전', calories: 260, protein: 4, carbs: 36, fat: 12, servingSize: '1인분 180g' },
+  { id: 'e-224', name: '녹두빈대떡', calories: 380, protein: 14, carbs: 44, fat: 17, servingSize: '1인분 200g' },
+
+  /* ══════════════════════════════════════════
+   * 음료 추가 (탄산/주스)
+   * ══════════════════════════════════════════ */
+  { id: 'e-240', name: '오렌지주스 (500ml)', calories: 220, protein: 3, carbs: 52, fat: 0.5, servingSize: '500ml' },
+  { id: 'e-241', name: '토마토주스 (300ml)', calories: 60, protein: 2.7, carbs: 12, fat: 0.3, servingSize: '300ml' },
+  { id: 'e-242', name: '딸기주스 (300ml)', calories: 140, protein: 1, carbs: 34, fat: 0.3, servingSize: '300ml' },
+  { id: 'e-243', name: '수박주스 (300ml)', calories: 100, protein: 1, carbs: 24, fat: 0.2, servingSize: '300ml' },
+  { id: 'e-244', name: '복숭아아이스티 (500ml)', calories: 130, protein: 0, carbs: 33, fat: 0, servingSize: '500ml' },
+  { id: 'e-245', name: '레몬에이드 (300ml)', calories: 120, protein: 0.2, carbs: 30, fat: 0, servingSize: '300ml' },
+  { id: 'e-246', name: '자두에이드 (300ml)', calories: 130, protein: 0.2, carbs: 32, fat: 0, servingSize: '300ml' },
+  { id: 'e-247', name: '패션후르츠에이드 (300ml)', calories: 140, protein: 0.3, carbs: 34, fat: 0, servingSize: '300ml' },
 ]
 
 /* ─────────────────────────────────────────
@@ -1937,6 +2102,43 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   '영양제': ['d-880','d-881','d-882','d-883','d-884','d-885'],
   '보조식품': ['d-880','d-881','d-882','d-883','d-884','d-885'],
   '프로틴': ['d-883','d-319','d-320'],
+  // 에너지/스포츠음료
+  '에너지음료': ['e-001','e-002','e-003'],
+  '스포츠음료': ['e-004','e-005','e-006','e-010'],
+  '탄산음료': ['e-011','e-012','e-013','e-014','e-015','e-016','e-017'],
+  '콜라': ['e-011','e-012','e-013'],
+  '사이다': ['e-014','e-016'],
+  '주스': ['e-018','e-019','e-020','e-021','e-022','e-240','e-241','e-242','e-243'],
+  '에이드': ['e-245','e-246','e-247'],
+  '식물성음료': ['e-023','e-024','e-025','e-026'],
+  '두유': ['e-023'],
+  // 냉면/막국수
+  '냉면': ['e-050','e-051','e-052'],
+  '막국수': ['e-053','e-054'],
+  // 한식 찜
+  '찜닭': ['e-070','e-071'],
+  '보쌈': ['e-074'],
+  '족발': ['e-075','e-076'],
+  '잡채': ['e-079'],
+  '전': ['e-081','e-082','e-220','e-221','e-222','e-223','e-224'],
+  '죽': ['e-100','e-101','e-102','e-103','e-104','e-105','e-106','e-107','e-108'],
+  '전복죽': ['e-100'],
+  // 치킨 브랜드
+  '교촌': ['e-140','e-141'],
+  'bbq': ['e-142'],
+  'bhc': ['e-143','e-144'],
+  '굽네': ['e-145'],
+  // 카페 브랜드
+  '스타벅스': ['c-200','c-201','c-202','c-203','c-204','e-160','e-161','e-162','e-163'],
+  '이디야': ['e-164'],
+  '메가커피': ['e-165'],
+  '빽다방': ['e-166'],
+  '투썸': ['e-168'],
+  // 아이스크림
+  '빠삐코': ['e-180'],
+  '메로나': ['e-181'],
+  '하겐다즈': ['e-183'],
+  '베스킨라빈스': ['e-184'],
 }
 
 /** 쿼리 문자열로 식품 검색
