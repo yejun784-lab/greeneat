@@ -263,6 +263,18 @@ export const BUILTIN_FOODS: BuiltinFood[] = [
   { id: 'b-275', name: '자두', calories: 46, protein: 0.7, carbs: 11, fat: 0.3, servingSize: '1개 80g' },
   { id: 'b-276', name: '체리', calories: 63, protein: 1, carbs: 16, fat: 0.2, servingSize: '100g' },
   { id: 'b-277', name: '레몬', calories: 29, protein: 1.1, carbs: 9, fat: 0.3, servingSize: '100g' },
+  { id: 'b-278', name: '감', calories: 60, protein: 0.4, carbs: 16, fat: 0.1, servingSize: '1개 100g' },
+  { id: 'b-279', name: '단감', calories: 60, protein: 0.4, carbs: 16, fat: 0.1, servingSize: '1개 100g' },
+  { id: 'b-280a', name: '홍시', calories: 55, protein: 0.5, carbs: 14, fat: 0.1, servingSize: '1개 80g' },
+  { id: 'b-280b', name: '아보카도', calories: 160, protein: 2, carbs: 9, fat: 15, servingSize: '1/2개 75g' },
+  { id: 'b-280c', name: '자몽', calories: 52, protein: 0.8, carbs: 13, fat: 0.2, servingSize: '1/2개 150g' },
+  { id: 'b-280d', name: '석류', calories: 83, protein: 1.7, carbs: 19, fat: 1.2, servingSize: '100g' },
+  { id: 'b-280e', name: '무화과', calories: 74, protein: 0.8, carbs: 19, fat: 0.3, servingSize: '1개 50g' },
+  { id: 'b-280f', name: '살구', calories: 48, protein: 1.4, carbs: 11, fat: 0.4, servingSize: '100g' },
+  { id: 'b-280g', name: '라임', calories: 30, protein: 0.7, carbs: 10, fat: 0.2, servingSize: '100g' },
+  { id: 'b-280h', name: '용과', calories: 60, protein: 1.2, carbs: 13, fat: 0.4, servingSize: '100g' },
+  { id: 'b-280i', name: '리치', calories: 66, protein: 0.8, carbs: 17, fat: 0.4, servingSize: '100g' },
+  { id: 'b-280j', name: '감귤', calories: 37, protein: 0.6, carbs: 9.4, fat: 0.1, servingSize: '1개 80g' },
 
   /* ══════════════════════════════════════════
    * 유제품 / 단백질
@@ -1000,6 +1012,455 @@ export const BUILTIN_FOODS: BuiltinFood[] = [
   { id: 'f-272', name: '이삭토스트 에그치즈 (1개)', calories: 410, protein: 16, carbs: 52, fat: 16, servingSize: '1개 185g' },
   { id: 'f-273', name: '이삭토스트 스테이크 (1개)', calories: 480, protein: 22, carbs: 54, fat: 20, servingSize: '1개 215g' },
   { id: 'f-274', name: '바르다 김선생 참치마요 (1줄)', calories: 520, protein: 18, carbs: 82, fat: 14, servingSize: '1줄 340g' },
+
+  /* ══════════════════════════════════════════
+   * 카페 음료 — 기본 커피
+   * ══════════════════════════════════════════ */
+  { id: 'c-001', name: '에스프레소', calories: 5, protein: 0.3, carbs: 0.5, fat: 0.1, servingSize: '1샷 30ml' },
+  { id: 'c-002', name: '더블에스프레소', calories: 10, protein: 0.6, carbs: 1, fat: 0.2, servingSize: '2샷 60ml' },
+  { id: 'c-003', name: '콜드브루', calories: 15, protein: 0.3, carbs: 2, fat: 0, servingSize: '350ml' },
+  { id: 'c-004', name: '콜드브루 라떼', calories: 150, protein: 5, carbs: 17, fat: 7, servingSize: '350ml' },
+  { id: 'c-005', name: '플랫화이트', calories: 120, protein: 6, carbs: 10, fat: 6, servingSize: '230ml' },
+  { id: 'c-006', name: '룽고', calories: 8, protein: 0.4, carbs: 1, fat: 0.1, servingSize: '110ml' },
+  { id: 'c-007', name: '리스트레토', calories: 4, protein: 0.2, carbs: 0.4, fat: 0.1, servingSize: '25ml' },
+  { id: 'c-008', name: '드립커피', calories: 5, protein: 0.3, carbs: 0.8, fat: 0, servingSize: '240ml' },
+  { id: 'c-009', name: '핸드드립 커피', calories: 5, protein: 0.3, carbs: 0.8, fat: 0, servingSize: '250ml' },
+  { id: 'c-010', name: '더치커피', calories: 10, protein: 0.3, carbs: 1.5, fat: 0, servingSize: '150ml' },
+
+  /* ── 라떼 / 모카 계열 ─────────────────────── */
+  { id: 'c-011', name: '카페모카', calories: 290, protein: 7, carbs: 42, fat: 11, servingSize: '350ml' },
+  { id: 'c-012', name: '아이스카페모카', calories: 280, protein: 7, carbs: 40, fat: 11, servingSize: '350ml' },
+  { id: 'c-013', name: '화이트초콜릿모카', calories: 330, protein: 7, carbs: 50, fat: 12, servingSize: '350ml' },
+  { id: 'c-014', name: '헤이즐넛라떼', calories: 200, protein: 5, carbs: 30, fat: 7, servingSize: '350ml' },
+  { id: 'c-015', name: '시나몬라떼', calories: 180, protein: 5.5, carbs: 26, fat: 6.5, servingSize: '350ml' },
+  { id: 'c-016', name: '라벤더라떼', calories: 170, protein: 5, carbs: 25, fat: 6, servingSize: '350ml' },
+  { id: 'c-017', name: '흑당라떼', calories: 250, protein: 5, carbs: 38, fat: 8, servingSize: '350ml' },
+  { id: 'c-018', name: '흑임자라떼', calories: 220, protein: 6, carbs: 30, fat: 9, servingSize: '350ml' },
+  { id: 'c-019', name: '고구마라떼', calories: 230, protein: 5, carbs: 38, fat: 6, servingSize: '350ml' },
+  { id: 'c-020', name: '쑥라떼', calories: 210, protein: 5.5, carbs: 32, fat: 7, servingSize: '350ml' },
+  { id: 'c-021', name: '단호박라떼', calories: 220, protein: 5, carbs: 34, fat: 7, servingSize: '350ml' },
+  { id: 'c-022', name: '말차라떼', calories: 200, protein: 6, carbs: 30, fat: 6, servingSize: '350ml' },
+  { id: 'c-023', name: '얼그레이라떼', calories: 160, protein: 5, carbs: 22, fat: 6, servingSize: '350ml' },
+  { id: 'c-024', name: '런던포그라떼', calories: 170, protein: 5.5, carbs: 24, fat: 6.5, servingSize: '350ml' },
+  { id: 'c-025', name: '로얄밀크티', calories: 180, protein: 5, carbs: 26, fat: 7, servingSize: '350ml' },
+
+  /* ── 프라푸치노 / 블렌디드 ─────────────────── */
+  { id: 'c-030', name: '카라멜프라푸치노', calories: 390, protein: 5, carbs: 63, fat: 13, servingSize: '350ml' },
+  { id: 'c-031', name: '모카프라푸치노', calories: 410, protein: 6, carbs: 65, fat: 15, servingSize: '350ml' },
+  { id: 'c-032', name: '자바칩프라푸치노', calories: 440, protein: 7, carbs: 68, fat: 17, servingSize: '350ml' },
+  { id: 'c-033', name: '녹차프라푸치노', calories: 370, protein: 6, carbs: 58, fat: 13, servingSize: '350ml' },
+  { id: 'c-034', name: '딸기프라푸치노', calories: 360, protein: 4, carbs: 60, fat: 12, servingSize: '350ml' },
+  { id: 'c-035', name: '바닐라프라푸치노', calories: 380, protein: 5, carbs: 62, fat: 13, servingSize: '350ml' },
+  { id: 'c-036', name: '쿠키앤크림프라푸치노', calories: 420, protein: 6, carbs: 66, fat: 16, servingSize: '350ml' },
+  { id: 'c-037', name: '망고패션프라푸치노', calories: 310, protein: 2, carbs: 56, fat: 7, servingSize: '350ml' },
+
+  /* ── 에이드 / 주스 ───────────────────────── */
+  { id: 'c-040', name: '레몬에이드', calories: 120, protein: 0, carbs: 31, fat: 0, servingSize: '350ml' },
+  { id: 'c-041', name: '자몽에이드', calories: 130, protein: 0.5, carbs: 33, fat: 0, servingSize: '350ml' },
+  { id: 'c-042', name: '청포도에이드', calories: 140, protein: 0, carbs: 36, fat: 0, servingSize: '350ml' },
+  { id: 'c-043', name: '복숭아에이드', calories: 135, protein: 0, carbs: 35, fat: 0, servingSize: '350ml' },
+  { id: 'c-044', name: '딸기에이드', calories: 130, protein: 0.5, carbs: 33, fat: 0, servingSize: '350ml' },
+  { id: 'c-045', name: '블루레몬에이드', calories: 120, protein: 0, carbs: 31, fat: 0, servingSize: '350ml' },
+  { id: 'c-046', name: '패션후르츠에이드', calories: 145, protein: 0.5, carbs: 37, fat: 0, servingSize: '350ml' },
+  { id: 'c-047', name: '오렌지주스', calories: 110, protein: 1.7, carbs: 26, fat: 0.5, servingSize: '250ml' },
+  { id: 'c-048', name: '사과주스', calories: 115, protein: 0.3, carbs: 28, fat: 0.2, servingSize: '250ml' },
+  { id: 'c-049', name: '포도주스', calories: 130, protein: 0.6, carbs: 32, fat: 0.3, servingSize: '250ml' },
+  { id: 'c-050', name: '수박주스', calories: 80, protein: 1, carbs: 19, fat: 0.3, servingSize: '300ml' },
+  { id: 'c-051', name: '당근주스', calories: 95, protein: 2, carbs: 22, fat: 0.5, servingSize: '250ml' },
+  { id: 'c-052', name: '녹즙', calories: 45, protein: 2, carbs: 9, fat: 0.5, servingSize: '200ml' },
+
+  /* ── 티 ─────────────────────────────────── */
+  { id: 'c-060', name: '얼그레이티', calories: 2, protein: 0, carbs: 0.5, fat: 0, servingSize: '240ml' },
+  { id: 'c-061', name: '캐모마일티', calories: 2, protein: 0, carbs: 0.4, fat: 0, servingSize: '240ml' },
+  { id: 'c-062', name: '페퍼민트티', calories: 2, protein: 0, carbs: 0.4, fat: 0, servingSize: '240ml' },
+  { id: 'c-063', name: '루이보스티', calories: 2, protein: 0.1, carbs: 0.3, fat: 0, servingSize: '240ml' },
+  { id: 'c-064', name: '히비스커스티', calories: 3, protein: 0, carbs: 0.6, fat: 0, servingSize: '240ml' },
+  { id: 'c-065', name: '자스민티', calories: 2, protein: 0.1, carbs: 0.4, fat: 0, servingSize: '240ml' },
+  { id: 'c-066', name: '유자차', calories: 90, protein: 0.3, carbs: 23, fat: 0.1, servingSize: '240ml' },
+  { id: 'c-067', name: '생강차', calories: 60, protein: 0.2, carbs: 15, fat: 0.1, servingSize: '240ml' },
+  { id: 'c-068', name: '쌍화차', calories: 80, protein: 1, carbs: 18, fat: 0.5, servingSize: '240ml' },
+  { id: 'c-069', name: '대추차', calories: 85, protein: 0.5, carbs: 21, fat: 0.2, servingSize: '240ml' },
+  { id: 'c-070', name: '레몬티', calories: 70, protein: 0.2, carbs: 18, fat: 0, servingSize: '240ml' },
+  { id: 'c-071', name: '복숭아아이스티', calories: 100, protein: 0, carbs: 26, fat: 0, servingSize: '350ml' },
+  { id: 'c-072', name: '아이스티 (레몬)', calories: 90, protein: 0, carbs: 23, fat: 0, servingSize: '350ml' },
+
+  /* ── 스무디 / 요거트 ──────────────────────── */
+  { id: 'c-080', name: '망고스무디', calories: 200, protein: 3, carbs: 44, fat: 2, servingSize: '350ml' },
+  { id: 'c-081', name: '블루베리스무디', calories: 190, protein: 4, carbs: 40, fat: 2, servingSize: '350ml' },
+  { id: 'c-082', name: '그린스무디', calories: 150, protein: 4, carbs: 32, fat: 1.5, servingSize: '350ml' },
+  { id: 'c-083', name: '아사이볼', calories: 280, protein: 6, carbs: 52, fat: 6, servingSize: '300g' },
+  { id: 'c-084', name: '요거트스무디', calories: 220, protein: 8, carbs: 40, fat: 4, servingSize: '350ml' },
+  { id: 'c-085', name: '플레인요거트', calories: 100, protein: 6, carbs: 12, fat: 3, servingSize: '150g' },
+  { id: 'c-086', name: '그릭요거트', calories: 130, protein: 12, carbs: 9, fat: 4, servingSize: '150g' },
+  { id: 'c-087', name: '요거트파르페', calories: 320, protein: 10, carbs: 52, fat: 9, servingSize: '300g' },
+  { id: 'c-088', name: '아사이스무디볼', calories: 340, protein: 7, carbs: 60, fat: 8, servingSize: '350g' },
+
+  /* ══════════════════════════════════════════
+   * 카페 디저트 / 베이커리
+   * ══════════════════════════════════════════ */
+  { id: 'c-100', name: '크루아상', calories: 270, protein: 5.5, carbs: 30, fat: 14, servingSize: '1개 70g' },
+  { id: 'c-101', name: '버터크루아상', calories: 310, protein: 6, carbs: 33, fat: 17, servingSize: '1개 80g' },
+  { id: 'c-102', name: '아몬드크루아상', calories: 380, protein: 9, carbs: 38, fat: 22, servingSize: '1개 90g' },
+  { id: 'c-103', name: '크림치즈베이글', calories: 340, protein: 12, carbs: 54, fat: 9, servingSize: '1개 135g' },
+  { id: 'c-104', name: '에그베이글', calories: 360, protein: 14, carbs: 55, fat: 10, servingSize: '1개 145g' },
+  { id: 'c-105', name: '어니언베이글', calories: 280, protein: 10, carbs: 54, fat: 3, servingSize: '1개 110g' },
+  { id: 'c-106', name: '스콘', calories: 350, protein: 6, carbs: 46, fat: 16, servingSize: '1개 90g' },
+  { id: 'c-107', name: '블루베리스콘', calories: 360, protein: 6, carbs: 50, fat: 16, servingSize: '1개 95g' },
+  { id: 'c-108', name: '치즈스콘', calories: 370, protein: 9, carbs: 44, fat: 18, servingSize: '1개 95g' },
+  { id: 'c-109', name: '머핀 (블루베리)', calories: 320, protein: 5, carbs: 50, fat: 11, servingSize: '1개 100g' },
+  { id: 'c-110', name: '머핀 (초콜릿)', calories: 360, protein: 5.5, carbs: 54, fat: 14, servingSize: '1개 105g' },
+  { id: 'c-111', name: '바나나브레드', calories: 290, protein: 4.5, carbs: 46, fat: 10, servingSize: '1조각 90g' },
+  { id: 'c-112', name: '파운드케이크', calories: 400, protein: 5, carbs: 50, fat: 20, servingSize: '1조각 100g' },
+  { id: 'c-113', name: '레몬파운드케이크', calories: 390, protein: 5, carbs: 52, fat: 18, servingSize: '1조각 100g' },
+  { id: 'c-114', name: '브라우니', calories: 400, protein: 5.5, carbs: 52, fat: 20, servingSize: '1조각 90g' },
+  { id: 'c-115', name: '블론디', calories: 380, protein: 5, carbs: 54, fat: 16, servingSize: '1조각 90g' },
+  { id: 'c-116', name: '쿠키 (초콜릿칩)', calories: 200, protein: 2.5, carbs: 28, fat: 9, servingSize: '2개 50g' },
+  { id: 'c-117', name: '쿠키 (오트밀)', calories: 180, protein: 3, carbs: 27, fat: 7, servingSize: '2개 50g' },
+  { id: 'c-118', name: '크림치즈쿠키', calories: 210, protein: 3, carbs: 28, fat: 10, servingSize: '2개 55g' },
+  { id: 'c-119', name: '에그타르트', calories: 280, protein: 6, carbs: 32, fat: 14, servingSize: '1개 80g' },
+  { id: 'c-120', name: '다쿠아즈', calories: 220, protein: 5, carbs: 28, fat: 10, servingSize: '1개 60g' },
+  { id: 'c-121', name: '마들렌', calories: 180, protein: 3, carbs: 23, fat: 9, servingSize: '2개 50g' },
+  { id: 'c-122', name: '피낭시에', calories: 190, protein: 4, carbs: 22, fat: 10, servingSize: '2개 50g' },
+  { id: 'c-123', name: '카눌레', calories: 230, protein: 4, carbs: 38, fat: 7, servingSize: '1개 60g' },
+  { id: 'c-124', name: '크렘브륄레', calories: 280, protein: 5, carbs: 32, fat: 15, servingSize: '1개 120g' },
+  { id: 'c-125', name: '판나코타', calories: 230, protein: 4, carbs: 28, fat: 12, servingSize: '1개 130g' },
+  { id: 'c-126', name: '수플레 치즈케이크', calories: 260, protein: 8, carbs: 28, fat: 13, servingSize: '1조각 100g' },
+  { id: 'c-127', name: '바스크 치즈케이크', calories: 360, protein: 9, carbs: 26, fat: 25, servingSize: '1조각 120g' },
+  { id: 'c-128', name: '뉴욕 치즈케이크', calories: 400, protein: 7, carbs: 36, fat: 26, servingSize: '1조각 130g' },
+  { id: 'c-129', name: '오페라케이크', calories: 380, protein: 6, carbs: 44, fat: 20, servingSize: '1조각 100g' },
+  { id: 'c-130', name: '몽블랑', calories: 320, protein: 5, carbs: 42, fat: 15, servingSize: '1개 100g' },
+  { id: 'c-131', name: '딸기케이크', calories: 290, protein: 4.5, carbs: 42, fat: 12, servingSize: '1조각 100g' },
+  { id: 'c-132', name: '초코케이크', calories: 380, protein: 5.5, carbs: 52, fat: 18, servingSize: '1조각 110g' },
+  { id: 'c-133', name: '당근케이크', calories: 350, protein: 5, carbs: 48, fat: 16, servingSize: '1조각 110g' },
+  { id: 'c-134', name: '레드벨벳케이크', calories: 360, protein: 5, carbs: 50, fat: 16, servingSize: '1조각 110g' },
+
+  /* ── 아이스크림 / 빙수 ──────────────────── */
+  { id: 'c-140', name: '아이스크림 (바닐라)', calories: 200, protein: 3.5, carbs: 24, fat: 10, servingSize: '1스쿱 100g' },
+  { id: 'c-141', name: '아이스크림 (초콜릿)', calories: 220, protein: 3.5, carbs: 26, fat: 12, servingSize: '1스쿱 100g' },
+  { id: 'c-142', name: '딸기빙수', calories: 380, protein: 5, carbs: 72, fat: 8, servingSize: '1인분 400g' },
+  { id: 'c-143', name: '팥빙수', calories: 420, protein: 7, carbs: 82, fat: 7, servingSize: '1인분 400g' },
+  { id: 'c-144', name: '녹차빙수', calories: 350, protein: 6, carbs: 64, fat: 8, servingSize: '1인분 380g' },
+  { id: 'c-145', name: '망고빙수', calories: 360, protein: 4, carbs: 70, fat: 7, servingSize: '1인분 380g' },
+  { id: 'c-146', name: '소프트아이스크림 (바닐라)', calories: 160, protein: 3, carbs: 24, fat: 6, servingSize: '1개 100g' },
+  { id: 'c-147', name: '소프트아이스크림 (초코)', calories: 170, protein: 3, carbs: 26, fat: 6.5, servingSize: '1개 100g' },
+  { id: 'c-148', name: '젤라또', calories: 180, protein: 4, carbs: 28, fat: 6, servingSize: '1스쿱 100g' },
+
+  /* ══════════════════════════════════════════
+   * 프랜차이즈 카페 추가 메뉴
+   * ══════════════════════════════════════════ */
+  { id: 'c-200', name: '스타벅스 콜드브루 (톨)', calories: 15, protein: 0.5, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'c-201', name: '스타벅스 리저브 콜드브루 (톨)', calories: 15, protein: 0.5, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'c-202', name: '스타벅스 말차라떼 (톨)', calories: 200, protein: 8, carbs: 28, fat: 6.5, servingSize: '355ml' },
+  { id: 'c-203', name: '스타벅스 돌체라떼 (톨)', calories: 270, protein: 7, carbs: 40, fat: 8, servingSize: '355ml' },
+  { id: 'c-204', name: '스타벅스 콜드폼 아메리카노 (톨)', calories: 60, protein: 2, carbs: 7, fat: 3, servingSize: '355ml' },
+  { id: 'c-205', name: '스타벅스 리저브 에스프레소 (1샷)', calories: 5, protein: 0.3, carbs: 0.5, fat: 0.1, servingSize: '30ml' },
+  { id: 'c-206', name: '이디야 흑당밀크티 (레귤러)', calories: 270, protein: 5, carbs: 42, fat: 8, servingSize: '350ml' },
+  { id: 'c-207', name: '이디야 딸기라떼 (레귤러)', calories: 220, protein: 6, carbs: 34, fat: 6, servingSize: '350ml' },
+  { id: 'c-208', name: '메가커피 흑당버블라떼 (레귤러)', calories: 310, protein: 7, carbs: 48, fat: 9, servingSize: '400ml' },
+  { id: 'c-209', name: '메가커피 아이스크림라떼 (레귤러)', calories: 340, protein: 8, carbs: 52, fat: 11, servingSize: '400ml' },
+  { id: 'c-210', name: '컴포즈 아메리카노 (레귤러)', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'c-211', name: '컴포즈 아이스크림라떼 (레귤러)', calories: 320, protein: 7, carbs: 48, fat: 10, servingSize: '400ml' },
+  { id: 'c-212', name: '빽다방 아메리카노 (레귤러)', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '400ml' },
+  { id: 'c-213', name: '빽다방 빽스치노 (레귤러)', calories: 380, protein: 5, carbs: 60, fat: 14, servingSize: '400ml' },
+  { id: 'c-214', name: '투썸 딸기폭탄생크림케이크 (1조각)', calories: 450, protein: 6, carbs: 54, fat: 24, servingSize: '1조각 140g' },
+  { id: 'c-215', name: '투썸 아이스박스 케이크 (1조각)', calories: 420, protein: 5.5, carbs: 52, fat: 22, servingSize: '1조각 130g' },
+  { id: 'c-216', name: '할리스 카라멜마키아토 (레귤러)', calories: 240, protein: 7, carbs: 36, fat: 7.5, servingSize: '355ml' },
+  { id: 'c-217', name: '폴바셋 아메리카노 (레귤러)', calories: 10, protein: 0.3, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'c-218', name: '폴바셋 플랫화이트', calories: 130, protein: 6.5, carbs: 11, fat: 6.5, servingSize: '230ml' },
+  { id: 'c-219', name: '공차 버블밀크티 (레귤러)', calories: 310, protein: 3, carbs: 54, fat: 8, servingSize: '500ml' },
+  { id: 'c-220', name: '공차 타로밀크티 (레귤러)', calories: 330, protein: 4, carbs: 56, fat: 9, servingSize: '500ml' },
+  { id: 'c-221', name: '공차 흑당타피오카라떼 (레귤러)', calories: 350, protein: 5, carbs: 58, fat: 10, servingSize: '500ml' },
+  { id: 'c-222', name: '더벤티 아메리카노 (레귤러)', calories: 10, protein: 0.2, carbs: 2, fat: 0, servingSize: '400ml' },
+  { id: 'c-223', name: '더벤티 달고나라떼 (레귤러)', calories: 250, protein: 6, carbs: 38, fat: 8, servingSize: '400ml' },
+  { id: 'c-224', name: '파스쿠찌 아메리카노 (레귤러)', calories: 10, protein: 0.3, carbs: 2, fat: 0, servingSize: '355ml' },
+  { id: 'c-225', name: '블루보틀 카페라떼 (12oz)', calories: 140, protein: 7, carbs: 14, fat: 6, servingSize: '355ml' },
+
+  /* ══════════════════════════════════════════
+   * 한식 반찬 — 나물 / 조림 / 볶음 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-001', name: '시금치나물', calories: 28, protein: 2.5, carbs: 3.5, fat: 0.8, servingSize: '100g' },
+  { id: 'd-002', name: '콩나물무침', calories: 35, protein: 3.5, carbs: 3, fat: 1.2, servingSize: '100g' },
+  { id: 'd-003', name: '도라지무침', calories: 45, protein: 1.5, carbs: 8, fat: 1, servingSize: '100g' },
+  { id: 'd-004', name: '고사리나물', calories: 55, protein: 3, carbs: 7, fat: 1.5, servingSize: '100g' },
+  { id: 'd-005', name: '취나물', calories: 30, protein: 2.5, carbs: 4, fat: 0.8, servingSize: '100g' },
+  { id: 'd-006', name: '애호박나물', calories: 38, protein: 2, carbs: 5, fat: 1.2, servingSize: '100g' },
+  { id: 'd-007', name: '가지나물', calories: 40, protein: 2, carbs: 5.5, fat: 1.5, servingSize: '100g' },
+  { id: 'd-008', name: '숙주나물', calories: 25, protein: 2.5, carbs: 2.5, fat: 0.5, servingSize: '100g' },
+  { id: 'd-009', name: '파래무침', calories: 40, protein: 3, carbs: 5, fat: 1, servingSize: '100g' },
+  { id: 'd-010', name: '미역무침', calories: 30, protein: 1.5, carbs: 4.5, fat: 0.8, servingSize: '100g' },
+  { id: 'd-011', name: '김조림', calories: 60, protein: 4, carbs: 6, fat: 2.5, servingSize: '50g' },
+  { id: 'd-012', name: '멸치볶음', calories: 180, protein: 22, carbs: 8, fat: 7, servingSize: '100g' },
+  { id: 'd-013', name: '건새우볶음', calories: 160, protein: 28, carbs: 4, fat: 3.5, servingSize: '80g' },
+  { id: 'd-014', name: '두부조림', calories: 130, protein: 10, carbs: 6, fat: 7, servingSize: '150g' },
+  { id: 'd-015', name: '감자조림', calories: 130, protein: 2.5, carbs: 24, fat: 3.5, servingSize: '100g' },
+  { id: 'd-016', name: '연근조림', calories: 120, protein: 2, carbs: 26, fat: 1.5, servingSize: '100g' },
+  { id: 'd-017', name: '우엉조림', calories: 100, protein: 1.5, carbs: 20, fat: 2, servingSize: '100g' },
+  { id: 'd-018', name: '메추리알조림', calories: 150, protein: 10, carbs: 8, fat: 9, servingSize: '100g' },
+  { id: 'd-019', name: '깻잎무침', calories: 55, protein: 2.5, carbs: 6, fat: 2.5, servingSize: '100g' },
+  { id: 'd-020', name: '깻잎장아찌', calories: 50, protein: 2.5, carbs: 5.5, fat: 2, servingSize: '50g' },
+  { id: 'd-021', name: '오이무침', calories: 30, protein: 1, carbs: 5, fat: 0.8, servingSize: '100g' },
+  { id: 'd-022', name: '오이소박이', calories: 25, protein: 1.5, carbs: 3.5, fat: 0.5, servingSize: '100g' },
+  { id: 'd-023', name: '파김치', calories: 35, protein: 1.5, carbs: 5, fat: 0.8, servingSize: '100g' },
+  { id: 'd-024', name: '열무김치', calories: 20, protein: 1.5, carbs: 3, fat: 0.3, servingSize: '100g' },
+  { id: 'd-025', name: '총각김치', calories: 25, protein: 1.5, carbs: 3.5, fat: 0.5, servingSize: '100g' },
+  { id: 'd-026', name: '깍두기', calories: 22, protein: 1.2, carbs: 4, fat: 0.3, servingSize: '100g' },
+  { id: 'd-027', name: '동치미', calories: 15, protein: 0.8, carbs: 3, fat: 0.2, servingSize: '200g' },
+  { id: 'd-028', name: '나박김치', calories: 18, protein: 0.8, carbs: 3.5, fat: 0.2, servingSize: '200g' },
+  { id: 'd-029', name: '묵은지', calories: 20, protein: 1.5, carbs: 3, fat: 0.5, servingSize: '100g' },
+  { id: 'd-030', name: '갈치조림', calories: 200, protein: 22, carbs: 8, fat: 9, servingSize: '1인분 150g' },
+  { id: 'd-031', name: '고등어무조림', calories: 220, protein: 20, carbs: 12, fat: 11, servingSize: '1인분 200g' },
+  { id: 'd-032', name: '꽁치조림', calories: 195, protein: 19, carbs: 8, fat: 10, servingSize: '1인분 150g' },
+  { id: 'd-033', name: '돼지고기두루치기', calories: 360, protein: 24, carbs: 14, fat: 24, servingSize: '1인분 200g' },
+  { id: 'd-034', name: '주꾸미볶음', calories: 220, protein: 22, carbs: 14, fat: 9, servingSize: '1인분 200g' },
+  { id: 'd-035', name: '오징어볶음', calories: 200, protein: 20, carbs: 12, fat: 8, servingSize: '1인분 200g' },
+  { id: 'd-036', name: '낙지볶음', calories: 190, protein: 22, carbs: 10, fat: 7, servingSize: '1인분 200g' },
+
+  /* ══════════════════════════════════════════
+   * 한식 — 국밥 / 해장국
+   * ══════════════════════════════════════════ */
+  { id: 'd-050', name: '순대국밥', calories: 560, protein: 28, carbs: 62, fat: 22, servingSize: '1인분 700g' },
+  { id: 'd-051', name: '돼지국밥', calories: 540, protein: 30, carbs: 58, fat: 22, servingSize: '1인분 700g' },
+  { id: 'd-052', name: '소머리국밥', calories: 580, protein: 32, carbs: 60, fat: 24, servingSize: '1인분 700g' },
+  { id: 'd-053', name: '해장국', calories: 480, protein: 26, carbs: 52, fat: 18, servingSize: '1인분 650g' },
+  { id: 'd-054', name: '뼈다귀해장국', calories: 520, protein: 30, carbs: 52, fat: 22, servingSize: '1인분 700g' },
+  { id: 'd-055', name: '우거지해장국', calories: 350, protein: 20, carbs: 36, fat: 14, servingSize: '1인분 600g' },
+  { id: 'd-056', name: '선지국밥', calories: 480, protein: 28, carbs: 52, fat: 18, servingSize: '1인분 700g' },
+  { id: 'd-057', name: '곰탕', calories: 450, protein: 30, carbs: 38, fat: 18, servingSize: '1인분 600g' },
+  { id: 'd-058', name: '설렁탕', calories: 480, protein: 32, carbs: 40, fat: 20, servingSize: '1인분 650g' },
+  { id: 'd-059', name: '도가니탕', calories: 420, protein: 28, carbs: 34, fat: 18, servingSize: '1인분 600g' },
+  { id: 'd-060', name: '꼬리곰탕', calories: 550, protein: 34, carbs: 36, fat: 28, servingSize: '1인분 650g' },
+  { id: 'd-061', name: '삼계탕', calories: 540, protein: 42, carbs: 44, fat: 18, servingSize: '1인분 800g' },
+  { id: 'd-062', name: '백숙', calories: 480, protein: 40, carbs: 36, fat: 16, servingSize: '1인분 600g' },
+  { id: 'd-063', name: '닭곰탕', calories: 400, protein: 34, carbs: 32, fat: 14, servingSize: '1인분 600g' },
+
+  /* ══════════════════════════════════════════
+   * 한식 — 찜 / 조림 (메인 요리)
+   * ══════════════════════════════════════════ */
+  { id: 'd-070', name: '아귀찜', calories: 380, protein: 34, carbs: 18, fat: 20, servingSize: '1인분 350g' },
+  { id: 'd-071', name: '코다리찜', calories: 340, protein: 36, carbs: 14, fat: 16, servingSize: '1인분 300g' },
+  { id: 'd-072', name: '돼지등뼈찜', calories: 480, protein: 36, carbs: 22, fat: 28, servingSize: '1인분 400g' },
+  { id: 'd-073', name: '닭볶음탕 (매운)', calories: 400, protein: 34, carbs: 24, fat: 18, servingSize: '1인분 300g' },
+  { id: 'd-074', name: '쭈꾸미삼겹살볶음', calories: 440, protein: 30, carbs: 16, fat: 30, servingSize: '1인분 250g' },
+  { id: 'd-075', name: '우삼겹볶음', calories: 420, protein: 24, carbs: 14, fat: 32, servingSize: '1인분 200g' },
+  { id: 'd-076', name: '매운갈비찜', calories: 560, protein: 40, carbs: 30, fat: 32, servingSize: '1인분 350g' },
+  { id: 'd-077', name: '생선구이 (임연수)', calories: 180, protein: 24, carbs: 0, fat: 9, servingSize: '1토막 150g' },
+  { id: 'd-078', name: '생선구이 (삼치)', calories: 190, protein: 25, carbs: 0, fat: 10, servingSize: '1토막 150g' },
+
+  /* ══════════════════════════════════════════
+   * 중식 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-100', name: '짜장면', calories: 550, protein: 18, carbs: 86, fat: 14, servingSize: '1인분 480g' },
+  { id: 'd-101', name: '짬뽕', calories: 560, protein: 24, carbs: 72, fat: 18, servingSize: '1인분 500g' },
+  { id: 'd-102', name: '볶음밥 (중식)', calories: 580, protein: 16, carbs: 82, fat: 20, servingSize: '1인분 400g' },
+  { id: 'd-103', name: '탕수육', calories: 580, protein: 22, carbs: 62, fat: 28, servingSize: '1인분 250g' },
+  { id: 'd-104', name: '깐풍기', calories: 520, protein: 28, carbs: 44, fat: 26, servingSize: '1인분 250g' },
+  { id: 'd-105', name: '유린기', calories: 500, protein: 28, carbs: 36, fat: 28, servingSize: '1인분 250g' },
+  { id: 'd-106', name: '마파두부', calories: 380, protein: 20, carbs: 22, fat: 24, servingSize: '1인분 300g' },
+  { id: 'd-107', name: '마라탕', calories: 620, protein: 28, carbs: 52, fat: 36, servingSize: '1인분 500g' },
+  { id: 'd-108', name: '마라샹궈', calories: 700, protein: 32, carbs: 44, fat: 48, servingSize: '1인분 450g' },
+  { id: 'd-109', name: '훠궈', calories: 580, protein: 34, carbs: 42, fat: 32, servingSize: '1인분 500g' },
+  { id: 'd-110', name: '양장피', calories: 460, protein: 22, carbs: 48, fat: 22, servingSize: '1인분 350g' },
+  { id: 'd-111', name: '팔보채', calories: 380, protein: 26, carbs: 30, fat: 18, servingSize: '1인분 300g' },
+  { id: 'd-112', name: '깐쇼새우', calories: 440, protein: 24, carbs: 38, fat: 22, servingSize: '1인분 250g' },
+  { id: 'd-113', name: '동파육', calories: 680, protein: 28, carbs: 20, fat: 54, servingSize: '1인분 250g' },
+  { id: 'd-114', name: '북경오리', calories: 420, protein: 24, carbs: 28, fat: 26, servingSize: '1인분 200g' },
+  { id: 'd-115', name: '고추잡채', calories: 380, protein: 22, carbs: 28, fat: 22, servingSize: '1인분 250g' },
+  { id: 'd-116', name: '중국식 만두 (물만두)', calories: 280, protein: 14, carbs: 36, fat: 9, servingSize: '10개 200g' },
+  { id: 'd-117', name: '딤섬 (하가우)', calories: 200, protein: 10, carbs: 26, fat: 6, servingSize: '3개 90g' },
+  { id: 'd-118', name: '딤섬 (슈마이)', calories: 180, protein: 12, carbs: 20, fat: 6, servingSize: '3개 90g' },
+  { id: 'd-119', name: '군만두 (중식)', calories: 320, protein: 14, carbs: 38, fat: 13, servingSize: '5개 180g' },
+  { id: 'd-120', name: '완탕수프', calories: 280, protein: 16, carbs: 28, fat: 12, servingSize: '1인분 400g' },
+
+  /* ══════════════════════════════════════════
+   * 서양식 — 파스타 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-140', name: '스파게티 볼로네제', calories: 580, protein: 26, carbs: 68, fat: 22, servingSize: '1인분 400g' },
+  { id: 'd-141', name: '스파게티 까르보나라', calories: 650, protein: 22, carbs: 70, fat: 30, servingSize: '1인분 380g' },
+  { id: 'd-142', name: '스파게티 알리오올리오', calories: 500, protein: 14, carbs: 72, fat: 18, servingSize: '1인분 360g' },
+  { id: 'd-143', name: '스파게티 아마트리치아나', calories: 560, protein: 20, carbs: 72, fat: 20, servingSize: '1인분 380g' },
+  { id: 'd-144', name: '스파게티 봉골레', calories: 480, protein: 22, carbs: 68, fat: 14, servingSize: '1인분 380g' },
+  { id: 'd-145', name: '펜네 아라비아타', calories: 520, protein: 16, carbs: 76, fat: 16, servingSize: '1인분 380g' },
+  { id: 'd-146', name: '페투치네 알프레도', calories: 680, protein: 20, carbs: 72, fat: 34, servingSize: '1인분 400g' },
+  { id: 'd-147', name: '파스타 (봉골레)', calories: 480, protein: 22, carbs: 68, fat: 14, servingSize: '1인분 380g' },
+  { id: 'd-148', name: '리조또 (버섯)', calories: 520, protein: 14, carbs: 76, fat: 18, servingSize: '1인분 380g' },
+  { id: 'd-149', name: '리조또 (트러플)', calories: 560, protein: 14, carbs: 74, fat: 24, servingSize: '1인분 380g' },
+  { id: 'd-150', name: '리조또 (토마토새우)', calories: 500, protein: 18, carbs: 74, fat: 16, servingSize: '1인분 380g' },
+  { id: 'd-151', name: '뇨끼', calories: 480, protein: 12, carbs: 78, fat: 14, servingSize: '1인분 350g' },
+  { id: 'd-152', name: '라자냐', calories: 620, protein: 26, carbs: 62, fat: 30, servingSize: '1인분 350g' },
+
+  /* ══════════════════════════════════════════
+   * 서양식 — 스테이크 / 메인 요리
+   * ══════════════════════════════════════════ */
+  { id: 'd-160', name: '티본스테이크 (250g)', calories: 560, protein: 52, carbs: 0, fat: 38, servingSize: '250g' },
+  { id: 'd-161', name: '립아이스테이크 (200g)', calories: 500, protein: 46, carbs: 0, fat: 36, servingSize: '200g' },
+  { id: 'd-162', name: '안심스테이크 (200g)', calories: 400, protein: 48, carbs: 0, fat: 24, servingSize: '200g' },
+  { id: 'd-163', name: '채끝스테이크 (200g)', calories: 460, protein: 46, carbs: 0, fat: 30, servingSize: '200g' },
+  { id: 'd-164', name: '함박스테이크', calories: 420, protein: 26, carbs: 22, fat: 26, servingSize: '1인분 250g' },
+  { id: 'd-165', name: '치킨스테이크', calories: 340, protein: 36, carbs: 8, fat: 18, servingSize: '1인분 200g' },
+  { id: 'd-166', name: '포크스테이크', calories: 380, protein: 34, carbs: 4, fat: 26, servingSize: '1인분 200g' },
+  { id: 'd-167', name: '연어스테이크', calories: 380, protein: 38, carbs: 2, fat: 24, servingSize: '1인분 200g' },
+  { id: 'd-168', name: '쉬림프파스타', calories: 520, protein: 24, carbs: 68, fat: 18, servingSize: '1인분 380g' },
+  { id: 'd-169', name: '씨푸드파스타', calories: 540, protein: 26, carbs: 68, fat: 18, servingSize: '1인분 400g' },
+
+  /* ══════════════════════════════════════════
+   * 서양식 — 샐러드 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-180', name: '시저샐러드', calories: 280, protein: 10, carbs: 16, fat: 20, servingSize: '1인분 250g' },
+  { id: 'd-181', name: '그릭샐러드', calories: 220, protein: 7, carbs: 14, fat: 16, servingSize: '1인분 250g' },
+  { id: 'd-182', name: '코브샐러드', calories: 380, protein: 26, carbs: 12, fat: 28, servingSize: '1인분 300g' },
+  { id: 'd-183', name: '니수아즈샐러드', calories: 320, protein: 22, carbs: 18, fat: 18, servingSize: '1인분 300g' },
+  { id: 'd-184', name: '카프레제', calories: 260, protein: 14, carbs: 6, fat: 20, servingSize: '1인분 200g' },
+  { id: 'd-185', name: '루꼴라샐러드', calories: 180, protein: 8, carbs: 10, fat: 12, servingSize: '1인분 200g' },
+  { id: 'd-186', name: '콥샐러드', calories: 360, protein: 24, carbs: 10, fat: 26, servingSize: '1인분 300g' },
+  { id: 'd-187', name: '닭가슴살샐러드', calories: 240, protein: 28, carbs: 12, fat: 9, servingSize: '1인분 280g' },
+  { id: 'd-188', name: '연어샐러드', calories: 300, protein: 22, carbs: 10, fat: 20, servingSize: '1인분 280g' },
+  { id: 'd-189', name: '아보카도샐러드', calories: 280, protein: 6, carbs: 14, fat: 24, servingSize: '1인분 250g' },
+  { id: 'd-190', name: '참치샐러드', calories: 220, protein: 24, carbs: 10, fat: 10, servingSize: '1인분 250g' },
+  { id: 'd-191', name: '콘샐러드', calories: 180, protein: 4, carbs: 28, fat: 6, servingSize: '1인분 200g' },
+  { id: 'd-192', name: '과일샐러드', calories: 120, protein: 1.5, carbs: 28, fat: 0.5, servingSize: '1인분 200g' },
+
+  /* ══════════════════════════════════════════
+   * 멕시칸 / 타코
+   * ══════════════════════════════════════════ */
+  { id: 'd-200', name: '타코 (소고기)', calories: 380, protein: 22, carbs: 34, fat: 18, servingSize: '2개 200g' },
+  { id: 'd-201', name: '타코 (치킨)', calories: 340, protein: 24, carbs: 32, fat: 14, servingSize: '2개 200g' },
+  { id: 'd-202', name: '부리또 (소고기)', calories: 620, protein: 28, carbs: 68, fat: 24, servingSize: '1개 350g' },
+  { id: 'd-203', name: '부리또 (치킨)', calories: 580, protein: 30, carbs: 66, fat: 20, servingSize: '1개 350g' },
+  { id: 'd-204', name: '퀘사디아', calories: 500, protein: 22, carbs: 48, fat: 26, servingSize: '1인분 300g' },
+  { id: 'd-205', name: '나초', calories: 480, protein: 10, carbs: 56, fat: 24, servingSize: '1인분 150g' },
+  { id: 'd-206', name: '과카몰리', calories: 160, protein: 2, carbs: 10, fat: 14, servingSize: '100g' },
+  { id: 'd-207', name: '살사소스', calories: 35, protein: 1.5, carbs: 7, fat: 0.5, servingSize: '100g' },
+  { id: 'd-208', name: '치폴레볼', calories: 640, protein: 32, carbs: 72, fat: 24, servingSize: '1인분 450g' },
+
+  /* ══════════════════════════════════════════
+   * 인도 / 동남아
+   * ══════════════════════════════════════════ */
+  { id: 'd-220', name: '버터치킨카레', calories: 480, protein: 28, carbs: 28, fat: 30, servingSize: '1인분 300g' },
+  { id: 'd-221', name: '팔락파니르', calories: 380, protein: 16, carbs: 18, fat: 28, servingSize: '1인분 280g' },
+  { id: 'd-222', name: '치킨티카마살라', calories: 460, protein: 34, carbs: 22, fat: 28, servingSize: '1인분 300g' },
+  { id: 'd-223', name: '난', calories: 280, protein: 8, carbs: 50, fat: 5, servingSize: '1장 100g' },
+  { id: 'd-224', name: '비리야니', calories: 560, protein: 24, carbs: 72, fat: 20, servingSize: '1인분 400g' },
+  { id: 'd-225', name: '팟타이', calories: 520, protein: 20, carbs: 66, fat: 20, servingSize: '1인분 380g' },
+  { id: 'd-226', name: '그린카레', calories: 480, protein: 24, carbs: 26, fat: 32, servingSize: '1인분 350g' },
+  { id: 'd-227', name: '똠얌꿍', calories: 320, protein: 22, carbs: 18, fat: 18, servingSize: '1인분 400g' },
+  { id: 'd-228', name: '나시고랭', calories: 580, protein: 18, carbs: 76, fat: 24, servingSize: '1인분 400g' },
+  { id: 'd-229', name: '미고랭', calories: 540, protein: 16, carbs: 72, fat: 22, servingSize: '1인분 380g' },
+  { id: 'd-230', name: '쌀국수 (포)', calories: 420, protein: 18, carbs: 68, fat: 8, servingSize: '1인분 500g' },
+  { id: 'd-231', name: '반미', calories: 480, protein: 22, carbs: 58, fat: 18, servingSize: '1개 250g' },
+  { id: 'd-232', name: '분짜', calories: 460, protein: 24, carbs: 54, fat: 16, servingSize: '1인분 450g' },
+  { id: 'd-233', name: '스프링롤 (생)', calories: 180, protein: 8, carbs: 26, fat: 6, servingSize: '2개 120g' },
+  { id: 'd-234', name: '스프링롤 (튀김)', calories: 280, protein: 8, carbs: 30, fat: 15, servingSize: '2개 120g' },
+  { id: 'd-235', name: '인도네시아식 사테', calories: 320, protein: 26, carbs: 12, fat: 20, servingSize: '5꼬치 200g' },
+
+  /* ══════════════════════════════════════════
+   * 포장마차 / 길거리 음식 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-250', name: '어묵탕', calories: 280, protein: 16, carbs: 28, fat: 10, servingSize: '1인분 400g' },
+  { id: 'd-251', name: '호떡', calories: 260, protein: 4.5, carbs: 44, fat: 8, servingSize: '1개 100g' },
+  { id: 'd-252', name: '붕어빵', calories: 180, protein: 4, carbs: 34, fat: 3.5, servingSize: '2개 100g' },
+  { id: 'd-253', name: '계란빵', calories: 200, protein: 8, carbs: 28, fat: 7, servingSize: '1개 90g' },
+  { id: 'd-254', name: '핫도그 (길거리)', calories: 360, protein: 12, carbs: 40, fat: 16, servingSize: '1개 150g' },
+  { id: 'd-255', name: '옥수수 (찐)', calories: 130, protein: 4, carbs: 28, fat: 1.5, servingSize: '1개 150g' },
+  { id: 'd-256', name: '군고구마', calories: 150, protein: 2.5, carbs: 35, fat: 0.5, servingSize: '1개 130g' },
+  { id: 'd-257', name: '군밤', calories: 200, protein: 3.5, carbs: 44, fat: 1.5, servingSize: '10개 100g' },
+  { id: 'd-258', name: '타코야키', calories: 280, protein: 10, carbs: 34, fat: 11, servingSize: '6개 150g' },
+  { id: 'd-259', name: '꽈배기', calories: 300, protein: 5, carbs: 44, fat: 11, servingSize: '2개 100g' },
+  { id: 'd-260', name: '도넛 (글레이즈드)', calories: 260, protein: 4, carbs: 36, fat: 12, servingSize: '1개 70g' },
+  { id: 'd-261', name: '도넛 (초콜릿)', calories: 290, protein: 4, carbs: 38, fat: 14, servingSize: '1개 75g' },
+  { id: 'd-262', name: '슈크림빵', calories: 250, protein: 6, carbs: 36, fat: 10, servingSize: '1개 90g' },
+  { id: 'd-263', name: '멜론빵', calories: 280, protein: 5.5, carbs: 46, fat: 9, servingSize: '1개 90g' },
+  { id: 'd-264', name: '달고나커피', calories: 160, protein: 2, carbs: 30, fat: 4, servingSize: '1잔 200ml' },
+
+  /* ══════════════════════════════════════════
+   * 돈가스 / 튀김 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-280', name: '로스가스', calories: 620, protein: 32, carbs: 56, fat: 30, servingSize: '1인분 350g' },
+  { id: 'd-281', name: '치즈돈가스', calories: 680, protein: 34, carbs: 58, fat: 35, servingSize: '1인분 370g' },
+  { id: 'd-282', name: '고구마치즈돈가스', calories: 720, protein: 30, carbs: 70, fat: 36, servingSize: '1인분 380g' },
+  { id: 'd-283', name: '새우튀김', calories: 240, protein: 16, carbs: 22, fat: 10, servingSize: '3개 120g' },
+  { id: 'd-284', name: '오징어튀김', calories: 280, protein: 18, carbs: 24, fat: 12, servingSize: '1인분 150g' },
+  { id: 'd-285', name: '고구마튀김', calories: 240, protein: 2, carbs: 40, fat: 9, servingSize: '100g' },
+  { id: 'd-286', name: '야채튀김', calories: 200, protein: 3.5, carbs: 28, fat: 9, servingSize: '100g' },
+  { id: 'd-287', name: '닭튀김', calories: 290, protein: 22, carbs: 18, fat: 14, servingSize: '100g' },
+  { id: 'd-288', name: '텐동', calories: 680, protein: 22, carbs: 88, fat: 26, servingSize: '1인분 450g' },
+  { id: 'd-289', name: '새우덴푸라', calories: 200, protein: 14, carbs: 18, fat: 8, servingSize: '3개 100g' },
+  { id: 'd-290', name: '탕수육 (새우)', calories: 420, protein: 18, carbs: 50, fat: 18, servingSize: '1인분 200g' },
+  { id: 'd-291', name: '치킨까스', calories: 440, protein: 28, carbs: 36, fat: 20, servingSize: '1인분 200g' },
+
+  /* ══════════════════════════════════════════
+   * 건강식 / 다이어트 / 헬스 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-310', name: '닭가슴살 도시락', calories: 320, protein: 35, carbs: 28, fat: 8, servingSize: '1개 300g' },
+  { id: 'd-311', name: '현미밥', calories: 340, protein: 7, carbs: 74, fat: 2.5, servingSize: '1공기 200g' },
+  { id: 'd-312', name: '귀리밥', calories: 320, protein: 8, carbs: 68, fat: 3.5, servingSize: '1공기 200g' },
+  { id: 'd-313', name: '두부면', calories: 80, protein: 9, carbs: 3, fat: 4, servingSize: '200g' },
+  { id: 'd-314', name: '곤약', calories: 10, protein: 0.5, carbs: 2, fat: 0.1, servingSize: '100g' },
+  { id: 'd-315', name: '곤약볶음밥', calories: 180, protein: 5, carbs: 28, fat: 6, servingSize: '1인분 250g' },
+  { id: 'd-316', name: '닭가슴살 볶음밥', calories: 380, protein: 30, carbs: 42, fat: 10, servingSize: '1인분 300g' },
+  { id: 'd-317', name: '야채볶음밥', calories: 360, protein: 8, carbs: 58, fat: 10, servingSize: '1인분 300g' },
+  { id: 'd-318', name: '프로틴바', calories: 200, protein: 20, carbs: 22, fat: 7, servingSize: '1개 60g' },
+  { id: 'd-319', name: '단백질셰이크 (바닐라)', calories: 160, protein: 25, carbs: 10, fat: 3, servingSize: '1팩 300ml' },
+  { id: 'd-320', name: '단백질셰이크 (초코)', calories: 170, protein: 25, carbs: 12, fat: 3.5, servingSize: '1팩 300ml' },
+  { id: 'd-321', name: '에그화이트오믈렛', calories: 120, protein: 18, carbs: 2, fat: 4, servingSize: '1인분 150g' },
+  { id: 'd-322', name: '치아씨드푸딩', calories: 200, protein: 6, carbs: 22, fat: 10, servingSize: '1개 200g' },
+  { id: 'd-323', name: '오트밀볼', calories: 280, protein: 8, carbs: 46, fat: 8, servingSize: '1인분 200g' },
+  { id: 'd-324', name: '그래놀라볼', calories: 240, protein: 6, carbs: 38, fat: 9, servingSize: '1인분 80g' },
+  { id: 'd-325', name: '저칼로리도시락', calories: 400, protein: 28, carbs: 44, fat: 12, servingSize: '1개 350g' },
+  { id: 'd-326', name: '닭가슴살 소시지', calories: 130, protein: 16, carbs: 6, fat: 5, servingSize: '2개 80g' },
+  { id: 'd-327', name: '두부스테이크', calories: 180, protein: 14, carbs: 8, fat: 10, servingSize: '1인분 200g' },
+  { id: 'd-328', name: '현미채소죽', calories: 220, protein: 5, carbs: 44, fat: 2, servingSize: '1인분 400g' },
+  { id: 'd-329', name: '생식 (분말)', calories: 180, protein: 6, carbs: 34, fat: 3, servingSize: '1봉 50g' },
+  { id: 'd-330', name: '케일스무디', calories: 130, protein: 4, carbs: 26, fat: 2, servingSize: '300ml' },
+  { id: 'd-331', name: '당근사과주스', calories: 110, protein: 1.5, carbs: 26, fat: 0.4, servingSize: '250ml' },
+
+  /* ══════════════════════════════════════════
+   * 분식 (상세)
+   * ══════════════════════════════════════════ */
+  { id: 'd-350', name: '엽기떡볶이', calories: 520, protein: 16, carbs: 88, fat: 14, servingSize: '1인분 400g' },
+  { id: 'd-351', name: '로제떡볶이', calories: 560, protein: 16, carbs: 86, fat: 18, servingSize: '1인분 400g' },
+  { id: 'd-352', name: '궁중떡볶이', calories: 480, protein: 18, carbs: 76, fat: 14, servingSize: '1인분 400g' },
+  { id: 'd-353', name: '치즈떡볶이', calories: 600, protein: 18, carbs: 88, fat: 20, servingSize: '1인분 400g' },
+  { id: 'd-354', name: '오뎅꼬치', calories: 80, protein: 5, carbs: 9, fat: 2.5, servingSize: '1개 60g' },
+  { id: 'd-355', name: '순대 (일반)', calories: 280, protein: 14, carbs: 28, fat: 12, servingSize: '150g' },
+  { id: 'd-356', name: '순대볶음', calories: 440, protein: 20, carbs: 38, fat: 24, servingSize: '1인분 300g' },
+  { id: 'd-357', name: '우동 (분식집)', calories: 400, protein: 14, carbs: 68, fat: 8, servingSize: '1인분 500g' },
+  { id: 'd-358', name: '라볶이', calories: 600, protein: 18, carbs: 102, fat: 14, servingSize: '1인분 500g' },
+  { id: 'd-359', name: '치즈볼', calories: 280, protein: 10, carbs: 28, fat: 15, servingSize: '5개 120g' },
+  { id: 'd-360', name: '떡꼬치', calories: 160, protein: 2.5, carbs: 32, fat: 2, servingSize: '1개 80g' },
+  { id: 'd-361', name: '핫바', calories: 280, protein: 12, carbs: 28, fat: 14, servingSize: '1개 100g' },
+  { id: 'd-362', name: '고로케 (감자)', calories: 280, protein: 6, carbs: 38, fat: 12, servingSize: '1개 100g' },
+  { id: 'd-363', name: '고로케 (카레)', calories: 290, protein: 6.5, carbs: 38, fat: 13, servingSize: '1개 100g' },
+
+  /* ══════════════════════════════════════════
+   * 술 / 주류
+   * ══════════════════════════════════════════ */
+  { id: 'd-400', name: '소주 (1잔)', calories: 64, protein: 0, carbs: 0, fat: 0, servingSize: '1잔 50ml' },
+  { id: 'd-401', name: '소주 (1병)', calories: 400, protein: 0, carbs: 0, fat: 0, servingSize: '1병 360ml' },
+  { id: 'd-402', name: '맥주 (캔 500ml)', calories: 210, protein: 1.5, carbs: 14, fat: 0, servingSize: '500ml' },
+  { id: 'd-403', name: '맥주 (생맥주 500ml)', calories: 220, protein: 1.5, carbs: 15, fat: 0, servingSize: '500ml' },
+  { id: 'd-404', name: '막걸리 (1병)', calories: 340, protein: 3, carbs: 44, fat: 0.5, servingSize: '750ml' },
+  { id: 'd-405', name: '와인 (레드 1잔)', calories: 125, protein: 0.1, carbs: 3.8, fat: 0, servingSize: '150ml' },
+  { id: 'd-406', name: '와인 (화이트 1잔)', calories: 120, protein: 0.1, carbs: 3.2, fat: 0, servingSize: '150ml' },
+  { id: 'd-407', name: '하이볼', calories: 160, protein: 0, carbs: 14, fat: 0, servingSize: '300ml' },
+  { id: 'd-408', name: '사케 (1잔)', calories: 130, protein: 0.5, carbs: 5, fat: 0, servingSize: '180ml' },
+  { id: 'd-409', name: '제로소주', calories: 240, protein: 0, carbs: 0, fat: 0, servingSize: '360ml' },
+  { id: 'd-410', name: '맥주 (제로 500ml)', calories: 50, protein: 0.5, carbs: 3.5, fat: 0, servingSize: '500ml' },
+
+  /* ══════════════════════════════════════════
+   * 야식 / 안주
+   * ══════════════════════════════════════════ */
+  { id: 'd-420', name: '치킨 (반반)', calories: 900, protein: 56, carbs: 52, fat: 52, servingSize: '1마리 700g' },
+  { id: 'd-421', name: '피자 (콤비네이션 1조각)', calories: 280, protein: 13, carbs: 32, fat: 12, servingSize: '1조각 120g' },
+  { id: 'd-422', name: '피자 (불고기 1조각)', calories: 260, protein: 14, carbs: 30, fat: 10, servingSize: '1조각 120g' },
+  { id: 'd-423', name: '피자 (마르게리타 1조각)', calories: 240, protein: 12, carbs: 28, fat: 10, servingSize: '1조각 110g' },
+  { id: 'd-424', name: '닭발', calories: 350, protein: 28, carbs: 12, fat: 24, servingSize: '1인분 200g' },
+  { id: 'd-425', name: '막창구이', calories: 380, protein: 26, carbs: 4, fat: 30, servingSize: '1인분 200g' },
+  { id: 'd-426', name: '곱창전골', calories: 520, protein: 32, carbs: 24, fat: 36, servingSize: '1인분 400g' },
+  { id: 'd-427', name: '새우깡', calories: 510, protein: 7, carbs: 68, fat: 24, servingSize: '1봉 90g' },
+  { id: 'd-428', name: '먹태', calories: 280, protein: 58, carbs: 4, fat: 2.5, servingSize: '100g' },
+  { id: 'd-429', name: '쥐포', calories: 300, protein: 52, carbs: 8, fat: 6, servingSize: '100g' },
+  { id: 'd-430', name: '치즈볼 (냉동)', calories: 320, protein: 12, carbs: 32, fat: 17, servingSize: '6개 150g' },
+  { id: 'd-431', name: '소떡소떡', calories: 360, protein: 10, carbs: 52, fat: 14, servingSize: '1인분 200g' },
 ]
 
 /* ─────────────────────────────────────────
@@ -1038,13 +1499,137 @@ export function normalizeFoodName(name: string): string {
     .trim()
 }
 
+/** 카테고리 키워드 → 해당 음식 id 목록 (카테고리명으로 검색 지원) */
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  '과일': ['b-260','b-261','b-262','b-263','b-264','b-265','b-266','b-267','b-268',
+            'b-269','b-270','b-271','b-272','b-273','b-274','b-275','b-276','b-277',
+            'b-278','b-279','b-280a','b-280b','b-280c','b-280d','b-280e','b-280f',
+            'b-280g','b-280h','b-280i','b-280j'],
+  '채소': ['b-220','b-221','b-222','b-223','b-224','b-225','b-226','b-227','b-228',
+            'b-229','b-230','b-231','b-232','b-233','b-234','b-235','b-236','b-237',
+            'b-238','b-239','b-240','b-241','b-242','b-243','b-244','b-245','b-246',
+            'b-247','b-248','b-249','b-250'],
+  '육류': ['b-001','b-002','b-003','b-004','b-013','b-014','b-015','b-023','b-024','b-025'],
+  '해산물': ['b-040','b-041','b-042','b-043','b-044','b-045'],
+  '유제품': ['b-280','b-281','b-282','b-283'],
+  '카페': ['c-001','c-003','c-011','c-030','c-040','c-060','c-080','c-100','c-106',
+            'c-109','c-114','c-116','c-119','c-127','c-131','c-140','c-142','c-146'],
+  '커피': ['c-001','c-002','c-003','c-004','c-005','c-006','c-007','c-008','c-009','c-010',
+            'b-340','b-341','b-342','b-505','b-506'],
+  '디저트': ['c-100','c-101','c-106','c-109','c-114','c-116','c-119','c-120','c-121',
+              'c-122','c-123','c-124','c-126','c-127','c-128','c-131','c-132','c-133',
+              'c-134','b-313','b-314','b-570','b-571','d-260','d-261','d-262','d-263'],
+  '케이크': ['c-126','c-127','c-128','c-131','c-132','c-133','c-134','b-313','b-570',
+              'b-571','b-575','c-214','c-215'],
+  '음료': ['c-040','c-041','c-042','c-043','c-044','c-045','c-046','c-047','c-048',
+            'c-049','c-060','c-061','c-062','c-063','c-080','c-081','c-082','c-084',
+            'd-400','d-401','d-402','d-403','d-404','d-405','d-406','d-407','d-408'],
+  // 반찬
+  '반찬': ['d-001','d-002','d-003','d-004','d-005','d-006','d-007','d-008','d-009','d-010',
+            'd-011','d-012','d-013','d-014','d-015','d-016','d-017','d-018','d-019','d-020',
+            'd-021','d-022','d-023','d-024','d-025','d-026','d-027','d-028','d-029'],
+  '나물': ['d-001','d-002','d-003','d-004','d-005','d-006','d-007','d-008','d-009','d-010'],
+  '조림': ['d-011','d-014','d-015','d-016','d-017','d-018','d-030','d-031','d-032'],
+  '김치': ['d-023','d-024','d-025','d-026','d-027','d-028','d-029'],
+  // 국밥 / 탕
+  '국밥': ['d-050','d-051','d-052','d-053','d-054','d-055','d-056','d-057','d-058',
+            'd-059','d-060','d-061','d-062','d-063'],
+  '탕': ['d-053','d-054','d-055','d-057','d-058','d-059','d-060','d-061','d-063'],
+  '해장국': ['d-053','d-054','d-055'],
+  '삼계탕': ['d-061'],
+  // 중식
+  '중식': ['d-100','d-101','d-102','d-103','d-104','d-105','d-106','d-107','d-108',
+            'd-109','d-110','d-111','d-112','d-113','d-114','d-115','d-116','d-117',
+            'd-118','d-119','d-120'],
+  '마라': ['d-107','d-108','d-109'],
+  '마라탕': ['d-107'],
+  '마라샹궈': ['d-108'],
+  '탕수육': ['d-103','d-290'],
+  '짜장': ['d-100'],
+  '짬뽕': ['d-101'],
+  // 파스타 / 이탈리안
+  '파스타': ['d-140','d-141','d-142','d-143','d-144','d-145','d-146','d-147','d-148',
+              'd-149','d-150','d-151','d-152','d-168','d-169'],
+  '리조또': ['d-148','d-149','d-150'],
+  '이탈리안': ['d-140','d-141','d-142','d-143','d-144','d-145','d-146','d-147','d-148',
+                'd-149','d-150','d-151','d-152'],
+  // 스테이크
+  '스테이크': ['d-160','d-161','d-162','d-163','d-164','d-165','d-166','d-167'],
+  '서양식': ['d-140','d-141','d-142','d-143','d-144','d-145','d-146','d-147','d-148',
+              'd-149','d-150','d-151','d-152','d-160','d-161','d-162','d-163','d-164',
+              'd-165','d-166','d-167','d-168','d-169','d-180','d-181','d-182','d-183',
+              'd-184','d-185','d-186','d-187','d-188','d-189'],
+  // 샐러드
+  '샐러드': ['d-180','d-181','d-182','d-183','d-184','d-185','d-186','d-187','d-188',
+              'd-189','d-190','d-191','d-192'],
+  // 멕시칸
+  '멕시칸': ['d-200','d-201','d-202','d-203','d-204','d-205','d-206','d-207','d-208'],
+  '타코': ['d-200','d-201'],
+  '부리또': ['d-202','d-203'],
+  // 동남아 / 인도
+  '동남아': ['d-225','d-226','d-227','d-228','d-229','d-230','d-231','d-232','d-233','d-234','d-235'],
+  '인도': ['d-220','d-221','d-222','d-223','d-224'],
+  '카레': ['d-220','d-221','d-222','d-224','d-226'],
+  '태국': ['d-225','d-226','d-227'],
+  '쌀국수': ['d-230','d-232'],
+  '베트남': ['d-230','d-231','d-232','d-233','d-234'],
+  // 길거리 / 포장마차
+  '포장마차': ['d-250','d-251','d-252','d-253','d-254','d-255','d-256','d-257','d-258',
+                'd-259','d-260','d-261','d-262','d-263','d-264'],
+  '길거리음식': ['d-250','d-251','d-252','d-253','d-254','d-255','d-256','d-257','d-258',
+                  'd-259','d-260','d-261','d-262','d-263','d-264'],
+  '붕어빵': ['d-252'],
+  '호떡': ['d-251'],
+  '도넛': ['d-260','d-261'],
+  // 돈가스 / 튀김
+  '돈가스': ['d-280','d-281','d-282','d-287','d-291'],
+  '튀김': ['d-283','d-284','d-285','d-286','d-287','d-288','d-289','d-290','d-291'],
+  '일식': ['d-258','d-288','d-289','d-408'],
+  '텐동': ['d-288'],
+  // 건강식 / 다이어트
+  '건강식': ['d-310','d-311','d-312','d-313','d-314','d-315','d-316','d-317','d-318',
+              'd-319','d-320','d-321','d-322','d-323','d-324','d-325','d-326','d-327',
+              'd-328','d-329','d-330','d-331'],
+  '다이어트': ['d-310','d-313','d-314','d-315','d-316','d-318','d-319','d-320','d-321',
+                'd-322','d-325','d-326','d-327','d-328'],
+  '닭가슴살': ['d-310','d-316','d-321','d-326'],
+  '헬스': ['d-318','d-319','d-320','d-321','d-322','d-323','d-324','d-326','d-327'],
+  '단백질': ['d-318','d-319','d-320','d-326'],
+  // 분식
+  '분식': ['d-350','d-351','d-352','d-353','d-354','d-355','d-356','d-357','d-358',
+            'd-359','d-360','d-361','d-362','d-363'],
+  '떡볶이': ['d-350','d-351','d-352','d-353'],
+  '순대': ['d-355','d-356'],
+  // 술 / 주류
+  '술': ['d-400','d-401','d-402','d-403','d-404','d-405','d-406','d-407','d-408','d-409','d-410'],
+  '주류': ['d-400','d-401','d-402','d-403','d-404','d-405','d-406','d-407','d-408','d-409','d-410'],
+  '소주': ['d-400','d-401','d-409'],
+  '맥주': ['d-402','d-403','d-410'],
+  '막걸리': ['d-404'],
+  '와인': ['d-405','d-406'],
+  // 야식 / 안주
+  '야식': ['d-420','d-421','d-422','d-423','d-424','d-425','d-426','d-427','d-428',
+            'd-429','d-430','d-431'],
+  '안주': ['d-424','d-425','d-426','d-427','d-428','d-429','d-430','d-431'],
+  '치킨': ['d-420'],
+  '피자': ['d-421','d-422','d-423'],
+}
+
 /** 쿼리 문자열로 식품 검색
+ *  - 카테고리 검색: 과일, 채소, 육류 등
  *  - 일반 검색: 이름에 쿼리 포함 여부
  *  - 초성 검색: ㅂㅁ → 빅맥, ㄱㅊㅈ → 김치찌개
  */
 export function searchBuiltinFoods(q: string, limit = 6): BuiltinFood[] {
   const query = q.trim().toLowerCase()
   if (!query) return []
+
+  // 카테고리 검색: "과일", "채소" 등
+  const categoryIds = CATEGORY_KEYWORDS[query]
+  if (categoryIds) {
+    const idSet = new Set(categoryIds)
+    return BUILTIN_FOODS.filter(f => idSet.has(f.id)).slice(0, limit)
+  }
 
   if (isChosungOnly(query)) {
     // 초성 모드: 경음 정규화 후 초성 포함 여부 확인
