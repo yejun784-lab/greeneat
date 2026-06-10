@@ -294,12 +294,12 @@ export function ManualMealLogger({ userId }: { userId?: string | null }) {
         <div className="fixed inset-0 z-50 flex flex-col justify-end">
           {/* 딤 */}
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px] animate-dim-in"
             onClick={closeSheet}
           />
 
           {/* 시트 */}
-          <div className="relative bg-surface rounded-t-3xl max-h-[92dvh] flex flex-col shadow-2xl">
+          <div className="relative bg-surface rounded-t-3xl max-h-[92dvh] flex flex-col shadow-2xl animate-slide-up">
             {/* 핸들 */}
             <div className="flex justify-center pt-3 pb-1 shrink-0">
               <div className="w-10 h-1 rounded-full bg-line-2" />

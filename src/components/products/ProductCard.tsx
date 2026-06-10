@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, ShoppingBag, Zap, Leaf, Dumbbell, Users, GitCompareArrows, RotateCcw } from 'lucide-react'
@@ -58,6 +59,9 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   const isNew        = isNewProduct((product as any).created_at)
   const isEco        = !compact && isEcoFriendly(product)
 
+  // 하트 팝 애니메이션 트리거
+  const [heartPop, setHeartPop] = React.useState(false)
+
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
     if (outOfStock) { toast.error('품절된 상품입니다.'); return }
@@ -68,6 +72,8 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   function handleWish(e: React.MouseEvent) {
     e.preventDefault()
     toggle(product.id)
+    setHeartPop(true)
+    setTimeout(() => setHeartPop(false), 420)
   }
 
   function handleCompare(e: React.MouseEvent) {
@@ -163,7 +169,12 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
               : 'bg-black/15 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100'
           }`}
         >
-          <Heart size={12} fill={wished ? 'currentColor' : 'none'} strokeWidth={wished ? 0 : 2} />
+          <Heart
+            size={12}
+            fill={wished ? 'currentColor' : 'none'}
+            strokeWidth={wished ? 0 : 2}
+            className={heartPop ? 'animate-heart-pop' : ''}
+          />
         </button>
       </div>
 

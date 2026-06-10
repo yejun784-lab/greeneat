@@ -453,7 +453,10 @@ export function Header() {
             >
               <ShoppingCart size={22} />
               {cartMounted && totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#2d7a4f] text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span
+                  key={totalItems}
+                  className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#2d7a4f] text-white text-xs rounded-full flex items-center justify-center font-medium animate-badge-pop"
+                >
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>
               )}

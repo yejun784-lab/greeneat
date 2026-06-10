@@ -119,7 +119,7 @@ export default function CartPage() {
                     >
                       <Minus size={12} />
                     </button>
-                    <span className="w-7 text-center text-sm font-medium text-ink">{item.quantity}</span>
+                    <span key={item.quantity} className="w-7 text-center text-sm font-medium text-ink animate-count-bump">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.isSubscription)}
                       className="w-8 h-8 flex items-center justify-center hover:bg-wash text-ink"
