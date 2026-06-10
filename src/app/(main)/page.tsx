@@ -7,6 +7,8 @@ import { RecentlyViewed } from '@/components/products/RecentlyViewed'
 import { InstagramGrid } from '@/components/home/InstagramGrid'
 import { AnimateIn } from '@/components/ui/AnimateIn'
 import { CountUp } from '@/components/ui/CountUp'
+import { FlashSaleSection } from '@/components/home/FlashSaleSection'
+import type { FlashSaleItem } from '@/components/home/FlashSaleSection'
 import { formatPrice } from '@/lib/utils'
 import type { Product } from '@/types'
 
@@ -90,11 +92,32 @@ async function getNewProducts(): Promise<Product[]> {
   return (data as Product[]) ?? []
 }
 
+async function getFlashSales(): Promise<FlashSaleItem[]> {
+  const supabase = await createClient()
+  const now = new Date().toISOString()
+  const { data } = await supabase
+    .from('flash_sales')
+    .select('id, discount_rate, ends_at, product:products(*, product_categories(id, name, slug, description))')
+    .eq('is_active', true)
+    .lte('starts_at', now)
+    .gt('ends_at', now)
+    .order('ends_at', { ascending: true })
+    .limit(6)
+  if (!data) return []
+  return data.map((row: any) => ({
+    id: row.id,
+    discount_rate: row.discount_rate,
+    ends_at: row.ends_at,
+    product: row.product as Product,
+  }))
+}
+
 export default async function HomePage() {
-  const [products, newProducts, trendingProducts] = await Promise.all([
+  const [products, newProducts, trendingProducts, flashSales] = await Promise.all([
     getFeaturedProducts(),
     getNewProducts(),
     getTrendingProducts(),
+    getFlashSales(),
   ])
 
   return (
@@ -235,6 +258,13 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ── 타임세일 ─────────────────────────────────────────────── */}
+      {flashSales.length > 0 && (
+        <AnimateIn direction="up" duration={500}>
+          <FlashSaleSection items={flashSales} />
+        </AnimateIn>
+      )}
 
       {/* ── 인기 급상승 ──────────────────────────────────────────── */}
       {trendingProducts.length > 0 && (
