@@ -27,13 +27,30 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-24 text-center">
-        <ShoppingBag size={48} className="mx-auto text-ink-5 mb-4" />
-        <h2 className="text-xl font-semibold text-ink-2 mb-2">장바구니가 비어있습니다</h2>
-        <p className="text-ink-5 mb-8">마음에 드는 밀키트를 담아보세요!</p>
-        <Link href="/products">
-          <Button size="lg">밀키트 둘러보기</Button>
-        </Link>
+      <div className="max-w-3xl mx-auto px-4 py-20 flex flex-col items-center">
+        {/* 일러스트 */}
+        <div className="relative w-36 h-36 mb-6">
+          <div className="absolute inset-0 bg-green-tint rounded-full" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <ShoppingBag size={56} className="text-[#2d7a4f]/50" strokeWidth={1.5} />
+          </div>
+          {/* 작은 아이콘들 */}
+          <span className="absolute -top-1 -right-1 text-2xl animate-bounce" style={{ animationDuration: '2s' }}>🥦</span>
+          <span className="absolute -bottom-1 -left-2 text-xl animate-bounce" style={{ animationDuration: '2.4s', animationDelay: '0.3s' }}>🍱</span>
+        </div>
+
+        <h2 className="text-xl font-bold text-ink mb-2">장바구니가 비어있어요</h2>
+        <p className="text-sm text-ink-4 mb-1">신선한 밀키트를 담아보세요!</p>
+        <p className="text-xs text-ink-5 mb-8">3개 이상 담으면 <span className="text-[#2d7a4f] font-semibold">5% 묶음 할인</span>이 적용돼요</p>
+
+        <div className="flex gap-3">
+          <Link href="/products" className="px-6 py-3 bg-[#2d7a4f] text-white text-sm font-semibold rounded-xl hover:bg-[#235f3d] transition-colors">
+            밀키트 둘러보기
+          </Link>
+          <Link href="/products?sort=popular" className="px-6 py-3 border border-line-2 text-ink-3 text-sm font-medium rounded-xl hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors">
+            인기 상품 보기
+          </Link>
+        </div>
       </div>
     )
   }

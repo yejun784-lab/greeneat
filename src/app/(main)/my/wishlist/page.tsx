@@ -74,13 +74,19 @@ export default function WishlistPage() {
       </div>
 
       {products.length === 0 ? (
-        <div className="text-center py-24">
-          <Heart size={48} className="mx-auto text-line-2 mb-4" />
-          <p className="text-ink-5 mb-2">찜한 상품이 없어요.</p>
-          <p className="text-sm text-ink-5 mb-8">마음에 드는 도시락에 ♥ 버튼을 눌러보세요!</p>
+        <div className="flex flex-col items-center py-20 text-center">
+          <div className="relative w-28 h-28 mb-5">
+            <div className="absolute inset-0 bg-red-50 rounded-full" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Heart size={44} className="text-red-300" strokeWidth={1.5} />
+            </div>
+          </div>
+          <p className="text-base font-semibold text-ink-2 mb-1">아직 찜한 상품이 없어요</p>
+          <p className="text-sm text-ink-4 mb-1">마음에 드는 도시락을 찜해보세요</p>
+          <p className="text-xs text-ink-5 mb-7">상품 카드의 ♥ 버튼을 눌러서 저장할 수 있어요</p>
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2d7a4f] text-white rounded-xl text-sm font-medium hover:bg-[#235f3d] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#2d7a4f] text-white rounded-xl text-sm font-semibold hover:bg-[#235f3d] transition-colors"
           >
             도시락 둘러보기
           </Link>

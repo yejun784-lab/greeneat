@@ -81,10 +81,18 @@ async function ProductListServer({ params }: { params: Awaited<SearchParams> }) 
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-20">
-        <p className="text-4xl mb-3">🔍</p>
-        <p className="text-sm font-medium text-ink-3">검색 결과가 없어요</p>
-        <p className="text-xs text-ink-5 mt-1">필터를 초기화하거나 다른 검색어를 사용해보세요</p>
+      <div className="flex flex-col items-center py-20 px-4 text-center">
+        <div className="w-20 h-20 rounded-full bg-tint flex items-center justify-center mb-4">
+          <span className="text-4xl">🔍</span>
+        </div>
+        <p className="text-base font-semibold text-ink-2 mb-1">검색 결과가 없어요</p>
+        <p className="text-sm text-ink-5 mb-5">필터를 바꾸거나 다른 검색어를 시도해보세요</p>
+        <a
+          href="/products"
+          className="px-5 py-2.5 bg-[#2d7a4f] text-white text-sm font-semibold rounded-xl hover:bg-[#235f3d] transition-colors"
+        >
+          전체 상품 보기
+        </a>
       </div>
     )
   }

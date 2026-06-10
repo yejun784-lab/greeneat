@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL, getTrackingUrl } from '@/lib/utils'
 import { ChevronLeft, Package, MapPin, CreditCard, Truck, ExternalLink, Gift } from 'lucide-react'
 import type { OrderStatus } from '@/types'
+import { CancelOrderButton } from '@/components/orders/CancelOrderButton'
 
 const STATUS_COLOR: Record<string, string> = {
   pending:   'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
@@ -217,6 +218,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <Link href="/my/orders" className="flex-1 text-center py-3 border border-line-2 rounded-xl text-sm font-medium text-ink-3 hover:border-[#2d7a4f] hover:text-[#2d7a4f] transition-colors">
             목록으로
           </Link>
+          <CancelOrderButton orderId={order.id} status={order.status} />
           <Link href="/products" className="flex-1 text-center py-3 bg-[#2d7a4f] rounded-xl text-sm font-semibold text-white hover:bg-[#235f3d] transition-colors">
             쇼핑 계속하기
           </Link>
