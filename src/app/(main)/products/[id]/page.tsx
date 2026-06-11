@@ -11,6 +11,7 @@ import { formatPrice, DIFFICULTY_LABEL } from '@/lib/utils'
 import { toast } from '@/lib/toast-store'
 import { NutritionBadge } from '@/components/products/NutritionBadge'
 import { ReviewSection } from '@/components/products/ReviewSection'
+import { QASection } from '@/components/products/QASection'
 import { RelatedProducts } from '@/components/products/RelatedProducts'
 import { FrequentlyBoughtTogether } from '@/components/products/FrequentlyBoughtTogether'
 import { CalcNutrition } from '@/components/products/CalcNutrition'
@@ -30,7 +31,7 @@ type RecipeStep = {
   duration_minutes: number | null
 }
 
-type Tab = 'info' | 'calc' | 'recipe' | 'reviews'
+type Tab = 'info' | 'calc' | 'recipe' | 'reviews' | 'qa'
 type GalleryImage = { id: string; url: string; order: number }
 
 export default function ProductDetailPage() {
@@ -79,7 +80,7 @@ export default function ProductDetailPage() {
   // URL ?tab 파라미터로 탭 초기화 + 스크롤
   useEffect(() => {
     const t = searchParams.get('tab')
-    if (t === 'reviews' || t === 'calc' || t === 'recipe') {
+    if (t === 'reviews' || t === 'calc' || t === 'recipe' || t === 'qa') {
       setActiveTab(t)
       setTimeout(() => {
         document.getElementById('product-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -392,17 +393,17 @@ export default function ProductDetailPage() {
       {/* 탭 */}
       <div id="product-tabs" className="mt-12">
         <div className="flex border-b border-line-2 mb-6 overflow-x-auto scrollbar-none">
-          {(['info', 'calc', 'recipe', 'reviews'] as Tab[]).map((tab) => (
+          {(['info', 'calc', 'recipe', 'reviews', 'qa'] as Tab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab
                   ? 'border-[#2d7a4f] text-[#2d7a4f]'
                   : 'border-transparent text-ink-4 hover:text-ink-2'
               }`}
             >
-              {tab === 'info' ? '기본 정보' : tab === 'calc' ? '영양 계산기' : tab === 'recipe' ? '레시피' : '리뷰'}
+              {tab === 'info' ? '기본 정보' : tab === 'calc' ? '영양 계산기' : tab === 'recipe' ? '레시피' : tab === 'reviews' ? '리뷰' : 'Q&A'}
             </button>
           ))}
         </div>
@@ -461,6 +462,10 @@ export default function ProductDetailPage() {
 
         {activeTab === 'reviews' && (
           <ReviewSection productId={product.id} />
+        )}
+
+        {activeTab === 'qa' && (
+          <QASection productId={product.id} />
         )}
       </div>
 
