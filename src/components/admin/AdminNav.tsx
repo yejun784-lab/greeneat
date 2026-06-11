@@ -2,14 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Home } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Home, Boxes, BarChart3, Truck, RotateCcw, Megaphone, Zap } from 'lucide-react'
 
 const NAV = [
-  { href: '/admin',          label: '대시보드',   icon: LayoutDashboard },
-  { href: '/admin/products', label: '상품 관리',   icon: Package },
-  { href: '/admin/orders',   label: '주문 관리',   icon: ShoppingCart },
-  { href: '/admin/users',    label: '회원 관리',   icon: Users },
-  { href: '/admin/coupons',  label: '쿠폰 관리',   icon: Tag },
+  { href: '/admin',             label: '대시보드',   icon: LayoutDashboard },
+  { href: '/admin/products',    label: '상품 관리',   icon: Package },
+  { href: '/admin/inventory',   label: '재고 관리',   icon: Boxes },
+  { href: '/admin/orders',      label: '주문 관리',   icon: ShoppingCart },
+  { href: '/admin/deliveries',  label: '배송 관리',   icon: Truck },
+  { href: '/admin/refunds',     label: '환불 관리',   icon: RotateCcw },
+  { href: '/admin/users',       label: '회원 관리',   icon: Users },
+  { href: '/admin/coupons',     label: '쿠폰 관리',   icon: Tag },
+  { href: '/admin/flash-sales', label: '타임세일',    icon: Zap },
+  { href: '/admin/notices',     label: '공지 관리',   icon: Megaphone },
+  { href: '/admin/analytics',   label: '통계',       icon: BarChart3 },
 ]
 
 export function AdminNav() {

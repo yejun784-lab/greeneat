@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatPrice, formatDate, ORDER_STATUS_LABEL, SUBSCRIPTION_PLAN_LABEL } from '@/lib/utils'
-import { Package, RefreshCw, ChevronRight, Target, Calendar, Heart, Coins, Ticket, MapPin, Bell } from 'lucide-react'
+import { Package, RefreshCw, ChevronRight, Target, Calendar, Heart, Coins, Ticket, MapPin, Bell, Star } from 'lucide-react'
 import { AIRecommend } from '@/components/my/AIRecommend'
 import { SubscriptionActions } from '@/components/my/SubscriptionActions'
 import { ReferralCard } from '@/components/my/ReferralCard'
@@ -13,6 +13,8 @@ import { AllergySettings } from '@/components/my/AllergySettings'
 import { ProfileEditor } from '@/components/my/ProfileEditor'
 import { WithdrawButton } from '@/components/my/WithdrawButton'
 import { HealthProfileButton } from '@/components/my/HealthProfileButton'
+import { AttendanceCard } from '@/components/my/AttendanceCard'
+import { PasswordChanger } from '@/components/my/PasswordChanger'
 import type { Order, Subscription } from '@/types'
 
 const GOAL_INFO: Record<string, { label: string; emoji: string; calTarget: number; proteinTarget: number }> = {
@@ -172,6 +174,9 @@ export default async function MyPage() {
         {/* 친구 초대 */}
         <ReferralCard code={profile?.referral_code ?? null} />
 
+        {/* 출석체크 */}
+        <AttendanceCard />
+
         {/* 퀵 링크 그리드 */}
         <div className="grid grid-cols-2 gap-3">
           <Link
@@ -235,8 +240,23 @@ export default async function MyPage() {
             <ChevronRight size={14} className="text-ink-5 group-hover:text-[#2d7a4f] transition-colors" />
           </Link>
           <Link
+            href="/my/reviews"
+            className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                <Star size={16} className="text-amber-400" fill="currentColor" />
+              </div>
+              <div>
+                <p className="font-semibold text-ink text-sm">내 리뷰</p>
+                <p className="text-xs text-ink-5 mt-0.5">작성한 리뷰 관리</p>
+              </div>
+            </div>
+            <ChevronRight size={14} className="text-ink-5 group-hover:text-[#2d7a4f] transition-colors" />
+          </Link>
+          <Link
             href="/my/notifications"
-            className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group col-span-2"
+            className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
@@ -244,7 +264,7 @@ export default async function MyPage() {
               </div>
               <div>
                 <p className="font-semibold text-ink text-sm">알림 센터</p>
-                <p className="text-xs text-ink-5 mt-0.5">주문·재입고·이벤트 알림</p>
+                <p className="text-xs text-ink-5 mt-0.5">주문·재입고 알림</p>
               </div>
             </div>
             <ChevronRight size={14} className="text-ink-5 group-hover:text-[#2d7a4f] transition-colors" />
@@ -255,6 +275,12 @@ export default async function MyPage() {
         <AllergySettings
           userId={user.id}
           initial={(profile?.allergen_profile as string[]) ?? []}
+        />
+
+        {/* 비밀번호 변경 — 이메일 가입 회원만 */}
+        <PasswordChanger
+          email={user.email ?? ''}
+          provider={(user.app_metadata?.provider as string) ?? 'email'}
         />
 
         {/* 주간 영양 리포트 */}
