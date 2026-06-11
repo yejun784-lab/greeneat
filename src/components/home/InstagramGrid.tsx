@@ -1,12 +1,12 @@
 import Image from 'next/image'
 
 const POSTS = [
-  { src: 'hankki-dakgaseum.png', caption: '닭가슴살 도시락 🍱' },
-  { src: 'manrep-bulgogi.png',   caption: '만렙 소불고기 🥩' },
-  { src: 'granola-gamgyul2.png', caption: '감귤 그래놀라 🍊' },
-  { src: 'hankki-dakgalbi.png',  caption: '치즈닭갈비 🧀' },
-  { src: 'hankki-dakgaseum.png', caption: '건강한 한끼 💚' },
-  { src: 'manrep-bulgogi.png',   caption: '오늘의 도시락 🌿' },
+  { src: 'hankki-dakgaseum.png',  caption: '닭가슴살 도시락 🍱' },
+  { src: 'manrep-bulgogi.png',    caption: '만렙 소불고기 🥩' },
+  { src: 'granola-gamgyul2.png',  caption: '감귤 그래놀라 🍊' },
+  { src: 'hankki-dakgalbi.png',   caption: '치즈닭갈비 🧀' },
+  { src: 'manrep-omurice.png',    caption: '치즈 오므라이스 🍳' },
+  { src: 'hankki-buldakroze.png', caption: '불닭로제 도시락 🌶️' },
 ]
 
 const BASE = 'https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/'
