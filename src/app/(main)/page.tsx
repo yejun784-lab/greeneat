@@ -9,6 +9,8 @@ import { AnimateIn } from '@/components/ui/AnimateIn'
 import { CountUp } from '@/components/ui/CountUp'
 import { FlashSaleSection } from '@/components/home/FlashSaleSection'
 import type { FlashSaleItem } from '@/components/home/FlashSaleSection'
+import { CollectionsBanner } from '@/components/home/CollectionsBanner'
+import { PersonalizedSection } from '@/components/home/PersonalizedSection'
 import { formatPrice } from '@/lib/utils'
 import type { Product } from '@/types'
 
@@ -265,6 +267,12 @@ export default async function HomePage() {
           <FlashSaleSection items={flashSales} />
         </AnimateIn>
       )}
+
+      {/* ── 개인화 추천 (로그인 시) ───────────────────────────────── */}
+      <PersonalizedSection />
+
+      {/* ── 기획전 ───────────────────────────────────────────────── */}
+      <CollectionsBanner />
 
       {/* ── 인기 급상승 ──────────────────────────────────────────── */}
       {trendingProducts.length > 0 && (

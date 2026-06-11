@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Home, Boxes, BarChart3, Truck, RotateCcw, Megaphone, Zap } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Home, Boxes, BarChart3, Truck, RotateCcw, Megaphone, Zap, MessageCircleQuestion } from 'lucide-react'
 
 const NAV = [
   { href: '/admin',             label: '대시보드',   icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const NAV = [
   { href: '/admin/orders',      label: '주문 관리',   icon: ShoppingCart },
   { href: '/admin/deliveries',  label: '배송 관리',   icon: Truck },
   { href: '/admin/refunds',     label: '환불 관리',   icon: RotateCcw },
+  { href: '/admin/inquiries',   label: '1:1 문의',   icon: MessageCircleQuestion },
   { href: '/admin/users',       label: '회원 관리',   icon: Users },
   { href: '/admin/coupons',     label: '쿠폰 관리',   icon: Tag },
   { href: '/admin/flash-sales', label: '타임세일',    icon: Zap },

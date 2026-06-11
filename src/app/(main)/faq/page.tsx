@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronLeft, Mail, Bot, Search, Clock, Phone, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronLeft, Mail, Bot, Search, Clock, Phone, ChevronRight, MessageCircleQuestion } from 'lucide-react'
 
 type FAQItem  = { q: string; a: string }
 type FAQCategory = { label: string; emoji: string; items: FAQItem[] }
@@ -312,6 +312,12 @@ export default function FAQPage() {
           >
             <Bot size={13} /> AI 상담
           </button>
+          <Link
+            href="/my/inquiries"
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface border border-line text-ink-3 text-sm font-semibold rounded-xl hover:border-[#2d7a4f]/50 hover:text-[#2d7a4f] transition-colors"
+          >
+            <MessageCircleQuestion size={13} /> 1:1 문의
+          </Link>
           <a
             href="mailto:support@greeneat.kr"
             className="flex items-center gap-1.5 px-4 py-2 bg-surface border border-line text-ink-3 text-sm font-semibold rounded-xl hover:border-[#2d7a4f]/50 hover:text-[#2d7a4f] transition-colors"
