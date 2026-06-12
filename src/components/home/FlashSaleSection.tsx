@@ -91,7 +91,7 @@ export function FlashSaleSection({ items }: Props) {
 
               {/* 이미지 */}
               <Link href={`/products/${p.id}`} className="block">
-                <div className="aspect-square overflow-hidden bg-[#f5f5f3]">
+                <div className="relative aspect-square overflow-hidden bg-[#f5f5f3]">
                   {imgSrc ? (
                     <Image
                       src={imgSrc}
