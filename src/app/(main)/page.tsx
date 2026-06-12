@@ -11,6 +11,7 @@ import { FlashSaleSection } from '@/components/home/FlashSaleSection'
 import type { FlashSaleItem } from '@/components/home/FlashSaleSection'
 import { CollectionsBanner } from '@/components/home/CollectionsBanner'
 import { PersonalizedSection } from '@/components/home/PersonalizedSection'
+import { HeroCollage } from '@/components/home/HeroCollage'
 import { formatPrice } from '@/lib/utils'
 import type { Product } from '@/types'
 
@@ -175,64 +176,9 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* 이미지 콜라주 */}
+            {/* 이미지 콜라주 — 메뉴 풀 10종이 한 칸씩 번갈아 회전 */}
             <div className="order-1 md:order-2 animate-fade-up delay-150">
-              <div className="relative">
-                {/* 배경 장식 */}
-                <div className="absolute -inset-4 bg-gradient-to-br from-[#e8f5ee] to-[#f0faf4] rounded-[3rem] -z-0" />
-
-                {/* 2×2 콜라주 */}
-                <div className="relative z-10 grid grid-cols-2 gap-3 p-4">
-                  {[
-                    { src: 'hankki-dakgaseum.png', label: '닭가슴살 도시락', price: '4,900원~', badge: '🔥 인기 1위', contain: false },
-                    { src: 'manrep-bulgogi.png',  label: '만렙 소불고기',  price: '6,500원',  badge: '⭐ 신메뉴',  contain: false },
-                    { src: 'granola-gamgyul2.png', label: '감귤 그래놀라', price: '6,900원',  badge: null,        contain: false },
-                    { src: 'hankki-dakgalbi.png', label: '치즈닭갈비',    price: '5,200원',  badge: null,        contain: false },
-                  ].map((item, i) => (
-                    <Link
-                      key={i}
-                      href="/products"
-                      className={`relative overflow-hidden shadow-md shadow-black/8 group block ${
-                        item.contain ? 'bg-[#fffbf0]' : 'bg-surface'
-                      } ${
-                        i === 0 ? 'rounded-tl-3xl rounded-tr-xl rounded-bl-xl rounded-br-sm' :
-                        i === 1 ? 'rounded-tl-xl rounded-tr-3xl rounded-bl-sm rounded-br-xl' :
-                        i === 2 ? 'rounded-tl-xl rounded-tr-sm rounded-bl-3xl rounded-br-xl' :
-                                  'rounded-tl-sm rounded-tr-xl rounded-bl-xl rounded-br-3xl'
-                      }`}
-                    >
-                      <div className="aspect-square relative">
-                        <Image
-                          src={`https://nbdpckerbphyfnjzqiqp.supabase.co/storage/v1/object/public/product-images/greeneat/${item.src}`}
-                          alt={item.label}
-                          fill
-                          className={`transition-transform duration-500 group-hover:scale-105 ${item.contain ? 'object-contain p-3' : 'object-cover'}`}
-                          priority
-                          sizes="25vw"
-                        />
-                      </div>
-                      {/* 하단 그라디언트 오버레이 */}
-                      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/55 to-transparent" />
-                      {/* 하단 텍스트 — 배지 있으면 같이 표시 */}
-                      <div className="absolute inset-x-0 bottom-0 px-2.5 pb-2.5">
-                        {item.badge && (
-                          <span className="inline-block bg-surface/20 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded mb-1">
-                            {item.badge}
-                          </span>
-                        )}
-                        <p className="text-white text-[11px] font-semibold leading-tight drop-shadow">{item.label}</p>
-                        <p className="text-white/80 text-[10px] mt-0.5">{item.price}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-
-                {/* 플로팅 뱃지 — 가격 */}
-                <div className="absolute -top-3 right-4 z-20 bg-[#2d7a4f] rounded-2xl px-4 py-2.5 shadow-lg shadow-[#2d7a4f]/40 text-white text-center">
-                  <p className="text-[9px] opacity-75 tracking-wide">한 끼 최저</p>
-                  <p className="text-[15px] font-bold tracking-tight">4,900원</p>
-                </div>
-              </div>
+              <HeroCollage />
             </div>
           </div>
         </div>
