@@ -71,9 +71,12 @@ export function HeroCollage() {
   // 크로스페이드용 이전 인덱스 (교체 중인 칸만 값 보유)
   const [prevCells, setPrevCells] = useState<(number | null)[]>([null, null, null, null])
 
+  // setState updater는 StrictMode에서 두 번 호출될 수 있으므로
+  // 회전 상태의 단일 출처는 전부 ref로 관리하고, 인터벌 콜백에서만 갱신한다.
+  const cellsRef = useRef<number[]>([0, 1, 2, 3])
   const cursorRef = useRef(4)   // 다음 투입할 풀 인덱스
   const turnRef = useRef(0)     // 이번에 교체할 칸 (라운드로빈)
-  const cleanupRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timersRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set())
 
   useEffect(() => {
     // 모션 최소화 설정 시 회전 비활성화
@@ -81,48 +84,50 @@ export function HeroCollage() {
       return
     }
 
+    const timers = timersRef.current
     const id = setInterval(() => {
-      setCells(current => {
-        const turn = turnRef.current % 4
+      const turn = turnRef.current % 4
+      const current = cellsRef.current
 
-        // 현재 화면에 없는 다음 메뉴 선택
-        let next = cursorRef.current % MENU_POOL.length
-        let guard = 0
-        while (current.includes(next) && guard < MENU_POOL.length) {
-          cursorRef.current += 1
-          next = cursorRef.current % MENU_POOL.length
-          guard += 1
-        }
+      // 현재 화면에 없는 다음 메뉴 선택
+      let next = cursorRef.current % MENU_POOL.length
+      let guard = 0
+      while (current.includes(next) && guard < MENU_POOL.length) {
+        cursorRef.current += 1
+        next = cursorRef.current % MENU_POOL.length
+        guard += 1
+      }
 
-        const updated = [...current]
-        const old = updated[turn]
-        updated[turn] = next
+      const old = current[turn]
+      const updated = [...current]
+      updated[turn] = next
+      cellsRef.current = updated
+      cursorRef.current += 1
+      turnRef.current += 1
 
+      setCells(updated)
+      setPrevCells(prev => {
+        const p = [...prev]
+        p[turn] = old
+        return p
+      })
+
+      // 페이드 종료 후 이전 레이어 제거 (칸별 독립 타이머)
+      const t = setTimeout(() => {
+        timers.delete(t)
         setPrevCells(prev => {
           const p = [...prev]
-          p[turn] = old
+          p[turn] = null
           return p
         })
-
-        // 페이드 종료 후 이전 레이어 제거
-        if (cleanupRef.current) clearTimeout(cleanupRef.current)
-        cleanupRef.current = setTimeout(() => {
-          setPrevCells(prev => {
-            const p = [...prev]
-            p[turn] = null
-            return p
-          })
-        }, FADE_MS + 100)
-
-        cursorRef.current += 1
-        turnRef.current += 1
-        return updated
-      })
+      }, FADE_MS + 100)
+      timers.add(t)
     }, ROTATE_INTERVAL)
 
     return () => {
       clearInterval(id)
-      if (cleanupRef.current) clearTimeout(cleanupRef.current)
+      timers.forEach(clearTimeout)
+      timers.clear()
     }
   }, [])
 
