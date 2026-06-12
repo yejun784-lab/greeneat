@@ -20,12 +20,12 @@
   --c-green-tint:   #e8f5ee;
   --c-green-tint-2: #f0faf4;
 
-  /* 텍스트 */
+  /* 텍스트 — ink-4/5는 캡션용: WCAG AA(4.5:1) 충족 값 */
   --c-ink:   #111111;
   --c-ink-2: #333333;
   --c-ink-3: #555555;
-  --c-ink-4: #888888;
-  --c-ink-5: #aaaaaa;
+  --c-ink-4: #6b6b6b;  /* 대비 5.3:1 */
+  --c-ink-5: #767676;  /* 대비 4.5:1 */
 
   /* 보더 */
   --c-line:   #f0f0ee;
@@ -43,12 +43,12 @@
   --c-green-tint:   #283022;  /* muted olive */
   --c-green-tint-2: #2e3828;  /* lighter muted olive */
 
-  /* 텍스트: 부드러운 따뜻한 크림 */
+  /* 텍스트: 부드러운 따뜻한 크림 — ink-4/5 가독 대비 상향 */
   --c-ink:   #f0ece4;  /* soft cream */
   --c-ink-2: #d8d0c4;  /* warm light */
   --c-ink-3: #aea498;  /* warm mid */
-  --c-ink-4: #7e7470;  /* warm gray */
-  --c-ink-5: #544c48;  /* soft dark */
+  --c-ink-4: #9a9088;  /* warm gray — 대비 개선 */
+  --c-ink-5: #847a72;  /* muted warm — 대비 개선 */
 
   /* 보더: 부드러운 브라운 */
   --c-line:   #403428;  /* soft border */

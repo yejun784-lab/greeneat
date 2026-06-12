@@ -77,9 +77,9 @@ export default async function OrdersPage() {
   const orders = (data ?? []) as Order[]
 
   const STATUS_COLOR: Record<string, string> = {
-    pending:   'bg-yellow-50 text-yellow-600',
-    confirmed: 'bg-blue-50 text-blue-600',
-    preparing: 'bg-purple-50 text-purple-600',
+    pending:   'bg-yellow-50 dark:bg-yellow-950/40 text-yellow-600 dark:text-yellow-400',
+    confirmed: 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400',
+    preparing: 'bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400',
     shipped:   'bg-indigo-50 text-indigo-600',
     delivered: 'bg-green-50 text-[#2d7a4f]',
     cancelled: 'bg-tint text-ink-4',
@@ -130,7 +130,7 @@ export default async function OrdersPage() {
                         {order.status === 'delivered' && (item as { product_id?: string }).product_id && (
                           <Link
                             href={`/products/${(item as { product_id: string }).product_id}?tab=reviews`}
-                            className="flex items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-full transition-colors"
+                            className="flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60 px-2 py-0.5 rounded-full transition-colors"
                           >
                             <Star size={10} fill="currentColor" />
                             리뷰 쓰기

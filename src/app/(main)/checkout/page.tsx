@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                 보유 포인트: <span className="font-bold text-[#2d7a4f]">{pointBalance.toLocaleString()}P</span>
               </p>
               {usedPoints > 0 ? (
-                <div className="flex items-center justify-between bg-yellow-50 rounded-xl p-3">
+                <div className="flex items-center justify-between bg-yellow-50 dark:bg-yellow-950/40 rounded-xl p-3">
                   <p className="text-sm font-medium text-yellow-700">
                     {usedPoints.toLocaleString()}P 사용 중
                   </p>
@@ -383,7 +383,7 @@ export default function CheckoutPage() {
                     ? Math.round(discountedTotal * best.discount_value / 100)
                     : best.discount_value
                   return (
-                    <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-3">
+                    <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3 mb-3">
                       <div>
                         <p className="text-xs font-semibold text-amber-700">🎫 최대 할인 쿠폰</p>
                         <p className="text-sm font-bold text-ink mt-0.5">{best.code}

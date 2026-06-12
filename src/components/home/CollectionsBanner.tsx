@@ -32,7 +32,7 @@ export async function CollectionsBanner() {
         </div>
         <Link
           href="/collections"
-          className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-line hover:border-ink"
+          className="inline-block text-sm font-medium text-ink-4 hover:text-ink transition-colors pt-3 pb-1 -mt-3 border-b border-line hover:border-ink"
         >
           전체보기
         </Link>

@@ -185,7 +185,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
                 <Heart size={16} className="text-red-400" fill="currentColor" />
               </div>
               <div>
@@ -200,7 +200,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-yellow-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-yellow-50 dark:bg-yellow-950/40 flex items-center justify-center">
                 <Coins size={16} className="text-yellow-500" />
               </div>
               <div>
@@ -215,7 +215,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
                 <Ticket size={16} className="text-purple-400" />
               </div>
               <div>
@@ -230,7 +230,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
                 <MapPin size={16} className="text-blue-400" />
               </div>
               <div>
@@ -245,7 +245,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
                 <Star size={16} className="text-amber-400" fill="currentColor" />
               </div>
               <div>
@@ -260,7 +260,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
                 <Bell size={16} className="text-[#2d7a4f]" />
               </div>
               <div>
@@ -275,7 +275,7 @@ export default async function MyPage() {
             className="flex items-center justify-between bg-surface rounded-2xl border border-line p-4 hover:border-[#2d7a4f]/30 transition-colors group col-span-2"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center">
                 <MessageCircleQuestion size={16} className="text-sky-500" />
               </div>
               <div>

@@ -1,9 +1,9 @@
 import Link from 'next/link'
 
 const TIERS = [
-  { name: 'Bronze', min: 0,      max: 50000,   color: 'text-amber-700',  bg: 'bg-amber-50',   bar: 'bg-amber-500'  },
-  { name: 'Silver', min: 50000,  max: 150000,  color: 'text-slate-500',  bg: 'bg-slate-50',   bar: 'bg-slate-400'  },
-  { name: 'Gold',   min: 150000, max: 300000,  color: 'text-yellow-600', bg: 'bg-yellow-50',  bar: 'bg-yellow-400' },
+  { name: 'Bronze', min: 0,      max: 50000,   color: 'text-amber-700',  bg: 'bg-amber-50 dark:bg-amber-950/40',   bar: 'bg-amber-500'  },
+  { name: 'Silver', min: 50000,  max: 150000,  color: 'text-slate-500',  bg: 'bg-slate-50 dark:bg-slate-900/40',   bar: 'bg-slate-400'  },
+  { name: 'Gold',   min: 150000, max: 300000,  color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/40',  bar: 'bg-yellow-400' },
   { name: 'VIP',    min: 300000, max: Infinity, color: 'text-[#2d7a4f]', bg: 'bg-green-tint', bar: 'bg-[#2d7a4f]'  },
 ]
 

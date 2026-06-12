@@ -231,7 +231,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/products?sort=popular"
-              className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+              className="inline-block text-sm font-medium text-ink-4 hover:text-ink transition-colors pt-3 pb-1 -mt-3 border-b border-[#ddd] hover:border-[#111]"
             >
               전체 보기
             </Link>
@@ -294,7 +294,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/products?sort=newest"
-              className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+              className="inline-block text-sm font-medium text-ink-4 hover:text-ink transition-colors pt-3 pb-1 -mt-3 border-b border-[#ddd] hover:border-[#111]"
             >
               전체 보기
             </Link>
@@ -320,7 +320,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/products"
-            className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+            className="inline-block text-sm font-medium text-ink-4 hover:text-ink transition-colors pt-3 pb-1 -mt-3 border-b border-[#ddd] hover:border-[#111]"
           >
             전체 보기
           </Link>
@@ -369,7 +369,7 @@ export default async function HomePage() {
               href="https://www.instagram.com/green_eat_food"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-ink-4 hover:text-ink transition-colors pb-1 border-b border-[#ddd] hover:border-[#111]"
+              className="inline-block text-sm font-medium text-ink-4 hover:text-ink transition-colors pt-3 pb-1 -mt-3 border-b border-[#ddd] hover:border-[#111]"
             >
               팔로우
             </a>

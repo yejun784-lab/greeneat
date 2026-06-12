@@ -24,13 +24,13 @@ type Highlight = { label: string; Icon: React.ElementType; className: string }
 
 function getHighlight(p: Product): Highlight | null {
   if (p.calories && p.calories < 350)
-    return { label: `${p.calories} kcal`, Icon: Leaf,     className: 'bg-emerald-50 text-emerald-600' }
+    return { label: `${p.calories} kcal`, Icon: Leaf,     className: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400' }
   if (p.protein  && p.protein >= 30)
-    return { label: `단백질 ${p.protein}g`, Icon: Dumbbell, className: 'bg-blue-50 text-blue-500' }
+    return { label: `단백질 ${p.protein}g`, Icon: Dumbbell, className: 'bg-blue-50 dark:bg-blue-950/40 text-blue-500 dark:text-blue-400' }
   if (p.cook_time && p.cook_time <= 3)
-    return { label: `${p.cook_time}분 완성`, Icon: Zap,      className: 'bg-amber-50 text-amber-500' }
+    return { label: `${p.cook_time}분 완성`, Icon: Zap,      className: 'bg-amber-50 dark:bg-amber-950/40 text-amber-500 dark:text-amber-400' }
   if (p.servings  && p.servings >= 2)
-    return { label: `${p.servings}인분`,    Icon: Users,    className: 'bg-purple-50 text-purple-500' }
+    return { label: `${p.servings}인분`,    Icon: Users,    className: 'bg-purple-50 dark:bg-purple-950/40 text-purple-500 dark:text-purple-400' }
   return null
 }
 

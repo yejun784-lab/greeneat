@@ -23,12 +23,12 @@ export function Footer() {
           <div>
             <p className="text-white font-medium mb-3">서비스</p>
             <ul className="space-y-2 text-sm text-[#b8b4ae]">
-              <li><Link href="/products"      className="hover:text-white transition-colors">도시락 쇼핑</Link></li>
-              <li><Link href="/subscription"  className="hover:text-white transition-colors">구독 플랜</Link></li>
-              <li><Link href="/my/orders"     className="hover:text-white transition-colors">주문 내역</Link></li>
-              <li><Link href="/terms"         className="hover:text-white transition-colors">이용약관</Link></li>
-              <li><Link href="/privacy"       className="hover:text-white transition-colors">개인정보처리방침</Link></li>
-              <li><Link href="/faq"           className="hover:text-white transition-colors">이용안내</Link></li>
+              <li><Link href="/products"      className="inline-block py-1.5 -my-1.5 hover:text-white transition-colors">도시락 쇼핑</Link></li>
+              <li><Link href="/subscription"  className="inline-block py-1.5 -my-1.5 hover:text-white transition-colors">구독 플랜</Link></li>
+              <li><Link href="/my/orders"     className="inline-block py-1.5 -my-1.5 hover:text-white transition-colors">주문 내역</Link></li>
+              <li><Link href="/terms"         className="inline-block py-1.5 -my-1.5 hover:text-white transition-colors">이용약관</Link></li>
+              <li><Link href="/privacy"       className="inline-block py-1.5 -my-1.5 hover:text-white transition-colors">개인정보처리방침</Link></li>
+              <li><Link href="/faq"           className="inline-block py-1.5 -my-1.5 hover:text-white transition-colors">이용안내</Link></li>
             </ul>
           </div>
 
