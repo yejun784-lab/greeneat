@@ -8,6 +8,7 @@ import { toast } from '@/lib/toast-store'
 
 type Inquiry = {
   id: string
+  user_id: string
   category: string
   title: string
   content: string
@@ -65,6 +66,20 @@ export function InquiryAnswerForm({ inquiry, userName }: Props) {
       setError(`답변 저장에 실패했습니다: ${updateError.message}`)
       setSaving(false)
       return
+    }
+
+    // 신규 답변일 때만 작성자에게 알림 발송 (실패해도 무시)
+    if (!answered) {
+      fetch('/api/notify-answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: inquiry.user_id,
+          kind: 'inquiry',
+          subject: inquiry.title,
+          link: '/my/inquiries',
+        }),
+      }).catch(() => {})
     }
 
     toast.success(answered ? '답변을 수정했습니다.' : '답변을 등록했습니다.')

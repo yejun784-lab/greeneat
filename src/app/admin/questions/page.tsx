@@ -6,6 +6,7 @@ import { MessageCircleQuestion, Lock } from 'lucide-react'
 
 type QuestionRow = {
   id: string
+  user_id: string
   product_id: string
   question: string
   is_secret: boolean

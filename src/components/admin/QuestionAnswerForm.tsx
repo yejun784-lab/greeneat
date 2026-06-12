@@ -8,6 +8,8 @@ import { toast } from '@/lib/toast-store'
 
 type Question = {
   id: string
+  user_id: string
+  product_id: string
   question: string
   is_secret: boolean
   status: 'pending' | 'answered'
@@ -48,6 +50,21 @@ export function QuestionAnswerForm({ question, userName, productName }: Props) {
     setSaving(false)
 
     if (updateError) { setError('저장에 실패했어요. 다시 시도해 주세요.'); return }
+
+    // 신규 답변일 때만 작성자에게 알림 발송 (실패해도 무시)
+    if (!answered) {
+      fetch('/api/notify-answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: question.user_id,
+          kind: 'qa',
+          subject: productName,
+          link: `/products/${question.product_id}?tab=qa`,
+        }),
+      }).catch(() => {})
+    }
+
     toast.success(answered ? '답변을 수정했어요.' : '답변을 등록했어요.')
     setOpen(false)
     router.refresh()
