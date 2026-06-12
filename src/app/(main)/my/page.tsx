@@ -15,6 +15,7 @@ import { WithdrawButton } from '@/components/my/WithdrawButton'
 import { HealthProfileButton } from '@/components/my/HealthProfileButton'
 import { AttendanceCard } from '@/components/my/AttendanceCard'
 import { PasswordChanger } from '@/components/my/PasswordChanger'
+import { EmailChanger } from '@/components/my/EmailChanger'
 import type { Order, Subscription } from '@/types'
 
 const GOAL_INFO: Record<string, { label: string; emoji: string; calTarget: number; proteinTarget: number }> = {
@@ -135,7 +136,7 @@ export default async function MyPage() {
         {/* 프로필 + 영양 목표 */}
         <div className="bg-surface rounded-2xl border border-line p-5">
           <div className="flex items-center gap-4 mb-4">
-            <ProfileEditor userId={user.id} initialName={profile?.name ?? null} initialPhone={profile?.phone ?? null} email={user.email ?? ''} />
+            <ProfileEditor userId={user.id} initialName={profile?.name ?? null} initialPhone={profile?.phone ?? null} email={user.email ?? ''} initialAvatarUrl={(profile as { avatar_url?: string | null } | null)?.avatar_url ?? null} />
             <GoalEditor current={goal} userId={user.id} />
           </div>
 
@@ -295,6 +296,12 @@ export default async function MyPage() {
         {/* 비밀번호 변경 — 이메일 가입 회원만 */}
         <PasswordChanger
           email={user.email ?? ''}
+          provider={(user.app_metadata?.provider as string) ?? 'email'}
+        />
+
+        {/* 이메일 변경 — 이메일 가입 회원만 */}
+        <EmailChanger
+          currentEmail={user.email ?? ''}
           provider={(user.app_metadata?.provider as string) ?? 'email'}
         />
 

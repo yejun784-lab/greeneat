@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 const TIERS = [
   { name: 'Bronze', min: 0,      max: 50000,   color: 'text-amber-700',  bg: 'bg-amber-50',   bar: 'bg-amber-500'  },
   { name: 'Silver', min: 50000,  max: 150000,  color: 'text-slate-500',  bg: 'bg-slate-50',   bar: 'bg-slate-400'  },
@@ -17,7 +19,15 @@ export function MembershipBadge({ totalOrderAmount }: Props) {
       <div className="flex items-center justify-between mb-3">
         <div>
           <p className="text-xs text-ink-4 mb-0.5">멤버십 등급</p>
-          <p className={`text-xl font-bold ${tier.color}`}>{tier.name}</p>
+          <div className="flex items-center gap-2">
+            <p className={`text-xl font-bold ${tier.color}`}>{tier.name}</p>
+            <Link
+              href="/my/membership"
+              className="text-[11px] font-medium text-ink-4 hover:text-[#2d7a4f] underline underline-offset-2 transition-colors"
+            >
+              혜택 보기
+            </Link>
+          </div>
         </div>
         <div className="text-3xl">
           {tier.name === 'Bronze' ? '🥉' : tier.name === 'Silver' ? '🥈' : tier.name === 'Gold' ? '🥇' : '👑'}

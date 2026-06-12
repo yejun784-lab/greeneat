@@ -5,6 +5,7 @@ import { Bell, Package, RefreshCw, Megaphone, Settings, ShoppingBag, ChevronLeft
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
+import { NotificationSettings } from '@/components/my/NotificationSettings'
 
 type NotificationType = 'order' | 'restock' | 'event' | 'system' | 'subscription'
 
@@ -111,6 +112,9 @@ export default function NotificationsPage() {
           </button>
         )}
       </div>
+
+      {/* 푸시 알림 설정 */}
+      <NotificationSettings />
 
       {/* 필터 탭 */}
       <div className="flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-none">
