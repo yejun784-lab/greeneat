@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
     totalPrice,
     usedPoints = 0,
     couponId = null,
-    pending = false,
     deliveryDate = null,
   } = body as {
     items: { product_id: string; quantity: number; price: number }[]
@@ -26,9 +25,15 @@ export async function POST(req: NextRequest) {
     totalPrice: number
     usedPoints?: number
     couponId?: string | null
-    pending?: boolean
     deliveryDate?: string | null
   }
+
+  // ── 보안 불변식 ────────────────────────────────────────────────────────────
+  // 주문은 이 엔드포인트에서 절대 'paid'로 생성하지 않는다. 항상 결제 미확정(pending)으로만
+  // 만들고, 'paid'/'confirmed' 전환은 오직 /api/payment/confirm(토스 승인 검증) 또는
+  // 결제 웹훅에서만 일어난다. (클라이언트가 pending:false를 보내 결제 없이 주문을
+  // 확정시키던 우회 경로 차단)
+  const pending = true
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: '주문 상품이 없습니다.' }, { status: 400 })

@@ -1,14 +1,28 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Gift, Heart, ChevronLeft, Loader2 } from 'lucide-react'
+import { Gift, ChevronLeft, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { formatPrice } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { toast } from '@/lib/toast-store'
+import type {} from '@/types/toss'
+
+function loadTossScript(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.TossPayments) { resolve(); return }
+    const existing = document.querySelector('script[src*="tosspayments"]')
+    if (existing) { existing.addEventListener('load', () => resolve()); existing.addEventListener('error', reject); return }
+    const script = document.createElement('script')
+    script.src = 'https://js.tosspayments.com/v2/standard'
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Toss 결제 스크립트 로드 실패'))
+    document.head.appendChild(script)
+  })
+}
 
 type Product = {
   id: string
@@ -20,7 +34,6 @@ type Product = {
 }
 
 function GiftPageInner() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const productId = searchParams.get('product')
 
@@ -33,8 +46,7 @@ function GiftPageInner() {
   const [message, setMessage] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [submitting, setSubmitting] = useState(false)
-  const [done, setDone] = useState(false)
-  const [orderId, setOrderId] = useState('')
+  const [tossReady, setTossReady] = useState(false)
 
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -42,6 +54,9 @@ function GiftPageInner() {
     createClient().auth.getUser().then(({ data }) => {
       setUserId(data.user?.id ?? null)
     })
+    loadTossScript()
+      .then(() => setTossReady(true))
+      .catch(() => toast.error('결제 모듈 로드에 실패했습니다. 새로고침해주세요.'))
   }, [])
 
   useEffect(() => {
@@ -66,8 +81,14 @@ function GiftPageInner() {
       toast.info('로그인 후 선물을 보낼 수 있어요.', { action: { label: '로그인', href: '/login' } })
       return
     }
+    if (!tossReady || !window.TossPayments) {
+      toast.error('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.')
+      return
+    }
     setSubmitting(true)
+    let dbOrderId: string | null = null
     try {
+      // 1) 결제 미확정(pending) 선물 주문 생성
       const res = await fetch('/api/gift', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,42 +102,39 @@ function GiftPageInner() {
           gift_message: message,
         }),
       })
-      if (res.ok) {
-        const { orderId: id } = await res.json()
-        setOrderId(id)
-        setDone(true)
-      } else {
+      if (!res.ok) {
         const { error } = await res.json().catch(() => ({ error: '오류' }))
         toast.error(error ?? '선물 주문에 실패했습니다.')
+        setSubmitting(false)
+        return
       }
-    } catch {
-      toast.error('네트워크 오류가 발생했습니다.')
-    } finally {
+      const { orderId: id, amount } = await res.json()
+      dbOrderId = id
+
+      // 2) TossPayments 결제 요청 (성공 시 /checkout/success 에서 승인·확정)
+      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!
+      const tossPayments = window.TossPayments(clientKey)
+      const payment = tossPayments.payment({ customerKey: id })
+      await payment.requestPayment({
+        method: 'CARD',
+        amount: { currency: 'KRW', value: amount },
+        orderId: id,
+        orderName: quantity > 1 ? `${product.name} 선물 ${quantity}개` : `${product.name} 선물`,
+        successUrl: `${window.location.origin}/checkout/success?usedPoints=0`,
+        failUrl: `${window.location.origin}/checkout/fail`,
+      })
+      // requestPayment 성공 시 successUrl로 redirect됨
+    } catch (err: unknown) {
+      // 결제 실패/취소 시 pending 주문 삭제
+      if (dbOrderId) {
+        fetch(`/api/orders/${dbOrderId}`, { method: 'DELETE' }).catch(() => {})
+      }
+      const msg = err instanceof Error ? err.message : ''
+      if (!msg.includes('PAY_PROCESS_CANCELED')) {
+        toast.error('결제 처리 중 오류가 발생했습니다.')
+      }
       setSubmitting(false)
     }
-  }
-
-  if (done) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-24 text-center">
-        <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
-          <Heart size={36} className="text-red-400" fill="currentColor" />
-        </div>
-        <h2 className="text-2xl font-bold text-ink mb-2">선물이 전달됐어요! 🎁</h2>
-        <p className="text-ink-4 mb-2">
-          <span className="font-medium text-ink">{recipientName}</span>님께<br />
-          마음을 담은 밀키트를 보냈습니다.
-        </p>
-        {message && (
-          <p className="text-sm text-ink-5 italic mb-2">"{message}"</p>
-        )}
-        <p className="text-xs text-ink-5 font-mono mt-1">{orderId}</p>
-        <div className="flex gap-3 justify-center mt-8">
-          <Button onClick={() => router.push('/my/orders')}>주문 내역 보기</Button>
-          <Button variant="secondary" onClick={() => router.push('/products')}>계속 쇼핑하기</Button>
-        </div>
-      </div>
-    )
   }
 
   if (!productId) {

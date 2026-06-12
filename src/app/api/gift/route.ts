@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   const qty = safeQty
+  // 선물은 배송비 무료 (UI와 일치). 서버가 가격의 단일 출처.
   const totalPrice = product.price * qty
 
   // 배송지 저장 (수신자 주소)
@@ -57,15 +58,17 @@ export async function POST(req: NextRequest) {
     .select()
     .single()
 
-  // 주문 생성
+  // ── 주문 생성 (결제 미확정: pending) ──────────────────────────────────────
+  // 보안: 토스 결제 승인 전에는 절대 'paid'로 만들지 않는다. /api/payment/confirm 이
+  // 금액 검증 후 'paid'/'confirmed'로 전환하고 재고를 차감한다. (결제 없는 무료 선물주문 차단)
   const { data: order, error: orderErr } = await supabase
     .from('orders')
     .insert({
       user_id: user.id,
       total_price: totalPrice,
       payment_method: 'card',
-      payment_status: 'paid',
-      status: 'confirmed',
+      payment_status: 'pending',
+      status: 'pending',
       address_id: savedAddress?.id ?? null,
       is_gift: true,
       gift_message: gift_message ?? null,
@@ -79,7 +82,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '주문 생성에 실패했습니다.' }, { status: 500 })
   }
 
-  // 주문 상품
+  // 주문 상품 (가격은 DB의 실제 가격 사용)
   await supabase.from('order_items').insert({
     order_id: order.id,
     product_id: product.id,
@@ -87,14 +90,6 @@ export async function POST(req: NextRequest) {
     price_at_purchase: product.price,
   })
 
-  // 재고 차감
-  const { error: rpcErr } = await supabase.rpc('decrement_stock', {
-    p_product_id: product.id,
-    p_quantity: qty,
-  })
-  if (rpcErr) {
-    await supabase.from('products').update({ stock: product.stock - qty }).eq('id', product.id)
-  }
-
-  return NextResponse.json({ orderId: order.id })
+  // 재고 차감은 결제 승인(confirm) 시점에 수행 — 여기서는 차감하지 않는다.
+  return NextResponse.json({ orderId: order.id, amount: totalPrice })
 }
