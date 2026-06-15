@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { XCircle, Loader2, X, ChevronRight } from 'lucide-react'
 import { toast } from '@/lib/toast-store'
 
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function CancelOrderButton({ orderId, status }: Props) {
+  const router = useRouter()
   const [step, setStep] = useState<'idle' | 'reason' | 'loading'>('idle')
   const [selectedReason, setSelectedReason] = useState('')
 
@@ -34,7 +36,8 @@ export function CancelOrderButton({ orderId, status }: Props) {
     })
     if (res.ok) {
       toast.success('주문이 취소됐어요.')
-      window.location.reload()
+      handleClose()
+      router.refresh()
     } else {
       const { error } = await res.json().catch(() => ({ error: '오류' }))
       toast.error(error ?? '취소 처리 중 오류가 발생했어요.')
