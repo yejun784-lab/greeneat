@@ -2,7 +2,7 @@
 
 import { useState, useRef, useTransition } from 'react'
 import Image from 'next/image'
-import { Camera, Users, Plus, Copy, Check, Flame, LogIn, X, Loader2, Utensils, MessageCircle, Send, Trash2 } from 'lucide-react'
+import { Camera, Users, Plus, Copy, Check, Flame, LogIn, X, Loader2, Utensils, MessageCircle, Send, Trash2, MoreVertical, LogOut, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/lib/toast-store'
 import type { MealLog, FeedGroup, MealType, MealLogComment } from '@/types'
@@ -541,6 +541,46 @@ export function FeedClient({
   const [streak, setStreak] = useState(currentStreak)
   const [showLog, setShowLog] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmKind, setConfirmKind] = useState<'leave' | 'delete' | null>(null)
+  const [busy, setBusy] = useState(false)
+
+  const isOwner = !!group && group.created_by === userId
+
+  // 그룹 나가기 — 본인 멤버 행만 삭제 (방장이 아닌 멤버용)
+  async function leaveGroup() {
+    if (!group) return
+    setBusy(true)
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('feed_group_members')
+      .delete()
+      .eq('group_id', group.id)
+      .eq('user_id', userId)
+    setBusy(false)
+    if (error) { toast.error('그룹을 나가지 못했어요.'); return }
+    toast.success('그룹에서 나왔어요.')
+    setConfirmKind(null)
+    setGroup(null)
+    setLogs([])
+  }
+
+  // 그룹 삭제 — 방장만. CASCADE로 멤버·로그 함께 삭제
+  async function deleteGroup() {
+    if (!group) return
+    setBusy(true)
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('feed_groups')
+      .delete()
+      .eq('id', group.id)
+    setBusy(false)
+    if (error) { toast.error('그룹을 삭제하지 못했어요.'); return }
+    toast.success('그룹을 삭제했어요.')
+    setConfirmKind(null)
+    setGroup(null)
+    setLogs([])
+  }
 
   async function createGroup(name: string) {
     const supabase = createClient()
@@ -662,13 +702,46 @@ export function FeedClient({
             </button>
           </div>
         </div>
-        <button
-          onClick={() => setShowLog(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#2d7a4f] text-white rounded-2xl text-sm font-medium hover:bg-[#235f3d] transition-colors"
-        >
-          <Plus size={16} />
-          기록하기
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowLog(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#2d7a4f] text-white rounded-2xl text-sm font-medium hover:bg-[#235f3d] transition-colors"
+          >
+            <Plus size={16} />
+            기록하기
+          </button>
+
+          {/* 그룹 관리 메뉴 */}
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="그룹 관리"
+              className="w-10 h-10 flex items-center justify-center rounded-2xl text-ink-4 hover:bg-wash transition-colors"
+            >
+              <MoreVertical size={18} />
+            </button>
+            {menuOpen && (
+              <>
+                {/* 바깥 클릭 닫기 */}
+                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                <div className="absolute right-0 top-11 z-20 w-40 bg-surface border border-line rounded-xl shadow-lg overflow-hidden animate-pop-in">
+                  <button
+                    onClick={() => { setMenuOpen(false); copyCode() }}
+                    className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm text-ink-2 hover:bg-wash transition-colors"
+                  >
+                    <Copy size={14} /> 초대코드 복사
+                  </button>
+                  <button
+                    onClick={() => { setMenuOpen(false); setConfirmKind(isOwner ? 'delete' : 'leave') }}
+                    className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors border-t border-line"
+                  >
+                    {isOwner ? <><Trash2 size={14} /> 그룹 삭제</> : <><LogOut size={14} /> 그룹 나가기</>}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* 스트릭 */}
@@ -706,6 +779,46 @@ export function FeedClient({
           onClose={() => setShowLog(false)}
           onSubmit={handleNewLog}
         />
+      )}
+
+      {/* 나가기 / 삭제 확인 모달 */}
+      {confirmKind && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-dim-in">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => !busy && setConfirmKind(null)} />
+          <div className="relative bg-surface rounded-2xl border border-line p-6 w-full max-w-sm shadow-2xl animate-pop-in">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center shrink-0">
+                <AlertTriangle size={18} className="text-red-500" />
+              </div>
+              <div>
+                <p className="font-semibold text-ink">
+                  {confirmKind === 'delete' ? '그룹을 삭제할까요?' : '그룹에서 나갈까요?'}
+                </p>
+                <p className="text-xs text-ink-4 mt-0.5">
+                  {confirmKind === 'delete'
+                    ? '모든 멤버와 기록이 함께 삭제되며 되돌릴 수 없어요.'
+                    : '내 기록은 남지만 피드에서 더 이상 볼 수 없어요.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmKind(null)}
+                disabled={busy}
+                className="flex-1 py-2.5 border border-line-2 rounded-xl text-sm font-medium text-ink-3 hover:bg-tint transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={confirmKind === 'delete' ? deleteGroup : leaveGroup}
+                disabled={busy}
+                className="flex-1 py-2.5 bg-red-500 text-white rounded-xl text-sm font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
+              >
+                {busy ? '처리 중...' : confirmKind === 'delete' ? '삭제' : '나가기'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
